@@ -29,7 +29,7 @@ This replication package contains the source code and data used in the paper *"T
 
 `hcc_cal` is a python package that calculates the human-centric code complexity (HCC) of a commit.
 
-We provide `hcc_cal` as a standalone package for calculating the HCC metrics of a commit. It can be used to calculate the HCC metrics of a commit that only modified existing methods.
+We provide `hcc_cal` as a standalone package for collecting commits with modified methods and calculating the HCC metrics.
 
 ## Structure
 
@@ -56,7 +56,7 @@ We provide `hcc_cal` as a standalone package for calculating the HCC metrics of 
 
 ## Installation
 
-Currently, you can install `hcc_cal` via a binary file. Download [hcc_cal-0.1.0-py3-none-any.whl](dist) to your project and install it using pip wheel.
+Currently, you can install `hcc_cal` via a .whl file. Download [hcc_cal-0.1.0-py3-none-any.whl](dist/hcc_cal-0.1.0-py3-none-any.whl) to your project and install it using pip wheel.
 
 ```bash
 $ pip install hcc_cal-0.1.0-py3-none-any.whl
@@ -69,30 +69,24 @@ We will provide the package via PyPI in the future.
 Also, you can build the package from the source code via `rye`.
 
 ```bash
-$ rye build
+$ rye build --clean --wheel
 ```
 
 # The Replication Package
 
-This repository includes all the scripts, data and trained models to reproduce the results of the paper. The repository is structured as follows:
+This repository includes all the scripts, data and trained models to reproduce the results of the paper. The replication package is structured as follows:
 
 ```bash
 ├── data
 │  ├── dataset # see `Building Dataset`
 │  ├── output # generated output from `jit_sdp.py`
 │  ├── plots # generated plots
-│  └── pickles.zip ... # archives of trained models in our experiment
-├── dist # hcc_cal binary
+│  └── archives # zipped trained models (pickles) in our experiment
+├── dist # hcc_cal wheel file
 ├── hcc_cal # hcc_cal source code, see `hcc_cal`
 └── scripts # scripts for reproducing the results
 ```
 
-To unzip the pickles.zip, (Unix/Linux)
-
-```bash
-$ zip -s 0 data/archives/pickles.zip --out data/pickles.zip
-$ unzip data/pickles.zip -d data/pickles
-```
 
 ## 0. Setup
 
@@ -108,6 +102,12 @@ $ unzip data/pickles.zip -d data/pickles
 
     ```bash
     $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
+    ```
+- trained models: unzip the pickles.zip in the `data/archives` directory
+
+    ```bash
+    $ zip -s 0 data/archives/pickles.zip --out data/pickles.zip
+    $ unzip data/pickles.zip -d data/pickles
     ```
 
 ## 1. Building Dataset
