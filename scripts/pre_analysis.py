@@ -377,8 +377,6 @@ def table_distribution(
         start_date = data.index.min()
         end_date = data.index.max()
 
-        print((end_date - start_date).days)
-
         commits_day = len(data) / (end_date - start_date).days
         avg_gap = data.loc[data["buggy"] == 1, "gap"].mean()
         commits_gap = round(avg_gap * commits_day, 1)

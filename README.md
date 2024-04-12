@@ -1,77 +1,37 @@
 # Human-centric Code Complexity (HCC) Metrics Calculator
 
-This replication package contains the source code and data used in the paper *"The Impact of Understandability on Defect-inducing Risks of Software Changes"* and the implementation of the human-centric code complexity (HCC) calculator, `hcc_cal`.
+This replication package contains the source code and data used in the paper *"The Impact of Understandability on Defect-inducing Risks of Software Changes"* and the implementation of the human-centric code complexity (HCC) metrics calculator, `hcc_cal`.
 
 ## Table of Contents
 
 - [Human-centric Code Complexity (HCC) Metrics Calculator](#human-centric-code-complexity-hcc-metrics-calculator)
   - [Table of Contents](#table-of-contents)
-  - [The Replication Package](#the-replication-package)
-  - [Setup](#setup)
-  - [`hcc_cal`](#hcc_cal)
-    - [Structure](#structure)
-    - [Pre-requisites](#pre-requisites)
-    - [Installation](#installation)
-    - [Building from Source](#building-from-source)
-  - [Building Dataset](#building-dataset)
-    - [1. Collecting the Changes and Contexts](#1-collecting-the-changes-and-contexts)
+- [`hcc_cal`](#hcc_cal)
+  - [Structure](#structure)
+  - [Pre-requisites](#pre-requisites)
+  - [Installation](#installation)
+  - [Building from Source](#building-from-source)
+- [The Replication Package](#the-replication-package)
+  - [0. Setup](#0-setup)
+  - [1. Building Dataset](#1-building-dataset)
+    - [1) Collecting the Changes and Contexts](#1-collecting-the-changes-and-contexts)
       - [(Option 1) From Scratch](#option-1-from-scratch)
       - [(Option 2) From Pre-filtered Commits](#option-2-from-pre-filtered-commits)
-    - [2. Computing HCC Metrics](#2-computing-hcc-metrics)
-  - [Reproducing the Results](#reproducing-the-results)
+    - [2) Computing HCC Metrics](#2-computing-hcc-metrics)
+  - [2. Reproducing the Results](#2-reproducing-the-results)
     - [Pre-analysis](#pre-analysis)
     - [RQ1: Do HCC metrics correlate with defect-inducing risk?](#rq1-do-hcc-metrics-correlate-with-defect-inducing-risk)
     - [RQ2: How do HCC metrics differ from existing JIT-SDP metrics?](#rq2-how-do-hcc-metrics-differ-from-existing-jit-sdp-metrics)
     - [RQ3: Can HCC metrics improve the performance of JIT-SDP models?](#rq3-can-hcc-metrics-improve-the-performance-of-jit-sdp-models)
-      - [RF](#rf)
-      - [XGBoost](#xgboost)
     - [Discussion: More Actionable JIT-SDP with HCC metrics](#discussion-more-actionable-jit-sdp-with-hcc-metrics)
 
-## The Replication Package
-
-This repository includes all the scripts, data and trained models to reproduce the results of the paper. The repository is structured as follows:
-
-```bash
-├── data
-│  ├── dataset # see `Building Dataset`
-│  ├── output # generated output from `jit_sdp.py`
-│  ├── plots # generated plots
-│  └── pickles.zip ... # archives of trained models in our experiment
-├── dist # hcc_cal binary
-├── hcc_cal # hcc_cal source code, see `hcc_cal`
-└── scripts # scripts for reproducing the results
-```
-
-To unzip the pickles,
-
-```bash
-$ zip -s 0 data/archives/pickles.zip --out data/pickles.zip
-$ unzip data/pickles.zip -d data/pickles
-```
-
-## Setup
-
-- [rye](https://rye-up.com): We recommend to use `rye`, a python package manager. After installing rye, run the following command to install all dependencies.
-
-    ```bash
-    $ rye pin 3.12 # pin the python version you want to use
-    $ rye sync # install all dependencies
-    ```
-
-    See [pyproject.toml](./pyproject.toml) for the list of dependencies.
-- [Checkstyle](https://github.com/checkstyle/checkstyle/releases/): Recommend to save to root directory as checkstyle.jar for easy replication.
-
-    ```bash
-    $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
-    ```
-
-## `hcc_cal`
+# `hcc_cal`
 
 `hcc_cal` is a python package that calculates the human-centric code complexity (HCC) of a commit.
 
 We provide `hcc_cal` as a standalone package for calculating the HCC metrics of a commit. It can be used to calculate the HCC metrics of a commit that only modified existing methods.
 
-### Structure
+## Structure
 
 ```bash
  src/hcc_cal
@@ -88,13 +48,13 @@ We provide `hcc_cal` as a standalone package for calculating the HCC metrics of 
     └── data_utils.py # The module that processes the data for JIT-SDP.
 ```
 
-### Pre-requisites
+## Pre-requisites
 
 - python 3.10+
 - pip
 - wheel
 
-### Installation
+## Installation
 
 Currently, you can install `hcc_cal` via a binary file. Download [hcc_cal-0.1.0-py3-none-any.whl](dist) to your project and install it using pip wheel.
 
@@ -104,7 +64,7 @@ $ pip install hcc_cal-0.1.0-py3-none-any.whl
 
 We will provide the package via PyPI in the future.
 
-### Building from Source
+## Building from Source
 
 Also, you can build the package from the source code via `rye`.
 
@@ -112,7 +72,45 @@ Also, you can build the package from the source code via `rye`.
 $ rye build
 ```
 
-## Building Dataset
+# The Replication Package
+
+This repository includes all the scripts, data and trained models to reproduce the results of the paper. The repository is structured as follows:
+
+```bash
+├── data
+│  ├── dataset # see `Building Dataset`
+│  ├── output # generated output from `jit_sdp.py`
+│  ├── plots # generated plots
+│  └── pickles.zip ... # archives of trained models in our experiment
+├── dist # hcc_cal binary
+├── hcc_cal # hcc_cal source code, see `hcc_cal`
+└── scripts # scripts for reproducing the results
+```
+
+To unzip the pickles.zip, (Unix/Linux)
+
+```bash
+$ zip -s 0 data/archives/pickles.zip --out data/pickles.zip
+$ unzip data/pickles.zip -d data/pickles
+```
+
+## 0. Setup
+
+- [rye](https://rye-up.com): We recommend to use `rye`, a hassle-free python package manager. After installing rye, run the following command to install all dependencies for the replication and `hcc_cal`.
+
+    ```bash
+    $ rye pin 3.12 # pin the python version you want to use
+    $ rye sync # install all dependencies
+    ```
+
+    See [pyproject.toml](./pyproject.toml) for the list of dependencies.
+- [Checkstyle](https://github.com/checkstyle/checkstyle/releases/): Save to root directory as checkstyle.jar for easy replication. For example,
+
+    ```bash
+    $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
+    ```
+
+## 1. Building Dataset
 
 To calculate the verification latency gap (i.e., average fixing time, gap), we slightly modified the code of the [ApacheJIT](https://github.com/hosseinkshvrz/apachejit) repository to create an apachejit dataset that includes a fixed_date, and constructed `data/dataset/apachejit_gap.csv`, which is composed of a total of 8 projects that include the gap.
 
@@ -135,7 +133,7 @@ data/dataset
    ├── ...
 ```
 
-### 1. Collecting the Changes and Contexts
+### 1) Collecting the Changes and Contexts
 
 ```bash
 $ python scripts/collect.py --help
@@ -198,7 +196,7 @@ Or to save the change contexts for all commits that modified existing methods wi
 
 `hcc_cal.commit.MethodChangesCommit` instances are saved to `data/cache/<project>/<commit_hash>.pkl`.
 
-### 2. Computing HCC Metrics
+### 2) Computing HCC Metrics
 
 ```bash
 $ python scripts/compute.py hcc --help
@@ -249,19 +247,11 @@ Additionally, to compute the `LT` for the baseline dataset,
 
 Or just use the pre-computed HCC metrics and baseline dataset in `data/dataset/hcc` and `data/dataset/baseline`, respectively.
 
-## Reproducing the Results
+## 2. Reproducing the Results
 
 ### Pre-analysis
 
 To reproduce the pre-analysis results, i.e., the distribution of the dataset and the correlation between HCC features and defect-inducing risks, run the `table-distribution` and `plot-hmap`. `plot-hmap` also generates the collinearity between features for RQ2.
-
-<details>
-<summary>Click to see the pre-analysis results</summary>
-
-![Pre1](./data/plots/pre_analysis/hmap/BASELINE.svg)
-![Pre2](./data/plots/pre_analysis/hmap/HCC.svg)
-
-</details>
 
 ```bash
 $ python scripts/pre_analysis.py --help
@@ -277,6 +267,27 @@ $ python scripts/pre_analysis.py --help
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
+<details>
+<summary>(Click to see the pre-analysis results)</summary>
+
+| Project   | Defective Commits   | Clean Commits   |   Changed Methods |   Changed Lines (avg.) |   Context Sizes (avg.) |   Fixing Time (avg.) | Duration                |
+|-----------|---------------------|-----------------|-------------------|------------------------|------------------------|----------------------|-------------------------|
+| ActiveMQ  | 286 (11.75%)        | 2148 (88.25%)   |               2.5 |                   17.0 |                   72.2 |                479.9 | 2005-12-14 ~ 2019-12-03 |
+| Camel     | 496 (7.66%)         | 5975 (92.34%)   |               3.9 |                   22.9 |                   96.3 |                881.5 | 2007-03-19 ~ 2019-12-26 |
+| Flink     | 338 (11.22%)        | 2674 (88.78%)   |               3.8 |                   27.5 |                  132.7 |                237.1 | 2010-12-18 ~ 2019-12-26 |
+| Groovy    | 522 (16.24%)        | 2692 (83.76%)   |               3.2 |                   25.1 |                   98.5 |                592.2 | 2003-09-11 ~ 2019-12-25 |
+| Cassandra | 745 (22.31%)        | 2594 (77.69%)   |               2.5 |                   16.7 |                   99.7 |                321.4 | 2009-03-23 ~ 2019-12-17 |
+| HBase     | 772 (27.54%)        | 2031 (72.46%)   |               3.1 |                   22.2 |                  123.2 |                243.9 | 2007-04-07 ~ 2019-12-11 |
+| Hive      | 1012 (45.34%)       | 1220 (54.66%)   |               2.8 |                   23.2 |                  138.9 |                206.2 | 2008-09-12 ~ 2019-12-25 |
+| Ignite    | 345 (8.16%)         | 3883 (91.84%)   |               2.7 |                   18.1 |                  146.5 |                834.8 | 2014-02-20 ~ 2019-12-24 |
+| Total     |                     |                 |               3.1 |                   21.6 |                  113.5 |                474.6 |                         |
+
+![Pre1](./data/plots/pre_analysis/hmap/BASELINE.svg)
+![Pre2](./data/plots/pre_analysis/hmap/HCC.svg)
+
+</details>
+
+
 ### RQ1: Do HCC metrics correlate with defect-inducing risk?
 
 ```bash
@@ -286,7 +297,7 @@ $ python scripts/pre_analysis.py table-group-diff
 ```
 
 <details>
-<summary>Click to see the RQ1 results</summary>
+<summary>(Click to see the RQ1 results)</summary>
 
 ![RQ1_1](data/plots/pre_analysis/significance/corr_hcc_lr.svg)
 ![RQ1_2](./data/plots/pre_analysis/significance/corr_baseline+hcc_lr.svg)
@@ -361,7 +372,7 @@ $ python scripts/analysis.py plot-set-relationships --help
 ```
 
 <details>
-<summary>Click to see the RQ2 results</summary>
+<summary>(Click to see the RQ2 results)</summary>
 <h4>Correlations (left), Set relationships between TPs (right)</h4>
 
 ![RQ2_1](./data/plots/pre_analysis/hmap/BASELINE_HCC.svg)
@@ -426,7 +437,7 @@ $ python scripts/analysis.py table-performances data/output/xgboost_baseline.jso
 ```
 
 <details>
-<summary>Click to see the RQ3 results</summary>
+<summary>(Click to see the RQ3 results)</summary>
 <h4>RF (f1, mcc, brier)</h4>
 
 ![rq3_1](./data/plots/analysis/radar_chart_rf_f1_macro.svg)
@@ -440,7 +451,7 @@ $ python scripts/analysis.py table-performances data/output/xgboost_baseline.jso
 ![rq3_6](./data/plots/analysis/radar_chart_xgb_brier.svg)
 <p>orange: baseline, blue: baseline+HCC</p>
 
-#### RF
+<h4>RF</h4>
 
 | Project   | Features     | f1_macro       | mcc            | brier          |
 |-----------|--------------|----------------|----------------|----------------|
@@ -461,7 +472,7 @@ $ python scripts/analysis.py table-performances data/output/xgboost_baseline.jso
 | Ignite    | baseline     | 0.57           | 0.14           | 0.20           |
 |           | baseline+hcc | 0.56 0.705 [*] | 0.14 0.829 [*] | 0.18 0.004 [l] |
 
-#### XGBoost
+<h4>XGBoost</h4>
 
 | Project   | Features     | f1_macro       | mcc            | brier          |
 |-----------|--------------|----------------|----------------|----------------|
@@ -514,7 +525,7 @@ $ python scripts/analysis.py table-actionable data/output/actionable.csv
 ```
 
 <details>
-<summary>Click to see the discussion results</summary>
+<summary>(Click to see the discussion results)</summary>
 
 | Project   |   Our |   Baseline | Wilcoxon, Cliff's Delta   |
 |-----------|-------|------------|---------------------------|
