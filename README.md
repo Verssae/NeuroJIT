@@ -270,17 +270,17 @@ $ python scripts/pre_analysis.py --help
 <details>
 <summary>(Click to see the pre-analysis results)</summary>
 
-| Project   | Defective Commits   | Clean Commits   |   Changed Methods |   Changed Lines (avg.) |   Context Sizes (avg.) |   Fixing Time (avg.) | Duration                |
-|-----------|---------------------|-----------------|-------------------|------------------------|------------------------|----------------------|-------------------------|
-| ActiveMQ  | 286 (11.75%)        | 2148 (88.25%)   |               2.5 |                   17.0 |                   72.2 |                479.9 | 2005-12-14 ~ 2019-12-03 |
-| Camel     | 496 (7.66%)         | 5975 (92.34%)   |               3.9 |                   22.9 |                   96.3 |                881.5 | 2007-03-19 ~ 2019-12-26 |
-| Flink     | 338 (11.22%)        | 2674 (88.78%)   |               3.8 |                   27.5 |                  132.7 |                237.1 | 2010-12-18 ~ 2019-12-26 |
-| Groovy    | 522 (16.24%)        | 2692 (83.76%)   |               3.2 |                   25.1 |                   98.5 |                592.2 | 2003-09-11 ~ 2019-12-25 |
-| Cassandra | 745 (22.31%)        | 2594 (77.69%)   |               2.5 |                   16.7 |                   99.7 |                321.4 | 2009-03-23 ~ 2019-12-17 |
-| HBase     | 772 (27.54%)        | 2031 (72.46%)   |               3.1 |                   22.2 |                  123.2 |                243.9 | 2007-04-07 ~ 2019-12-11 |
-| Hive      | 1012 (45.34%)       | 1220 (54.66%)   |               2.8 |                   23.2 |                  138.9 |                206.2 | 2008-09-12 ~ 2019-12-25 |
-| Ignite    | 345 (8.16%)         | 3883 (91.84%)   |               2.7 |                   18.1 |                  146.5 |                834.8 | 2014-02-20 ~ 2019-12-24 |
-| Total     |                     |                 |               3.1 |                   21.6 |                  113.5 |                474.6 |                         |
+| Project   | Defective Commits | Clean Commits | Changed Methods | Changed Lines (avg.) | Context Sizes (avg.) | Fixing Time (avg.) | Duration                |
+| --------- | ----------------- | ------------- | --------------- | -------------------- | -------------------- | ------------------ | ----------------------- |
+| ActiveMQ  | 286 (11.75%)      | 2148 (88.25%) | 2.5             | 17.0                 | 72.2                 | 479.9              | 2005-12-14 ~ 2019-12-03 |
+| Camel     | 496 (7.66%)       | 5975 (92.34%) | 3.9             | 22.9                 | 96.3                 | 881.5              | 2007-03-19 ~ 2019-12-26 |
+| Flink     | 338 (11.22%)      | 2674 (88.78%) | 3.8             | 27.5                 | 132.7                | 237.1              | 2010-12-18 ~ 2019-12-26 |
+| Groovy    | 522 (16.24%)      | 2692 (83.76%) | 3.2             | 25.1                 | 98.5                 | 592.2              | 2003-09-11 ~ 2019-12-25 |
+| Cassandra | 745 (22.31%)      | 2594 (77.69%) | 2.5             | 16.7                 | 99.7                 | 321.4              | 2009-03-23 ~ 2019-12-17 |
+| HBase     | 772 (27.54%)      | 2031 (72.46%) | 3.1             | 22.2                 | 123.2                | 243.9              | 2007-04-07 ~ 2019-12-11 |
+| Hive      | 1012 (45.34%)     | 1220 (54.66%) | 2.8             | 23.2                 | 138.9                | 206.2              | 2008-09-12 ~ 2019-12-25 |
+| Ignite    | 345 (8.16%)       | 3883 (91.84%) | 2.7             | 18.1                 | 146.5                | 834.8              | 2014-02-20 ~ 2019-12-24 |
+| Total     |                   |               | 3.1             | 21.6                 | 113.5                | 474.6              |                         |
 
 ![Pre1](./data/plots/pre_analysis/hmap/BASELINE.svg)
 ![Pre2](./data/plots/pre_analysis/hmap/HCC.svg)
@@ -304,18 +304,18 @@ $ python scripts/pre_analysis.py table-group-diff
 ![RQ1_3](./data/plots/pre_analysis/significance/corr_hcc_rf.svg)
 ![RQ1_4](./data/plots/pre_analysis/significance/corr_baseline+hcc_rf.svg)
 
-| Metric   |   Wilcoxon P-value | Cliff's Delta   |
-|----------|--------------------|-----------------|
-| V        |              0.000 | small           |
-| DD_V     |              0.042 | negligible      |
-| MDNL     |              0.000 | small           |
-| NB       |              0.000 | negligible      |
-| REC      |              0.000 | negligible      |
-| NP       |              0.000 | small           |
-| RG       |              0.000 | negligible      |
-| NTM      |              0.000 | negligible      |
-| TS       |              0.000 | negligible      |
-| RII      |              0.000 | small           |
+| Metric | Wilcoxon P-value | Cliff's Delta |
+| ------ | ---------------- | ------------- |
+| V      | 0.000            | small         |
+| DD_V   | 0.042            | negligible    |
+| MDNL   | 0.000            | small         |
+| NB     | 0.000            | negligible    |
+| REC    | 0.000            | negligible    |
+| NP     | 0.000            | small         |
+| RG     | 0.000            | negligible    |
+| NTM    | 0.000            | negligible    |
+| TS     | 0.000            | negligible    |
+| RII    | 0.000            | small         |
 </details>
 
 ### RQ2: How do HCC metrics differ from existing JIT-SDP metrics?
@@ -454,7 +454,7 @@ $ python scripts/analysis.py table-performances data/output/xgboost_baseline.jso
 <h4>RF</h4>
 
 | Project   | Features     | f1_macro       | mcc            | brier          |
-|-----------|--------------|----------------|----------------|----------------|
+| --------- | ------------ | -------------- | -------------- | -------------- |
 | ActiveMQ  | baseline     | 0.54           | 0.10           | 0.19           |
 |           | baseline+hcc | 0.55 0.245 [s] | 0.11 0.787 [*] | 0.12 0.000 [l] |
 | Camel     | baseline     | 0.53           | 0.06           | 0.09           |
@@ -475,7 +475,7 @@ $ python scripts/analysis.py table-performances data/output/xgboost_baseline.jso
 <h4>XGBoost</h4>
 
 | Project   | Features     | f1_macro       | mcc            | brier          |
-|-----------|--------------|----------------|----------------|----------------|
+| --------- | ------------ | -------------- | -------------- | -------------- |
 | ActiveMQ  | baseline     | 0.52           | 0.08           | 0.22           |
 |           | baseline+hcc | 0.55 0.002 [l] | 0.10 0.267 [s] | 0.17 0.000 [l] |
 | Camel     | baseline     | 0.52           | 0.05           | 0.09           |
@@ -521,22 +521,33 @@ To generate the actionable JIT-SDP results,
 Then, to tabulate the results,
 
 ```bash
-$ python scripts/analysis.py table-actionable data/output/actionable.csv
+$ python scripts/analysis.py table-actionable --help
+
+ Usage: analysis.py table-actionable [OPTIONS] [PATH]
+
+ Tabulate the results of the actionable features
+
+╭─ Arguments ──────────────────────────────────────────────────╮
+│   path      [PATH]  [default: data/output/actionable.csv]    │
+╰──────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────╮
+│ --fmt         TEXT  [default: github]                        │
+╰──────────────────────────────────────────────────────────────╯
 ```
 
 <details>
 <summary>(Click to see the discussion results)</summary>
 
-| Project   |   Our |   Baseline | Wilcoxon, Cliff's Delta   |
-|-----------|-------|------------|---------------------------|
-| activemq  |  66.1 |       65.8 | 0.883 [*]                 |
-| camel     |  67.4 |       65.9 | 0.444 [*]                 |
-| flink     |  73.5 |       68.4 | 0.000 [s]                 |
-| groovy    |  66.4 |       49.7 | 0.000 [l]                 |
-| cassandra |  74.7 |       58.8 | 0.000 [l]                 |
-| hbase     |  79.0 |       71.1 | 0.000 [s]                 |
-| hive      |  82.0 |       75.8 | 0.000 [s]                 |
-| ignite    |  77.1 |       65.9 | 0.000 [m]                 |
-| Average   |  73.3 |       65.2 |                           |
+| Project   | baseline+HCC | baseline | Wilcoxon, Cliff's Delta |
+| --------- | ------------ | -------- | ----------------------- |
+| activemq  | 66.1         | 65.8     | 0.883 [*]               |
+| camel     | 67.4         | 65.9     | 0.444 [*]               |
+| flink     | 73.5         | 68.4     | 0.000 [s]               |
+| groovy    | 66.4         | 49.7     | 0.000 [l]               |
+| cassandra | 74.7         | 58.8     | 0.000 [l]               |
+| hbase     | 79.0         | 71.1     | 0.000 [s]               |
+| hive      | 82.0         | 75.8     | 0.000 [s]               |
+| ignite    | 77.1         | 65.9     | 0.000 [m]               |
+| Average   | 73.3         | 65.2     |                         |
 
 </details>

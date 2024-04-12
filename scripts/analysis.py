@@ -434,7 +434,10 @@ def plot_set_relationships(
 
 
 @app.command()
-def table_actionable(path):
+def table_actionable(
+    path: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/actionable.csv"),
+    fmt: Annotated[str, typer.Option()] = "github",
+):
     """
     Tabulate the results of the actionable features
     """
@@ -462,8 +465,8 @@ def table_actionable(path):
     print(
         tabulate(
             table,
-            headers=["Project", "Our", "Baseline", "Wilcoxon, Cliff's Delta"],
-            tablefmt="github",
+            headers=["Project", "baseline+HCC", "baseline", "Wilcoxon, Cliff's Delta"],
+            tablefmt=fmt,
             floatfmt=".1f",
         )
     )
