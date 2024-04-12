@@ -1,0 +1,32 @@
+# python generated files
+__pycache__/
+*/__pycache__/
+*/**/__pycache__/
+*.py[oc]
+build/
+wheels/
+*.egg-info
+
+# venv
+.venv/
+
+# rye 
+.ruff_cache/
+.python-version
+
+# IDE
+.vscode/
+
+# Generated Data
+data/repo/
+data/cache/
+data/pickles/
+data/pickles.zip
+
+# Mac
+
+.DS_Store
+._*
+
+# Binaries
+checkstyle.jar
