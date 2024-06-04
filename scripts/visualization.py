@@ -134,21 +134,21 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
     # ax.yaxis.tick_right()
     # ax.yaxis.set_label_position("right")
     
-    greys = sns.color_palette("Greys", n_colors=9)
-    for i in range(corr_matrix.shape[0]):
-        for j in range(corr_matrix.shape[1]):
-            value = corr_matrix.iloc[i, j]
-            if  i > j :
-                ax.text(
-                    j + 0.5,
-                    i + 0.5,
-                    f"{value:.2f}"[2:] if value > 0 else "-" + f"{value:.2f}"[3:],
-                    ha="center",
-                    va="center",
-                    color=greys[4] if abs(value) < 0.5 else greys[7],
-                    fontsize=15,
-                    # fontweight="bold",
-                )
+    # greys = sns.color_palette("Greys", n_colors=9)
+    # for i in range(corr_matrix.shape[0]):
+    #     for j in range(corr_matrix.shape[1]):
+    #         value = corr_matrix.iloc[i, j]
+    #         if  i > j :
+    #             ax.text(
+    #                 j + 0.5,
+    #                 i + 0.5,
+    #                 f"{value:.2f}"[2:] if value > 0 else "-" + f"{value:.2f}"[3:],
+    #                 ha="center",
+    #                 va="center",
+    #                 color=greys[4] if abs(value) < 0.5 else greys[7],
+    #                 fontsize=15,
+    #                 # fontweight="bold",
+    #             )
     # plt.title(
     #     title,
     #     pad=10,

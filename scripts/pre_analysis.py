@@ -262,7 +262,7 @@ def plot_corr():
     X = data[BASELINE_HCC]
     results_kc = significances(X, y, metrics=BASELINE_HCC)
 
-    save_dir = Path("data/plots/pre_analysis/significance")
+    save_dir = Path("data/plots/pre_analysis/significance_ase")
     save_dir.mkdir(exist_ok=True, parents=True)
 
     corr_plot(results_ccc, results_kc, save_dir=save_dir)
@@ -276,16 +276,16 @@ def plot_hmap():
     data = load_data()
 
     X = data[BASELINE_HCC]
-    save_path = "data/plots/pre_analysis/hmap/BASELINE_HCC.svg"
-    visualize_hmap(X.corr(method="spearman"), size=9, save_path=save_path)
+    save_path = "data/plots/pre_analysis/hmap/BASELINE_HCC_ase.svg"
+    visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
     X = data[HCC]
-    save_path = "data/plots/pre_analysis/hmap/HCC.svg"
-    visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
+    save_path = "data/plots/pre_analysis/hmap/HCC_ase.svg"
+    visualize_hmap(X.corr(method="spearman"), size=4, save_path=save_path)
 
     X = data[BASELINE]
-    save_path = "data/plots/pre_analysis/hmap/BASELINE.svg"
-    visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
+    save_path = "data/plots/pre_analysis/hmap/BASELINE_ase.svg"
+    visualize_hmap(X.corr(method="spearman"), size=4, save_path=save_path)
 
 
 @app.command()
