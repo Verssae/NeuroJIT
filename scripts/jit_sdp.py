@@ -22,6 +22,7 @@ from lime.lime_tabular import LimeTabularExplainer
 from tabulate import tabulate
 from typer import Typer, Argument, Option
 
+from hcc_cal.commit import Mining
 from hcc_cal.tools.data_utils import KFoldDateSplit
 from hcc_cal.tools.correlation import group_difference
 from environment import (
@@ -321,10 +322,13 @@ def tp_samples(
     pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
 ):
     """
-    Compute the ratios of actionable features for the baseline and baseline+HCC models for the true positive samples in the 20 folds JIT-SDP
+    Save TP samples as json
     """
+    
     console = Console(quiet=not display)
-    scores = []
+
+
+
     for project in track(
         PROJECTS,
         description="Projects...",
@@ -332,11 +336,11 @@ def tp_samples(
         total=len(PROJECTS),
     ):
         baseline_data = pd.read_csv(baseline_dir / f"{project}.csv")
-        baseline_data = baseline_data.drop(columns=["target"])
+        baseline_data = baseline_data.drop(columns=["target", "ENT"])
         hcc_data = pd.read_csv(hcc_dir / f"{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target"])
+        hcc_data = hcc_data.drop(columns=["fix_date", "target", "Unnamed: 0"])
         data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
+            baseline_data, on=["commit_id", "project", "gap", "buggy", "date", "repo"]
         )
 
         data["date"] = pd.to_datetime(data["date"])
@@ -348,6 +352,12 @@ def tp_samples(
         splitter = KFoldDateSplit(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
         )
+
+        hcc_pairs = {}
+        baseline_pairs = {}
+        common_pairs = {}
+        
+        metric_pairs = {}
 
         for i, (train, test) in enumerate(splitter.split()):
 
@@ -383,28 +393,189 @@ def tp_samples(
             baseline_only_tp_index = (y_test == 1) & (hcc_y_pred == 0) & (base_y_pred == 1)
             common_tp_index = (y_test == 1) & (hcc_y_pred == 1) & (base_y_pred == 1)
 
-            console.print(f"Project: {project}, Fold: {i}")
-            console.print(
-                tabulate(
-                    [
-                        ["HCC only", sum(hcc_only_tp_index)],
-                        ["Baseline only", sum(baseline_only_tp_index)],
-                        ["Common", sum(common_tp_index)],
-                    ],
-                    headers=["Type", "Count"],
-                    tablefmt="pretty",
-                )
-            )
 
             for idx, row in test.loc[hcc_only_tp_index].iterrows():
                 commit_id = row.commit_id
-                console.print(f"HCC only: {commit_id}")
+                commit = Mining.load("data/cache", row["repo"], commit_id)
+                if commit is None:
+                    console.log(f"Commit {commit_id} not found")
+                    continue
+                
+                methods = {}
+                for m in commit.methods_after:
+                    methods[m.signature] = {
+                        'after' : m.snippet,
+                        'after_col': m.line_numbers_col(True)
+                    }
+
+                for m in commit.methods_before:
+                    if m.signature in methods:
+                        methods[m.signature]['before'] = m.snippet
+                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
+                    else:
+                        methods[m.signature] = {
+                            'before' : m.snippet,
+                            'before_col': m.line_numbers_col(False)
+                        }
+
+                hcc_pairs[commit_id] = []
+                for signature, m in methods.items():
+                    hcc_pairs[commit_id].append(
+                        (
+                            signature,
+                            m.get('before_col', ''),
+                            m.get('before', ''),
+                            m.get('after_col', ''),
+                            m.get('after', ''),
+                        )
+                    )
+                
+                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
+                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
+
+                metric_pairs[commit_id] = {
+                    'hcc': hcc_row,
+                    'baseline': baseline_row
+                }
 
             for idx, row in test.loc[baseline_only_tp_index].iterrows():
                 commit_id = row.commit_id
-                console.print(f"Baseline only: {commit_id}")
+                commit = Mining.load("data/cache", row["repo"], commit_id)
+                if commit is None:
+                    console.log(f"Commit {commit_id} not found")
+                    continue
 
-            break
+                methods = {}
+                for m in commit.methods_after:
+                    methods[m.signature] = {
+                        'after' : m.snippet,
+                        'after_col': m.line_numbers_col(True)
+                    }
+
+                for m in commit.methods_before:
+                    if m.signature in methods:
+                        methods[m.signature]['before'] = m.snippet
+                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
+                    else:
+                        methods[m.signature] = {
+                            'before' : m.snippet,
+                            'before_col': m.line_numbers_col(False)
+                        }
+
+                baseline_pairs[commit_id] = []
+                for signature, m in methods.items():
+                    baseline_pairs[commit_id].append(
+                        (
+                            signature,
+                            m.get('before_col', ''),
+                            m.get('before', ''),
+                            m.get('after_col', ''),
+                            m.get('after', ''),
+                        )
+                    )
+
+                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
+                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
+
+                metric_pairs[commit_id] = {
+                    'hcc': hcc_row,
+                    'baseline': baseline_row
+                }
+
+            for idx, row in test.loc[common_tp_index].iterrows():
+                commit_id = row.commit_id
+                commit = Mining.load("data/cache", row["repo"], commit_id)
+                if commit is None:
+                    console.log(f"Commit {commit_id} not found")
+                    continue
+
+                methods = {}
+                for m in commit.methods_after:
+                    methods[m.signature] = {
+                        'after' : m.snippet,
+                        'after_col': m.line_numbers_col(True)
+                    }
+
+                for m in commit.methods_before:
+                    if m.signature in methods:
+                        methods[m.signature]['before'] = m.snippet
+                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
+                    else:
+                        methods[m.signature] = {
+                            'before' : m.snippet,
+                            'before_col': m.line_numbers_col(False)
+                        }
+
+                common_pairs[commit_id] = []
+                for signature, m in methods.items():
+                    common_pairs[commit_id].append(
+                        (
+                            signature,
+                            m.get('before_col', ''),
+                            m.get('before', ''),
+                            m.get('after_col', ''),
+                            m.get('after', ''),
+                        )
+                    )
+
+                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
+                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
+
+                metric_pairs[commit_id] = {
+                    'hcc': hcc_row,
+                    'baseline': baseline_row
+                }
+
+        will_delete = set()
+        for commit_id in hcc_pairs.keys():
+            if commit_id in baseline_pairs or commit_id in common_pairs:
+                will_delete.add(commit_id)
+
+        for commit_id in baseline_pairs.keys():
+            if commit_id in hcc_pairs or commit_id in common_pairs:
+                will_delete.add(commit_id)
+
+        for commit_id in will_delete:
+            if commit_id in hcc_pairs:
+                del hcc_pairs[commit_id]
+
+            if commit_id in baseline_pairs:
+                del baseline_pairs[commit_id]
+
+            if commit_id in common_pairs:
+                del common_pairs[commit_id]
+
+        console.print(f"Project: {project}: {len(will_delete)} commits are contradictory.")
+
+            
+
+        output_dir.mkdir(exist_ok=True, parents=True)
+        save_path = output_dir / f"{project}_hcc.json"
+        with open(save_path, "w") as f:
+            json.dump(hcc_pairs, f, indent=4)
+        
+
+
+        save_path = output_dir / f"{project}_baseline.json"
+        with open(save_path, "w") as f:
+            json.dump(baseline_pairs, f, indent=4)
+
+        save_path = output_dir / f"{project}_common.json"
+        with open(save_path, "w") as f:
+            json.dump(common_pairs, f, indent=4)
+
+        save_path = output_dir / f"{project}_metrics.json"
+        with open(save_path, "w") as f:
+            json.dump(metric_pairs, f, indent=4)
+            
+        console.print(f"Results saved at {save_path}")
+
+
+
+            # for idx, row in test.loc[baseline_only_tp_index].iterrows():
+            #     commit_id = row.commit_id
+            #     console.print(f"Baseline only: {commit_id}")
+
             
             # for idx, row in test.loc[tp_index].iterrows():
             #     commit_id = row.commit_id

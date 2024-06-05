@@ -110,15 +110,39 @@ class Method:
         lines = self.code.split("\n")
         return "\n".join(lines[self.start_line - 1 : self.end_line])
 
-    @property
-    def line_numbered_snippet(self):
+    def line_numbers_col(self, show_after: bool = True) -> str:
         lines = self.code.split("\n")
-        return "\n".join(
-            [
-                f"{i+self.start_line:4} | {line}"
-                for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
-            ]
-        )
+        if show_after:
+            return "\n".join(
+                [
+                    f"{i+self.start_line:4} {'+' if i+self.start_line in self.added_lines else ' '}"
+                    for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
+                ]
+            )
+        else:
+            return "\n".join(
+                [
+                    f"{i+self.start_line:4} {'-' if i+self.start_line in self.deleted_lines else ' '}"
+                    for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
+                ]
+            )
+    
+    def line_numbered_snippet(self, show_after: bool = True) -> str:
+        lines = self.code.split("\n")
+        if show_after:
+            return "\n".join(
+                [
+                    f"{i+self.start_line:4} |{'+' if i+self.start_line in self.added_lines else ' '} {line}"
+                    for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
+                ]
+            )
+        else:
+            return "\n".join(
+                [
+                    f"{i+self.start_line:4} |{'-' if i+self.start_line in self.deleted_lines else ' '} {line}"
+                    for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
+                ]
+            )
 
     @property
     def tokens(self):

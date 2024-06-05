@@ -20,9 +20,9 @@ def incorrect_indentation_ratio(
     method: Method, commit_hash: str, cache_dir, checkstyle_path, xml_path
 ) -> float:
     cache = Path(cache_dir)
-    java_file = cache / commit_hash[0:7] / f"{method.signature}.java"
+    java_file = cache / commit_hash / f"{method.signature}.java"
     java_file = shorten(java_file)
-    save_file = cache / commit_hash[0:7] / f"{method.signature}.txt"
+    save_file = cache / commit_hash / f"{method.signature}.txt"
     save_file = shorten(save_file)
 
     java_file.parent.mkdir(exist_ok=True, parents=True)

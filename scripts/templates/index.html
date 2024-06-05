@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Pair Display</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <style>
+        .code-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: monospace;
+            font-size: 1.2em;
+        }
+
+        .link_container {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .link_container div {
+            margin-right: 20px;
+        }
+
+        table {
+            margin: 0 20px;
+            padding: 10px;
+
+        }
+
+        .code-block {
+            width: 42%;
+        }
+
+        .line-numbers {
+            width: 5%;
+        }
+
+        .vertical-divider {
+            width: 1%;
+            height: 100%;
+            /* background-color: #000; */
+            /* margin: 0 20px; */
+        }
+
+        summary {
+            cursor: pointer;
+            background-color: #a9dbb2;
+            color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+
+            /* border */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+
+            /* box-shadow */
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+
+            /* transition */
+            transition: background-color 0.3s;
+        }
+
+        section {
+            /* margin left and right */
+            margin: 5px 5px;
+
+        }
+
+        .red-box {
+            position: absolute;
+            background-color: rgba(252, 63, 63, 0.2);
+            /* 반투명의 붉은색 */
+            width: 46%;
+            height: 1em;
+            /* 높이는 텍스트 라인 높이와 일치하게 설정 */
+            z-index: 1;
+            pointer-events: none;
+            /* 텍스트 위에 표시되도록 설정 */
+
+        }
+
+        .blue-box {
+            position: absolute;
+            background-color: rgba(93, 223, 253, 0.2);
+            /* 반투명의 파란색 */
+            width: 46%;
+            height: 1em;
+            /* 높이는 텍스트 라인 높이와 일치하게 설정 */
+            z-index: 1;
+            pointer-events: none;
+            /* 텍스트 위에 표시되도록 설정 */
+        }
+
+        .code-col code {
+            position: relative;
+            /* 자식 요소의 위치를 기준으로 삼기 위해 설정 */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>True Positives ({{ metric }} only RF)</h1>
+    <!-- List of repo links -->
+    <div class="link_container">
+        <div>
+            <h2>HCC only</h2>
+            <ul>
+                {% for repo in repos %}
+                <li><a href="/repo/hcc/{{repo}}">{{ repo }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h2>Baseline only</h2>
+            <ul>
+                {% for repo in repos %}
+                <li><a href="/repo/baseline/{{repo}}">{{ repo }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h2>Common</h2>
+            <ul>
+                {% for repo in repos %}
+                <li><a href="/repo/common/{{repo}}">{{ repo }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <h2>{{ repo }} ({{ num_tp }} samples)</h2>
+    {% for commit_hash, code_pairs in commit_code_pairs.items() %}
+    {% if ((code_pairs|length) == 1) %}
+    <details>
+        <summary>{{ commit_hash }} <a href="https://github.com/apache/{{repo}}/commit/{{commit_hash}}" target="_blank">GitHub</a>
+
+            <div class="container">
+                <span>HCC</span>
+                <table>
+                    {% for key, value in metrics[commit_hash]["hcc"].items() %}
+                    <tr>
+                        <th>{{ key }}</th>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <table>
+                    {% for key, value in metrics[commit_hash]["baseline"].items() %}
+                    <tr>
+                        <th>{{ key }}</th>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <span>Baseline</span>
+            </div>
+
+        </summary>
+
+        <div id="code-pairs">
+
+            {% for signature, code1_line_numbers, code1, code2_line_numbers, code2 in code_pairs %}
+            <section>
+                <code class="language-java">{{ signature }}</code>
+                <div class="code-container">
+                    <pre class="line-numbers"><code class="language-txt code-col">{{ code1_line_numbers }}</code></pre>
+                    <pre class="code-block"><code class="language-java">{{ code1 }}</code></pre>
+                    <div class="vertical-divider"></div>
+                    <pre class="line-numbers"><code class="language-txt code-col">{{ code2_line_numbers }}</code></pre>
+                    <pre class="code-block"><code class="language-java">{{ code2 }}</code></pre>
+                </div>
+            </section>
+            <!-- <hr /> -->
+            {% endfor %}
+        </div>
+    </details>
+    {% endif %}
+    {% endfor %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        function getPositionOfCharacter(element, charIndex) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+
+            range.setStart(element.firstChild, charIndex);
+            range.setEnd(element.firstChild, charIndex + 1);
+
+            const rect = range.getBoundingClientRect();
+            return { top: rect.top + window.scrollY, left: rect.left + window.scrollX };
+        }
+
+        function highlightSigns(element) {
+            const text = element.textContent;
+
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === '+') {
+                    const position = getPositionOfCharacter(element, i);
+                    const highlightBox = document.createElement('div');
+
+                    highlightBox.className = 'blue-box';
+                    highlightBox.style.top = position.top + 'px';
+                    highlightBox.style.left = position.right + 'px';
+
+                    element.parentElement.appendChild(highlightBox);
+                } else if (text[i] === '-') {
+                    const position = getPositionOfCharacter(element, i);
+                    const highlightBox = document.createElement('div');
+
+                    highlightBox.className = 'red-box';
+                    highlightBox.style.top = position.top + 'px';
+                    highlightBox.style.left = position.right + 'px';
+
+                    element.parentElement.appendChild(highlightBox);
+                }
+            }
+        }
+
+        function highlightLines(name) {
+            const elements = document.querySelectorAll(name);
+
+            elements.forEach(element => {
+                highlightSigns(element);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const detailsElements = document.querySelectorAll('details');
+            detailsElements.forEach(detailsElement => {
+                detailsElement.addEventListener('toggle', () => {
+
+                    const codeBlocks = detailsElement.querySelectorAll('.code-col');
+
+                    console.log(codeBlocks)
+                    codeBlocks.forEach(codeBlock => {
+                        highlightSigns(codeBlock);
+                        console.log(detailsElement.open)
+                        if (!detailsElement.open) {
+                            //  delete all boxes
+                            detailsElement.querySelectorAll('.blue-box').forEach(box => box.remove());
+                            detailsElement.querySelectorAll('.red-box').forEach(box => box.remove());
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

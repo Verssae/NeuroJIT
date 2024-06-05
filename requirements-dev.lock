@@ -12,7 +12,10 @@ appnope==0.1.4
     # via ipykernel
 asttokens==2.4.1
     # via stack-data
+blinker==1.8.2
+    # via flask
 click==8.1.7
+    # via flask
     # via typer
 cliffs-delta==1.0.0
     # via hcc-cal
@@ -26,8 +29,12 @@ debugpy==1.8.1
     # via ipykernel
 decorator==5.1.1
     # via ipython
+diff-match-patch==20230430
+    # via hcc-cal
 executing==2.0.1
     # via stack-data
+flask==3.0.3
+    # via hcc-cal
 fonttools==4.50.0
     # via matplotlib
 gitdb==4.0.11
@@ -42,10 +49,14 @@ imblearn==0.0
 ipykernel==6.29.4
 ipython==8.23.0
     # via ipykernel
+itsdangerous==2.2.0
+    # via flask
 javalang==0.13.0
     # via hcc-cal
 jedi==0.19.1
     # via ipython
+jinja2==3.1.4
+    # via flask
 joblib==1.3.2
     # via imbalanced-learn
     # via scikit-learn
@@ -63,6 +74,9 @@ lizard==1.17.10
     # via pydriller
 markdown-it-py==3.0.0
     # via rich
+markupsafe==2.1.5
+    # via jinja2
+    # via werkzeug
 matplotlib==3.8.4
     # via lime
     # via seaborn
@@ -195,4 +209,6 @@ tzdata==2024.1
     # via pandas
 wcwidth==0.2.13
     # via prompt-toolkit
+werkzeug==3.0.3
+    # via flask
 xgboost==2.0.3
