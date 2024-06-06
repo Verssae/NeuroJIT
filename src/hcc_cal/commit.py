@@ -236,6 +236,18 @@ class Mining:
             ):
                 if before != after:
                     return None
+                
+                # Ignore methods that are trivially changed (i.e., no ast changes)
+                before_repr = ""
+                for path, node in before.ast:
+                    before_repr += node.__repr__()
+
+                after_repr = ""
+                for path, node in after.ast:
+                    after_repr += node.__repr__()
+                    
+                if before_repr == after_repr:
+                    continue
 
                 added_lines_in_method = {
                     line for line in added_lines if after.contains(line, "ADD")
