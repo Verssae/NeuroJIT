@@ -119,12 +119,10 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
 
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
     ax = sns.heatmap(
-        corr_matrix, annot=False, cmap="coolwarm", mask=mask, vmin=-1, vmax=1, cbar=False, square=True
+        corr_matrix, annot=False, cmap="coolwarm", mask=mask, vmin=-1, vmax=1, cbar=True, square=True
     )
     labels = list(map(lambda x: x.replace("_", "/"), corr_matrix.columns))
-    labels = list(map(lambda x: x.replace("REMC", "REC"), labels))
-    labels = list(map(lambda x: x.replace("EM", "ENT"), labels))
-    labels = list(map(lambda x: x.replace("MTL", "NTM"), labels))
+
     
     ax.set_yticklabels(labels, rotation=0, fontsize=15)
     ax.set_xticklabels(labels, rotation=90, fontsize=15)
@@ -134,21 +132,21 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
     # ax.yaxis.tick_right()
     # ax.yaxis.set_label_position("right")
     
-    # greys = sns.color_palette("Greys", n_colors=9)
-    # for i in range(corr_matrix.shape[0]):
-    #     for j in range(corr_matrix.shape[1]):
-    #         value = corr_matrix.iloc[i, j]
-    #         if  i > j :
-    #             ax.text(
-    #                 j + 0.5,
-    #                 i + 0.5,
-    #                 f"{value:.2f}"[2:] if value > 0 else "-" + f"{value:.2f}"[3:],
-    #                 ha="center",
-    #                 va="center",
-    #                 color=greys[4] if abs(value) < 0.5 else greys[7],
-    #                 fontsize=15,
-    #                 # fontweight="bold",
-    #             )
+    greys = sns.color_palette("Greys", n_colors=9)
+    for i in range(corr_matrix.shape[0]):
+        for j in range(corr_matrix.shape[1]):
+            value = corr_matrix.iloc[i, j]
+            if  i > j and abs(value) >= 0.7:
+                ax.text(
+                    j + 0.5,
+                    i + 0.5,
+                    f"{value:.2f}"[2:] if value > 0 else "-" + f"{value:.2f}"[3:],
+                    ha="center",
+                    va="center",
+                    color=greys[4] if abs(value) < 0.5 else greys[7],
+                    fontsize=15,
+                    # fontweight="bold",
+                )
     # plt.title(
     #     title,
     #     pad=10,

@@ -228,7 +228,7 @@ class HCCCommitMetrics:
     def all(self):
         return {
             "V": self.V,
-            "entropy": self.ENT,
+            "ENT": self.ENT,
             "DD": self.DD,
             "MDNL": self.MDNL,
             "NB": self.NB,
@@ -236,7 +236,7 @@ class HCCCommitMetrics:
             "NP": self.NP,
             "RG": self.RG,
             "NTM": self.NTM,
-            # "RII": self.RII,
+            "RII": self.RII,
             "ENT_V": self.ENT_V,
             "DD_V": self.DD_V,
             "TS": self.TS,

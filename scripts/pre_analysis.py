@@ -13,7 +13,7 @@ from cliffs_delta import cliffs_delta
 from hcc_cal.commit import Mining
 from visualization import visualize_hmap
 from hcc_cal.tools.correlation import group_difference, significances
-from environment import PROJECTS, BASELINE_HCC, HCC, BASELINE
+from environment import PROJECTS, BASELINE_HCC, HCC, BASELINE, FEATURES, BASE_FEATURES, HCC_FEATURES, HCC_ALL
 
 
 warnings.filterwarnings("ignore")
@@ -29,6 +29,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     sns.set_context("paper")
 
     palette = sns.color_palette("pastel", n_colors=4)
+    base_color = palette[3]
+    hcc_color = palette[2]
     greys = sns.color_palette("Greys", n_colors=9)
 
     results_kc["jit-sdp"] = results_kc["metric"].apply(
@@ -36,15 +38,9 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     )
 
     results_hcc["metric"] = results_hcc["metric"].apply(
-        lambda x: x.replace("EM_V", "EM/V")
-    )
-    results_hcc["metric"] = results_hcc["metric"].apply(
         lambda x: x.replace("DD_V", "DD/V")
     )
 
-    results_kc["metric"] = results_kc["metric"].apply(
-        lambda x: x.replace("EM_V", "EM/V")
-    )
     results_kc["metric"] = results_kc["metric"].apply(
         lambda x: x.replace("DD_V", "DD/V")
     )
@@ -77,7 +73,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         y="metric",
         data=results_hcc,
         join=False,
-        color=palette[-2],
+        color=hcc_color,
         ci=None,
         markers="o",
         capsize=0.1,
@@ -115,7 +111,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     plt.close()
 
     plt.figure(figsize=(4, 5))
-    palette.reverse()
+    
     for i, row in results_kc[:top_k].iterrows():
         plt.errorbar(
             x=row["lr_odds_ratio"],
@@ -134,7 +130,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         data=results_kc[:top_k],
         join=False,
         hue="jit-sdp",
-        palette=palette,
+        hue_order=["baseline", "HCC"],
+        palette=(base_color, hcc_color),
         ci=None,
         markers="o",
         capsize=0.1,
@@ -143,7 +140,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     plt.yticks(range(len(results_kc[:top_k])), results_kc[:top_k]["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
     plt.xlabel("Odds Ratios", fontsize=16, labelpad=5)
-    plt.title("Top 10 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
+    plt.title("Top 9 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
 
     plt.ylabel("")
 
@@ -177,7 +174,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         data=results_hcc[:top_k],
         y="metric",
         x="rf_feature_importance",
-        color=palette[1],
+        color=hcc_color,
         ci=None,
     )
     ax.set_yticklabels(labels=ax.get_yticklabels(), fontsize=16)
@@ -203,7 +200,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         x="rf_feature_importance",
         hue="jit-sdp",
         hue_order=["baseline", "HCC"],
-        palette=palette,
+        palette=(base_color, hcc_color),
         ci=None,
     )
 
@@ -233,17 +230,14 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
 def load_data():
     total = []
     for project in PROJECTS:
-        baseline_data = pd.read_csv(f"data/dataset/baseline/{project}.csv")
-        baseline_data = baseline_data.drop(columns=["target"])
-        hcc_data = pd.read_csv(f"data/dataset/hcc/{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target"])
-        data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
-        )
-        data = data.dropna(subset=list(set(data.columns) - {"gap"}))
-        data = data.drop_duplicates(subset=list(set(data.columns) - {"gap"}))
+        data = pd.read_csv(f"data/dataset/filtered/{project}.csv")
         total.append(data)
     data = pd.concat(total)
+ 
+    # data = pd.read_csv("data/dataset/to_preprocess.csv", index_col="commit_id")
+
+
+
     return data
 
 
@@ -256,7 +250,9 @@ def plot_corr():
 
     y = data["buggy"]
 
+
     X = data[HCC]
+
     results_ccc = significances(X, y, metrics=HCC)
 
     X = data[BASELINE_HCC]
@@ -265,7 +261,13 @@ def plot_corr():
     save_dir = Path("data/plots/pre_analysis/significance_ase")
     save_dir.mkdir(exist_ok=True, parents=True)
 
-    corr_plot(results_ccc, results_kc, save_dir=save_dir)
+    corr_plot(results_ccc, results_kc, save_dir=save_dir, top_k=9)
+
+    from rich import console
+    
+    console = console.Console()
+    df = pd.DataFrame(results_ccc)
+    console.print(df.T)
 
 
 @app.command()
@@ -276,16 +278,16 @@ def plot_hmap():
     data = load_data()
 
     X = data[BASELINE_HCC]
-    save_path = "data/plots/pre_analysis/hmap/BASELINE_HCC_ase.svg"
+    save_path = "data/plots/pre_analysis/hmap/ALL.svg"
     visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
     X = data[HCC]
-    save_path = "data/plots/pre_analysis/hmap/HCC_ase.svg"
-    visualize_hmap(X.corr(method="spearman"), size=4, save_path=save_path)
+    save_path = "data/plots/pre_analysis/hmap/ALL_H.svg"
+    visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
     X = data[BASELINE]
-    save_path = "data/plots/pre_analysis/hmap/BASELINE_ase.svg"
-    visualize_hmap(X.corr(method="spearman"), size=4, save_path=save_path)
+    save_path = "data/plots/pre_analysis/hmap/ALL_B.svg"
+    visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
 
 @app.command()
@@ -299,7 +301,7 @@ def table_group_diff(
     no_defects = data.loc[data["buggy"] == 0]
     defects = data.loc[data["buggy"] == 1]
     table = []
-    for metric in HCC:
+    for metric in HCC_ALL:
         gd = ranksums(no_defects[metric], defects[metric]).pvalue
         d, res = cliffs_delta(no_defects[metric], defects[metric])
         table.append([metric, gd, res])
@@ -357,14 +359,15 @@ def table_distribution(
     table = []
 
     for project in PROJECTS:
-        hcc_data = pd.read_csv(f"data/dataset/hcc/{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target"])
+        # hcc_data = pd.read_csv(f"data/dataset/hcc/{project}.csv")
+        # hcc_data = hcc_data.drop(columns=["fix_date", "target"])
 
-        baseline_data = pd.read_csv("data/dataset/baseline.csv")
+        # baseline_data = pd.read_csv("data/dataset/baseline.csv")
 
-        data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
-        )
+        # data = hcc_data.merge(
+        #     baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
+        # )
+        data = pd.read_csv(f"data/dataset/filtered/{project}.csv")
 
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])

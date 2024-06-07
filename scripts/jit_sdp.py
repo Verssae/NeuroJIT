@@ -14,7 +14,7 @@ from sklearn.metrics import (
     matthews_corrcoef,
     brier_score_loss,
 )
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
@@ -30,11 +30,12 @@ from environment import (
     BASELINE,
     BASELINE_HCC,
     FEATURE_SET,
-    ACTIONABLE_FEATURES,
+    INACTIONABLE_FEATURES,
     PROJECTS,
     SEED,
     PERFORMANCE_METRICS,
 )
+from pre_analysis import load_data
 
 warnings.filterwarnings("ignore")
 app = Typer()
@@ -85,7 +86,7 @@ def train_test(
         "data/dataset/hcc"
     ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
-    save_model: Annotated[bool, Option(help="Save models")] = False,
+    save_model: Annotated[bool, Option(help="Save models")] = True,
     load_model: Annotated[bool, Option(help="Load models")] = False,
     save_dir: Annotated[Path, Option(help="Save directory")] = Path("data/pickles"),
 ):
@@ -94,25 +95,17 @@ def train_test(
     """
     console = Console(quiet=not display)
     scores = []
+    total_data = load_data()
     for project in track(
         PROJECTS,
         description="Projects...",
         console=console,
         total=len(PROJECTS),
     ):
-        baseline_data = pd.read_csv(baseline_dir / f"{project}.csv")
-        baseline_data = baseline_data.drop(columns=["target"])
-        hcc_data = pd.read_csv(hcc_dir / f"{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target"])
-        data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
-        )
-
+        data = total_data.loc[total_data["project"] == project].copy()
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])
-
-        data = data.dropna(subset=list(set(data.columns) - {"gap"}))
-        data = data.drop_duplicates(subset=list(set(data.columns) - {"gap"}))
+        
 
         splitter = KFoldDateSplit(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
@@ -179,25 +172,16 @@ def actionable(
     """
     console = Console(quiet=not display)
     scores = []
+    total_data = load_data()
     for project in track(
         PROJECTS,
         description="Projects...",
         console=console,
         total=len(PROJECTS),
     ):
-        baseline_data = pd.read_csv(baseline_dir / f"{project}.csv")
-        baseline_data = baseline_data.drop(columns=["target"])
-        hcc_data = pd.read_csv(hcc_dir / f"{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target"])
-        data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
-        )
-
+        data = total_data.loc[total_data["project"] == project].copy()
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])
-
-        data = data.dropna(subset=list(set(data.columns) - {"gap"}))
-        data = data.drop_duplicates(subset=list(set(data.columns) - {"gap"}))
 
         splitter = KFoldDateSplit(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
@@ -281,12 +265,15 @@ def actionable(
                     baseline_top_feature_index
                 ].tolist()[:5]
 
-                our_actionable_ratio = (
-                    len(set(our_top5_features) & set(ACTIONABLE_FEATURES)) / 5
+                our_inactionable_ratio = (
+                    len(set(our_top5_features) & set(INACTIONABLE_FEATURES)) / 5
                 )
-                baseline_actionable_ratio = (
-                    len(set(baseline_top5_features) & set(ACTIONABLE_FEATURES)) / 5
+                baseline_inactionable_ratio = (
+                    len(set(baseline_top5_features) & set(INACTIONABLE_FEATURES)) / 5
                 )
+
+                our_actionable_ratio = 1 - our_inactionable_ratio
+                baseline_actionable_ratio = 1 - baseline_inactionable_ratio
 
                 scores.append(
                     {

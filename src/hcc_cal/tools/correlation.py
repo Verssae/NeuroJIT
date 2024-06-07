@@ -3,7 +3,7 @@ import pandas as pd
 
 import statsmodels.api as sm
 from cliffs_delta import cliffs_delta
-from scipy.stats import pointbiserialr, ranksums
+from scipy.stats import pointbiserialr, ranksums, pearsonr, kendalltau, spearmanr, mannwhitneyu
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 
@@ -48,12 +48,18 @@ def correlation(X, y, metrics, method):
                         "conf_upper": conf_upper,
                     }
 
-            case "point_biserial":
+            case "spearman":
                 for metric in metrics:
-                    p_value = pointbiserialr(X[metric], y).pvalue
-                    correlation = pointbiserialr(X[metric], y).correlation
-                    # Storing p-value and correlation coefficient
-                    results[metric] = {"p_value": p_value, "correlation": correlation}
+                    p_value = spearmanr(y, X[metric])[1]
+                    results[metric] = {"p_value": p_value}
+
+            case "manwhitneyu":
+                for metric in metrics:
+                    buggy = X[y == 1][metric]
+                    clean = X[y == 0][metric]
+                    p_value = mannwhitneyu(buggy, clean).pvalue
+                    results[metric] = {"p_value": p_value}
+
 
             case "random_forest":
                 X_selected = X[metrics]
@@ -69,14 +75,19 @@ def correlation(X, y, metrics, method):
                 importances = rf.feature_importances_
                 for idx, metric in enumerate(scaled_X_df.columns):
                     results[metric] = {"feature_importance": importances[idx]}
+
+
             case _:
                 raise NotImplementedError(
                     "Method not implemented. Choose 'logistic_regression', 'point_biserial', or 'random_forest'."
                 )
+            
+
         return results
     except Exception as e:
         print(type(e))
         print(metrics)
+
 
 
 def group_difference(x1, x2, fmt="str"):
@@ -124,6 +135,8 @@ def group_difference(x1, x2, fmt="str"):
 
 def significances(X, y, metrics):
     lr_results = correlation(X, y, metrics=metrics, method="logistic_regression")
+    # spearman_results = correlation(X, y, metrics=metrics, method="spearman")
+    # manwhitneyu_results = correlation(X, y, metrics=metrics, method="manwhitneyu")
     rf_results = correlation(X, y, metrics=metrics, method="random_forest")
 
     lr_p_values = []
@@ -131,18 +144,25 @@ def significances(X, y, metrics):
     lr_errors = []
     lr_conf_lower = []
     lr_conf_upper = []
+    spearman_p_values = []
+    manwhitneyu_p_values = []
     rf_feature_importances = []
+    
+
 
     for metric in metrics:
-        if metric in lr_results:
-            lr_p_values.append(lr_results[metric]["p_value"])
-            lr_odds_ratios.append(lr_results[metric]["odds_ratio"])
-            lr_errors.append(lr_results[metric]["error"])
-            lr_conf_lower.append(lr_results[metric]["conf_lower"])
-            lr_conf_upper.append(lr_results[metric]["conf_upper"])
+        lr_p_values.append(lr_results[metric]["p_value"])
+        lr_odds_ratios.append(lr_results[metric]["odds_ratio"])
+        lr_errors.append(lr_results[metric]["error"])
+        lr_conf_lower.append(lr_results[metric]["conf_lower"])
+        lr_conf_upper.append(lr_results[metric]["conf_upper"])
+        # spearman_p_values.append(spearman_results[metric]["p_value"])
+        # manwhitneyu_p_values.append(manwhitneyu_results[metric]["p_value"])
 
-        if metric in rf_results:
-            rf_feature_importances.append(rf_results[metric]["feature_importance"])
+        rf_feature_importances.append(rf_results[metric]["feature_importance"])
+
+
+
 
     results = pd.DataFrame(
         {
@@ -153,6 +173,8 @@ def significances(X, y, metrics):
             "lr_conf_lower": lr_conf_lower,
             "lr_conf_upper": lr_conf_upper,
             "rf_feature_importance": rf_feature_importances,
+            # "spearman_p_value": spearman_p_values,
+            # "manwhitneyu_p_value": manwhitneyu_p_values,
         }
     )
 

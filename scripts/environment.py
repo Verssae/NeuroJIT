@@ -11,21 +11,13 @@ PROJECTS = {
     "ignite": "Ignite",
 }
 
-BASELINE = [
-    "NS",
-    "NF",
-    "LA",
-    "LD",
-    "LT",
-    "AGE",
-    "NUC",
-    "EXP",
-    "SEXP",
-]
 
-HCC = [
+BASE_FEATURES = ['NUC', 'SEXP', 'LT', 'Entropy', 'EXP', 'LA', 'LD', 'NS', 'AGE']
+HCC_FEATURES = ['NP', 'REC', 'ENT_V', 'RII', 'MDNL', 'NB', 'NTM', 'TS', 'DD_V', 'RG']
+FEATURES = BASE_FEATURES + HCC_FEATURES
+HCC_ALL = [
     "V",
-    "DD_V",
+    "DD",
     "MDNL",
     "NB",
     "REC",
@@ -34,16 +26,27 @@ HCC = [
     "NTM",
     "TS",
     "RII",
+    "ENT",
+    "ENT_V",
+    "DD_V",
 ]
+
+BASE_ALL = [
+    "NUC", "SEXP", "LT", "Entropy", "EXP", "LA", "LD", "NS", "AGE", "LA/LT", "LD/LT", "LT/NF", "NUC/NF", "REXP", "ND", "NF"
+]
+
+BASELINE =['NUC', 'SEXP', 'LT', 'Entropy', 'EXP', 'LA', 'LD', 'NS', 'AGE']
+
+HCC = ['NP', 'REC', 'ENT', 'RII', 'MDNL', 'NB', 'NTM', 'DD_V', 'RG']
 
 BASELINE_HCC = HCC + BASELINE
 
 FEATURE_SET = {
     "baseline": BASELINE,
     "hcc": HCC,
-    "baseline+hcc": BASELINE_HCC,
+    "baseline+hcc": BASELINE + HCC,
 }
 
 PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier"]
 
-ACTIONABLE_FEATURES = HCC + ["NS", "NF", "LA", "LD", "LT"]
+INACTIONABLE_FEATURES = [ "NUC", "AGE", "EXP", "SEXP"]
