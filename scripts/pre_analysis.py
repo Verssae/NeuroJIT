@@ -11,9 +11,9 @@ from scipy.stats import ranksums
 from cliffs_delta import cliffs_delta
 from matplotlib import font_manager as fm
 
-from hcc_cal.commit import Mining
+from neurojit.commit import Mining
 from visualization import visualize_hmap
-from hcc_cal.tools.correlation import group_difference, significances
+from neurojit.tools.correlation import group_difference, significances
 from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
 warnings.filterwarnings("ignore")
@@ -34,7 +34,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
 
     palette = sns.color_palette("pastel", n_colors=4)
     base_color = palette[3]
-    hcc_color = palette[2]
+    cuf_color = palette[2]
     greys = sns.color_palette("Greys", n_colors=9)
 
     results_combined["jit-sdp"] = results_combined["metric"].apply(
@@ -77,7 +77,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
         y="metric",
         data=results_cuf,
         join=False,
-        color=hcc_color,
+        color=cuf_color,
         ci=None,
         markers="o",
         capsize=0.1,
@@ -86,7 +86,6 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     plt.yticks(range(len(results_cuf)), results_cuf["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
     plt.xlabel("")
-    # plt.title("HCC features", fontweight="bold", fontsize=16, pad=10)
 
     plt.ylabel("")
 
@@ -107,7 +106,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     plt.tight_layout()
     sns.despine(top=True, right=True)
     plt.savefig(
-        save_dir / "corr_hcc_lr.svg",
+        save_dir / "corr_cuf_lr.svg",
         bbox_inches="tight",
         dpi=300,
         format="svg",
@@ -135,7 +134,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
         join=False,
         hue="jit-sdp",
         hue_order=["baseline", "understandability"],
-        palette=(base_color, hcc_color),
+        palette=(base_color, cuf_color),
         ci=None,
         markers="o",
         capsize=0.1,
@@ -144,7 +143,6 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     plt.yticks(range(len(results_combined[:top_k])), results_combined[:top_k]["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
     plt.xlabel("")
-    # plt.title("Top 9 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
 
     plt.ylabel("")
 
@@ -165,7 +163,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     plt.tight_layout()
     sns.despine(top=True, right=True)
     plt.savefig(
-        save_dir / "corr_baseline+hcc_lr.svg",
+        save_dir / "corr_baseline+cuf_lr.svg",
         bbox_inches="tight",
         dpi=300,
         format="svg",
@@ -181,17 +179,13 @@ def load_data():
         total.append(data)
     data = pd.concat(total)
  
-    # data = pd.read_csv("data/dataset/to_preprocess.csv", index_col="commit_id")
-
-
-
     return data
 
 
 @app.command()
 def plot_corr():
     """
-    Generate plots for Correlations between HCC Features and Defect-inducing Risks
+    Generate plots for Correlations between cuf Features and Defect-inducing Risks
     """
     data = load_data()
 
@@ -242,7 +236,7 @@ def table_group_diff(
     fmt: Annotated[str, typer.Option()] = "github",
 ):
     """
-    Tabulate the group differences between buggy and clean commits for HCC
+    Tabulate the group differences between buggy and clean commits for cuf
     """
     data = load_data()
     no_defects = data.loc[data["buggy"] == 0]
@@ -272,7 +266,7 @@ def table_group_diff_projects(
     fmt: Annotated[str, typer.Option()] = "github",
 ):
     """
-    Tabulate the group differences between buggy and clean commits for HCC (each project)
+    Tabulate the group differences between buggy and clean commits for cuf (each project)
     """
     data = load_data()
     data["date"] = pd.to_datetime(data["date"])
@@ -310,14 +304,7 @@ def table_distribution(
     table = []
 
     for project in PROJECTS:
-        # hcc_data = pd.read_csv(f"data/dataset/hcc/{project}.csv")
-        # hcc_data = hcc_data.drop(columns=["fix_date", "target"])
-
-        # baseline_data = pd.read_csv("data/dataset/baseline.csv")
-
-        # data = hcc_data.merge(
-        #     baseline_data, on=["commit_id", "project", "gap", "buggy", "date"]
-        # )
+ 
         data = pd.read_csv(f"data/dataset/filtered/{project}.csv")
 
         data["date"] = pd.to_datetime(data["date"])

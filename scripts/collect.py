@@ -7,7 +7,7 @@ from rich.progress import track
 from rich.console import Console
 from typer import Typer, Argument, Option
 
-from hcc_cal.commit import Mining
+from neurojit.commit import Mining
 
 from environment import PROJECTS
 

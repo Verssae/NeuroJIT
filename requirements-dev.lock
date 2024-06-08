@@ -18,7 +18,7 @@ click==8.1.7
     # via flask
     # via typer
 cliffs-delta==1.0.0
-    # via hcc-cal
+    # via neurojit
 comm==0.2.2
     # via ipykernel
 contourpy==1.2.1
@@ -30,11 +30,11 @@ debugpy==1.8.1
 decorator==5.1.1
     # via ipython
 diff-match-patch==20230430
-    # via hcc-cal
+    # via neurojit
 executing==2.0.1
     # via stack-data
 flask==3.0.3
-    # via hcc-cal
+    # via neurojit
 fonttools==4.50.0
     # via matplotlib
 gitdb==4.0.11
@@ -52,7 +52,7 @@ ipython==8.23.0
 itsdangerous==2.2.0
     # via flask
 javalang==0.13.0
-    # via hcc-cal
+    # via neurojit
 jedi==0.19.1
     # via ipython
 jinja2==3.1.4
@@ -91,11 +91,11 @@ networkx==3.2.1
     # via scikit-image
 numpy==1.26.4
     # via contourpy
-    # via hcc-cal
     # via imageio
     # via imbalanced-learn
     # via lime
     # via matplotlib
+    # via neurojit
     # via pandas
     # via patsy
     # via scikit-image
@@ -112,7 +112,7 @@ packaging==24.0
     # via scikit-image
     # via statsmodels
 pandas==2.2.1
-    # via hcc-cal
+    # via neurojit
     # via seaborn
     # via statsmodels
 parso==0.8.4
@@ -136,7 +136,7 @@ ptyprocess==0.7.0
 pure-eval==0.2.2
     # via stack-data
 pydriller==2.6
-    # via hcc-cal
+    # via neurojit
 pygments==2.17.2
     # via ipython
     # via rich
@@ -157,13 +157,13 @@ rich==13.7.1
 scikit-image==0.22.0
     # via lime
 scikit-learn==1.4.1.post1
-    # via hcc-cal
     # via imbalanced-learn
     # via lime
+    # via neurojit
 scipy==1.13.0
-    # via hcc-cal
     # via imbalanced-learn
     # via lime
+    # via neurojit
     # via scikit-image
     # via scikit-learn
     # via statsmodels
@@ -181,7 +181,7 @@ smmap==5.0.1
 stack-data==0.6.3
     # via ipython
 statsmodels==0.14.1
-    # via hcc-cal
+    # via neurojit
 tabulate==0.9.0
 threadpoolctl==3.4.0
     # via imbalanced-learn

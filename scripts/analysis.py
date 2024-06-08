@@ -11,7 +11,7 @@ import seaborn as sns
 from tabulate import tabulate
 import matplotlib.font_manager as fm
 
-from hcc_cal.tools.correlation import group_difference
+from neurojit.tools.correlation import group_difference
 from visualization import radar_factory
 from environment import PROJECTS, PERFORMANCE_METRICS
 
@@ -35,24 +35,24 @@ def plot_radars(
     rf_baseline: Annotated[
         Path, typer.Argument(exists=True, file_okay=True, readable=True)
     ] = Path("data/output/random_forest_baseline.json"),
-    rf_baseline_hcc: Annotated[
+    rf_baseline_cuf: Annotated[
         Path, typer.Argument(exists=True, file_okay=True, readable=True)
-    ] = Path("data/output/random_forest_baseline+hcc.json"),
+    ] = Path("data/output/random_forest_combined.json"),
     xgb_baseline: Annotated[
         Path, typer.Argument(exists=True, file_okay=True, readable=True)
     ] = Path("data/output/xgboost_baseline.json"),
-    xgb_baseline_hcc: Annotated[
+    xgb_baseline_cuf: Annotated[
         Path, typer.Argument(exists=True, file_okay=True, readable=True)
-    ] = Path("data/output/xgboost_baseline+hcc.json"),
+    ] = Path("data/output/xgboost_combined.json"),
     save_dir: Annotated[Path, typer.Option()] = Path("data/plots/analysis"),
 ):
     """
     Generate radar charts for performance comparison between models
     """
-    rf_df = load_data([rf_baseline_hcc, rf_baseline])
-    xgb_df = load_data([xgb_baseline_hcc, xgb_baseline])
+    rf_df = load_data([rf_baseline_cuf, rf_baseline])
+    xgb_df = load_data([xgb_baseline_cuf, xgb_baseline])
 
-    ours = rf_baseline_hcc.stem.split("_")[-1]
+    ours = rf_baseline_cuf.stem.split("_")[-1]
     baseline = rf_baseline.stem.split("_")[-1]
 
     rf = (
@@ -217,16 +217,16 @@ def table_performances(
 @app.command()
 def table_set_relationships(
     baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
-    hcc_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
+    cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     fmt: Annotated[str, typer.Option()] = "github",
     quiet: Annotated[bool, typer.Option()] = False,
 ):
     """
-    Generate table for TPs predicted by baseline model only vs HCC model only
+    Generate table for TPs predicted by baseline model only vs cuf model only
     """
-    result_df = load_data([baseline_json, hcc_json])
+    result_df = load_data([baseline_json, cuf_json])
     features_1 = baseline_json.stem
-    features_2 = hcc_json.stem
+    features_2 = cuf_json.stem
     table = []
 
     for project in PROJECTS:
@@ -295,17 +295,17 @@ def table_set_relationships(
 @app.command()
 def plot_set_relationships(
     baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/random_forest_baseline.json"),
-    hcc_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/random_forest_hcc.json"),
+    cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/random_forest_cuf.json"),
     save_path: Annotated[Path, typer.Option()] = Path(
         "data/plots/analysis/diff_plot.svg"
     ),
 ):
     """
-    Generate plots for TPs predicted by baseline model only vs HCC model only
+    Generate plots for TPs predicted by baseline model only vs cuf model only
     """
-    result_df = load_data([baseline_json, hcc_json])
+    result_df = load_data([baseline_json, cuf_json])
     features_1 = baseline_json.stem.split("_")[-1]
-    features_2 = hcc_json.stem.split("_")[-1]
+    features_2 = cuf_json.stem.split("_")[-1]
     table = []
 
     for project in PROJECTS:
@@ -349,7 +349,7 @@ def plot_set_relationships(
                 pd.Series(only_2_ratio).agg("mean"),
             ]
         )
-    df = pd.DataFrame(table, columns=["Project", "Baseline", "Intersection", "HCC"])
+    df = pd.DataFrame(table, columns=["Project", "Baseline", "Intersection", "cuf"])
 
     # plot stacked barh plot using seaborn
     palette = sns.color_palette("pastel", n_colors=5)
@@ -363,17 +363,17 @@ def plot_set_relationships(
     
     plt.rcParams["font.family"] = "Linux Libertine"
 
-    df = df.sort_values(by="HCC", ascending=False)
-    df["bar2"] = df["HCC"] + df["Intersection"]
+    df = df.sort_values(by="cuf", ascending=False)
+    df["bar2"] = df["cuf"] + df["Intersection"]
     df["bar3"] = df["bar2"] + df["Baseline"]
     sns.barplot(data=df, y=df.index, x="bar3", color=palette[3], orient="h")
     sns.barplot(data=df, y=df.index, x="bar2", color=palette[4], orient="h")
-    ax = sns.barplot(data=df, y=df.index, x="HCC", color=palette[2], orient="h")
+    ax = sns.barplot(data=df, y=df.index, x="cuf", color=palette[2], orient="h")
 
     labels = []
     labels.extend(df["Baseline"].values)
     labels.extend(df["Intersection"].values)
-    labels.extend(df["HCC"].values)
+    labels.extend(df["cuf"].values)
 
     for i, p in enumerate(ax.patches):
         width = labels[i] * 100
@@ -471,7 +471,7 @@ def table_actionable(
     print(
         tabulate(
             table,
-            headers=["Project", "baseline+HCC", "baseline", "Wilcoxon, Cliff's Delta"],
+            headers=["Project", "combined", "baseline", "Wilcoxon, Cliff's Delta"],
             tablefmt=fmt,
             floatfmt=".1f",
         )

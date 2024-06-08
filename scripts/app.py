@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     # redirect to the first repo
-    return repo("hcc", "activemq")
+    return repo("cuf", "activemq")
 
 
 @app.route("/repo/<metric>/<repo>")

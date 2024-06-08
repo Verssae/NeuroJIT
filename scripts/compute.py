@@ -6,8 +6,8 @@ import pandas as pd
 from typer import Typer, Argument, Option
 from rich.progress import track
 
-from hcc_cal.commit import Mining
-from hcc_cal.hcc.metrics import HCCCommitMetrics
+from neurojit.commit import Mining
+from neurojit.cuf.metrics import CommitUnderstandabilityFeatures
 
 app = Typer()
 
@@ -52,9 +52,9 @@ def CUF_ALL(
             df.loc[commit_id, "target"] = "error"
             df.to_csv(save_path)
             continue
-        hcc = HCCCommitMetrics(commit, checkstyle_path, xml_path, checkstyle_cache_dir)
-        hcc_metrics = hcc.all
-        for metric, value in hcc_metrics.items():
+        cuf = CommitUnderstandabilityFeatures(commit, checkstyle_path, xml_path, checkstyle_cache_dir)
+        cufs = cuf.all
+        for metric, value in cufs.items():
             df.loc[commit_id, metric] = value
 
         df.loc[commit_id, "target"] = "done"
@@ -106,10 +106,10 @@ def CUF(
         commit = Mining.load("data/cache", row["repo"], commit_id)
         if commit is None:
             continue
-        hcc = HCCCommitMetrics(commit, checkstyle_path, xml_path, checkstyle_cache_dir)
+        cuf = CommitUnderstandabilityFeatures(commit, checkstyle_path, xml_path, checkstyle_cache_dir)
 
         for metric in metrics:
-            value = getattr(hcc, metric)
+            value = getattr(cuf, metric)
             df.loc[commit_id, metric] = value
         df.to_csv(save_path)
     df.to_csv(save_path)

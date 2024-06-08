@@ -21,8 +21,8 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 from lime.lime_tabular import LimeTabularExplainer
 from typer import Typer, Argument, Option
 
-from hcc_cal.commit import Mining
-from hcc_cal.tools.data_utils import KFoldDateSplit
+from neurojit.commit import Mining
+from neurojit.tools.data_utils import KFoldDateSplit
 from environment import (
     CUF,
     BASELINE,

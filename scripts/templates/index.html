@@ -113,10 +113,10 @@
     <!-- List of repo links -->
     <div class="link_container">
         <div>
-            <h2>HCC only</h2>
+            <h2>cuf only</h2>
             <ul>
                 {% for repo in repos %}
-                <li><a href="/repo/hcc/{{repo}}">{{ repo }}</a></li>
+                <li><a href="/repo/cuf/{{repo}}">{{ repo }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -144,9 +144,9 @@
         <summary>{{ commit_hash }} <a href="https://github.com/apache/{{repo}}/commit/{{commit_hash}}" target="_blank">GitHub</a>
 
             <div class="container">
-                <span>HCC</span>
+                <span>cuf</span>
                 <table>
-                    {% for key, value in metrics[commit_hash]["hcc"].items() %}
+                    {% for key, value in metrics[commit_hash]["cuf"].items() %}
                     <tr>
                         <th>{{ key }}</th>
                         <td>{{ value }}</td>
