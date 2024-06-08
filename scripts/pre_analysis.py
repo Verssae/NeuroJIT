@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 from tabulate import tabulate
 from scipy.stats import ranksums
 from cliffs_delta import cliffs_delta
+from matplotlib import font_manager as fm
 
 from hcc_cal.commit import Mining
 from visualization import visualize_hmap
 from hcc_cal.tools.correlation import group_difference, significances
-from environment import PROJECTS, BASELINE_HCC, HCC, BASELINE, FEATURES, BASE_FEATURES, HCC_FEATURES, HCC_ALL
-
+from environment import BASE_ALL, HCC_ALL, PROJECTS, BASELINE_HCC, HCC, BASELINE
 
 warnings.filterwarnings("ignore")
 
@@ -25,8 +25,12 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     """
     2 x 2 plot
     """
-    plt.rc("font", family="Times New Roman")
-    sns.set_context("paper")
+    font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
+    font_files = [ f for f in font_files if "LinLibertine" in f]
+    for font_file in font_files:
+        fm.fontManager.addfont(font_file)
+    # sns.set_context("paper")
+    plt.rcParams["font.family"] = "Linux Libertine"
 
     palette = sns.color_palette("pastel", n_colors=4)
     base_color = palette[3]
@@ -34,15 +38,15 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     greys = sns.color_palette("Greys", n_colors=9)
 
     results_kc["jit-sdp"] = results_kc["metric"].apply(
-        lambda x: "baseline" if x in BASELINE else "HCC"
+        lambda x: "baseline" if x in BASELINE else "understandability"
     )
 
     results_hcc["metric"] = results_hcc["metric"].apply(
-        lambda x: x.replace("DD_V", "DD/V")
+        lambda x: x.replace("DD_HV", "DD/HV")
     )
 
     results_kc["metric"] = results_kc["metric"].apply(
-        lambda x: x.replace("DD_V", "DD/V")
+        lambda x: x.replace("DD_HV", "DD/HV")
     )
 
     results_hcc["adjusted_odds"] = results_hcc["lr_odds_ratio"].apply(lambda x: x - 1)
@@ -54,7 +58,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     results_hcc = results_hcc.sort_values(by="abs_odds", ascending=False)
     results_kc = results_kc.sort_values(by="abs_odds", ascending=False)
 
-    plt.figure(figsize=(4, 5))
+    plt.figure(figsize=(3, 3.5))
 
     for i, row in results_hcc.iterrows():
         plt.errorbar(
@@ -81,8 +85,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
 
     plt.yticks(range(len(results_hcc)), results_hcc["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
-    plt.xlabel("Odds Ratios", fontsize=16, labelpad=5)
-    plt.title("HCC features", fontweight="bold", fontsize=16, pad=10)
+    plt.xlabel("")
+    # plt.title("HCC features", fontweight="bold", fontsize=16, pad=10)
 
     plt.ylabel("")
 
@@ -110,7 +114,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     )
     plt.close()
 
-    plt.figure(figsize=(4, 5))
+    plt.figure(figsize=(3, 3.5))
     
     for i, row in results_kc[:top_k].iterrows():
         plt.errorbar(
@@ -130,7 +134,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         data=results_kc[:top_k],
         join=False,
         hue="jit-sdp",
-        hue_order=["baseline", "HCC"],
+        hue_order=["baseline", "understandability"],
         palette=(base_color, hcc_color),
         ci=None,
         markers="o",
@@ -139,8 +143,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
 
     plt.yticks(range(len(results_kc[:top_k])), results_kc[:top_k]["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
-    plt.xlabel("Odds Ratios", fontsize=16, labelpad=5)
-    plt.title("Top 9 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
+    plt.xlabel("")
+    # plt.title("Top 9 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
 
     plt.ylabel("")
 
@@ -199,7 +203,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         y="metric",
         x="rf_feature_importance",
         hue="jit-sdp",
-        hue_order=["baseline", "HCC"],
+        hue_order=["baseline", "understandability"],
         palette=(base_color, hcc_color),
         ci=None,
     )
@@ -215,7 +219,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         fontsize=12,
         title="features",
         title_fontsize=14,
-        labels=["baseline", "HCC"],
+        labels=["baseline", "understandability"],
     )
     sns.despine(top=True, right=True)
     plt.savefig(
@@ -277,15 +281,15 @@ def plot_hmap():
     """
     data = load_data()
 
-    X = data[BASELINE_HCC]
+    X = data[BASELINE + HCC]
     save_path = "data/plots/pre_analysis/hmap/ALL.svg"
     visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
-    X = data[HCC]
+    X = data[HCC_ALL]
     save_path = "data/plots/pre_analysis/hmap/ALL_H.svg"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
-    X = data[BASELINE]
+    X = data[BASE_ALL]
     save_path = "data/plots/pre_analysis/hmap/ALL_B.svg"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
@@ -301,13 +305,17 @@ def table_group_diff(
     no_defects = data.loc[data["buggy"] == 0]
     defects = data.loc[data["buggy"] == 1]
     table = []
-    for metric in HCC_ALL:
+    for metric in HCC:
         gd = ranksums(no_defects[metric], defects[metric]).pvalue
         d, res = cliffs_delta(no_defects[metric], defects[metric])
-        table.append([metric, gd, res])
+        table.append([metric, gd, abs(d), res])
+
+    # sort by delta
+    table = sorted(table, key=lambda x: x[2], reverse=True)
+    
     output = tabulate(
         table,
-        headers=["Metric", "Wilcoxon P-value", "Cliff's Delta"],
+        headers=["Metric", "Wilcoxon P-value", "Cliff's Delta", "Res"],
         tablefmt=fmt,
         floatfmt=".3f",
     )

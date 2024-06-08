@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
 from tabulate import tabulate
+import matplotlib.font_manager as fm
 
 from hcc_cal.tools.correlation import group_difference
 from visualization import radar_factory
@@ -303,8 +304,8 @@ def plot_set_relationships(
     Generate plots for TPs predicted by baseline model only vs HCC model only
     """
     result_df = load_data([baseline_json, hcc_json])
-    features_1 = baseline_json.stem
-    features_2 = hcc_json.stem
+    features_1 = baseline_json.stem.split("_")[-1]
+    features_2 = hcc_json.stem.split("_")[-1]
     table = []
 
     for project in PROJECTS:
@@ -312,7 +313,7 @@ def plot_set_relationships(
         only_2_ratio = []
         intersection_ratio = []
 
-        for i in range(10):
+        for i in range(20):
             project_df = result_df.loc[
                 (result_df["project"] == project)
                 & (result_df["features"] == features_1)
@@ -353,9 +354,14 @@ def plot_set_relationships(
     # plot stacked barh plot using seaborn
     palette = sns.color_palette("pastel", n_colors=5)
     df = df.set_index("Project")
-    plt.figure(figsize=(6.5, 6))
-    sns.plotting_context("paper")
-    plt.rc("font", family="Times New Roman")
+    plt.figure(figsize=(4.5, 6))
+    # sns.plotting_context("paper")
+    font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
+    font_files = [ f for f in font_files if "LinLibertine" in f]
+    for font_file in font_files:
+        fm.fontManager.addfont(font_file)
+    
+    plt.rcParams["font.family"] = "Linux Libertine"
 
     df = df.sort_values(by="HCC", ascending=False)
     df["bar2"] = df["HCC"] + df["Intersection"]
@@ -380,8 +386,8 @@ def plot_set_relationships(
                 f"{round(width, 1)}",
                 va="center",
                 ha="center",
-                fontsize=14,
-                fontweight="bold",
+                fontsize=20,
+                # fontweight="bold",
                 color="black",
             )
         elif len(PROJECTS) <= i < len(PROJECTS) * 2:
@@ -391,8 +397,8 @@ def plot_set_relationships(
                 f"{round(width, 1)}",
                 va="center",
                 ha="center",
-                fontsize=14,
-                fontweight="bold",
+                fontsize=20,
+                # fontweight="bold",
                 color="black",
             )
         else:
@@ -402,17 +408,17 @@ def plot_set_relationships(
                 f"{round(width, 1)}",
                 va="center",
                 ha="center",
-                fontsize=14,
-                fontweight="bold",
+                fontsize=20,
+                # fontweight="bold",
                 color="black",
             )
 
-    top_bar = mpatches.Patch(color=palette[3], label="HCC", linewidth=0.5)
-    middle_bar = mpatches.Patch(color=palette[4], label="both", linewidth=0.5)
+    top_bar = mpatches.Patch(color=palette[3], label="understand", linewidth=0.5)
+    middle_bar = mpatches.Patch(color=palette[4], label="intersection", linewidth=0.5)
     bottom_bar = mpatches.Patch(color=palette[2], label="baseline", linewidth=0.5)
     plt.legend(
         handles=[top_bar, middle_bar, bottom_bar],
-        labels=["baseline", "both", "HCC"],
+        labels=["baseline", "intersection", "understand"],
         loc="lower center",
         ncol=3,
         fontsize=16,

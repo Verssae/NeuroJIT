@@ -9,6 +9,7 @@ from matplotlib.projections import register_projection
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.spines import Spine
 from matplotlib.transforms import Affine2D
+import matplotlib.font_manager as fm
 
 # See: https://stackoverflow.com/questions/52910187/how-to-make-a-polygon-radar-spider-chart-in-python
 
@@ -113,13 +114,19 @@ def radar_factory(num_vars, frame="circle"):
 
 
 def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
-    plt.rc('font', family='Times New Roman')
+    font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
+    font_files = [ f for f in font_files if "LinLibertine" in f]
+    for font_file in font_files:
+        fm.fontManager.addfont(font_file)
+    
+    plt.rcParams["font.family"] = "Linux Libertine"
+
     # plt.figure(figsize=(6, 6))
     plt.figure(figsize=(size, size))
 
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
     ax = sns.heatmap(
-        corr_matrix, annot=False, cmap="coolwarm", mask=mask, vmin=-1, vmax=1, cbar=True, square=True
+        corr_matrix, annot=False, cmap="coolwarm", mask=mask, vmin=-1, vmax=1, cbar=False, square=True
     )
     labels = list(map(lambda x: x.replace("_", "/"), corr_matrix.columns))
 
@@ -136,7 +143,7 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
     for i in range(corr_matrix.shape[0]):
         for j in range(corr_matrix.shape[1]):
             value = corr_matrix.iloc[i, j]
-            if  i > j and abs(value) >= 0.7:
+            if  i > j:
                 ax.text(
                     j + 0.5,
                     i + 0.5,

@@ -11,35 +11,31 @@ PROJECTS = {
     "ignite": "Ignite",
 }
 
-
-BASE_FEATURES = ['NUC', 'SEXP', 'LT', 'Entropy', 'EXP', 'LA', 'LD', 'NS', 'AGE']
-HCC_FEATURES = ['NP', 'REC', 'ENT_V', 'RII', 'MDNL', 'NB', 'NTM', 'TS', 'DD_V', 'RG']
-FEATURES = BASE_FEATURES + HCC_FEATURES
 HCC_ALL = [
-    "V",
+    "HV",
     "DD",
     "MDNL",
     "NB",
-    "REC",
-    "NP",
-    "RG",
-    "NTM",
-    "TS",
-    "RII",
-    "ENT",
-    "ENT_V",
-    "DD_V",
+    "EC",
+    "NOP",
+    "NOGV",
+    "NOMT",
+    "II",
+    "TE",
+    "E_HV",
+    "DD_HV",
+    'TS'
 ]
 
 BASE_ALL = [
-    "NUC", "SEXP", "LT", "Entropy", "EXP", "LA", "LD", "NS", "AGE", "LA/LT", "LD/LT", "LT/NF", "NUC/NF", "REXP", "ND", "NF"
+    "NUC", "SEXP", "LT", "Entropy", "EXP", "LA", "LD", "NS", "AGE","REXP", "ND", "NF"
 ]
 
-BASELINE =['NUC', 'SEXP', 'LT', 'Entropy', 'EXP', 'LA', 'LD', 'NS', 'AGE']
+BASELINE =['LA', 'NUC', 'LT', 'LD', 'Entropy', 'SEXP', 'EXP', 'AGE', 'NS']
 
-HCC = ['NP', 'REC', 'ENT', 'RII', 'MDNL', 'NB', 'NTM', 'DD_V', 'RG']
+HCC = ['NOGV', 'MDNL', 'TE', 'II', 'NOP', 'NB', 'EC', 'DD_HV', 'NOMT']
 
-BASELINE_HCC = HCC + BASELINE
+BASELINE_HCC = BASELINE + HCC
 
 FEATURE_SET = {
     "baseline": BASELINE,
@@ -49,4 +45,4 @@ FEATURE_SET = {
 
 PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier"]
 
-INACTIONABLE_FEATURES = [ "NUC", "AGE", "EXP", "SEXP"]
+ACTIONABLE_FEATURES = HCC + ["LA", "LD", "LT", "NS"]

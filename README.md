@@ -267,39 +267,6 @@ $ python scripts/pre_analysis.py --help
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-<details>
-<summary>(Click to see the pre-analysis results)</summary>
-<!-- 
-| Project   | Defective Commits | Clean Commits | Changed Methods | Changed Lines (avg.) | Context Sizes (avg.) | Fixing Time (avg.) | Duration                |
-| --------- | ----------------- | ------------- | --------------- | -------------------- | -------------------- | ------------------ | ----------------------- |
-| ActiveMQ  | 286 (11.75%)      | 2148 (88.25%) | 2.5             | 17.0                 | 72.2                 | 479.9              | 2005-12-14 ~ 2019-12-03 |
-| Camel     | 496 (7.66%)       | 5975 (92.34%) | 3.9             | 22.9                 | 96.3                 | 881.5              | 2007-03-19 ~ 2019-12-26 |
-| Flink     | 338 (11.22%)      | 2674 (88.78%) | 3.8             | 27.5                 | 132.7                | 237.1              | 2010-12-18 ~ 2019-12-26 |
-| Groovy    | 522 (16.24%)      | 2692 (83.76%) | 3.2             | 25.1                 | 98.5                 | 592.2              | 2003-09-11 ~ 2019-12-25 |
-| Cassandra | 745 (22.31%)      | 2594 (77.69%) | 2.5             | 16.7                 | 99.7                 | 321.4              | 2009-03-23 ~ 2019-12-17 |
-| HBase     | 772 (27.54%)      | 2031 (72.46%) | 3.1             | 22.2                 | 123.2                | 243.9              | 2007-04-07 ~ 2019-12-11 |
-| Hive      | 1012 (45.34%)     | 1220 (54.66%) | 2.8             | 23.2                 | 138.9                | 206.2              | 2008-09-12 ~ 2019-12-25 |
-| Ignite    | 345 (8.16%)       | 3883 (91.84%) | 2.7             | 18.1                 | 146.5                | 834.8              | 2014-02-20 ~ 2019-12-24 |
-| Total     |                   |               | 3.1             | 21.6                 | 113.5                | 474.6              |                         | -->
-
-| Project   | Defective Commits   | Clean Commits   |   Changed Methods |   Changed Lines (avg.) |   Context Sizes (avg.) |   Fixing Time (avg.) | Duration                |
-|-----------|---------------------|-----------------|-------------------|------------------------|------------------------|----------------------|-------------------------|
-| ActiveMQ  | 285 (11.79%)        | 2132 (88.21%)   |               2.2 |                   14.4 |                   66.1 |                475.6 | 2005-12-14 ~ 2019-12-03 |
-| Camel     | 481 (7.88%)         | 5621 (92.12%)   |               3.3 |                   17.5 |                   86.5 |                831.3 | 2007-03-19 ~ 2019-12-26 |
-| Flink     | 334 (11.29%)        | 2624 (88.71%)   |               3.2 |                   23.5 |                  116.3 |                232.8 | 2010-12-18 ~ 2019-12-26 |
-| Groovy    | 519 (16.32%)        | 2661 (83.68%)   |               2.5 |                   18.6 |                   85.9 |                587.3 | 2003-09-11 ~ 2019-12-25 |
-| Cassandra | 744 (22.37%)        | 2582 (77.63%)   |               2.4 |                   16.3 |                   98.1 |                320.6 | 2009-03-23 ~ 2019-12-17 |
-| HBase     | 771 (27.62%)        | 2020 (72.38%)   |               2.9 |                   21.1 |                  117.9 |                242.3 | 2007-04-07 ~ 2019-12-11 |
-| Hive      | 1011 (45.36%)       | 1218 (54.64%)   |               2.5 |                   20.6 |                  131.5 |                204.9 | 2008-09-12 ~ 2019-12-25 |
-| Ignite    | 345 (8.23%)         | 3847 (91.77%)   |               2.6 |                   17.8 |                  141.2 |                827.7 | 2014-02-20 ~ 2019-12-24 |
-| Total     |                     |                 |               2.7 |                   18.7 |                  105.4 |                465.3 |                         |
-
-![Pre1](./data/plots/pre_analysis/hmap/BASELINE.svg)
-![Pre2](./data/plots/pre_analysis/hmap/HCC.svg)
-
-</details>
-
-
 ### RQ1: Do HCC metrics correlate with defect-inducing risk?
 
 ```bash
@@ -307,28 +274,6 @@ $ python scripts/pre_analysis.py plot-corr
 
 $ python scripts/pre_analysis.py table-group-diff
 ```
-
-<details>
-<summary>(Click to see the RQ1 results)</summary>
-
-![RQ1_1](data/plots/pre_analysis/significance/corr_hcc_lr.svg)
-![RQ1_2](./data/plots/pre_analysis/significance/corr_baseline+hcc_lr.svg)
-![RQ1_3](./data/plots/pre_analysis/significance/corr_hcc_rf.svg)
-![RQ1_4](./data/plots/pre_analysis/significance/corr_baseline+hcc_rf.svg)
-
-| Metric | Wilcoxon P-value | Cliff's Delta |
-| ------ | ---------------- | ------------- |
-| V      | 0.000            | small         |
-| DD_V   | 0.042            | negligible    |
-| MDNL   | 0.000            | small         |
-| NB     | 0.000            | negligible    |
-| REC    | 0.000            | negligible    |
-| NP     | 0.000            | small         |
-| RG     | 0.000            | negligible    |
-| NTM    | 0.000            | negligible    |
-| TS     | 0.000            | negligible    |
-| RII    | 0.000            | small         |
-</details>
 
 ### RQ2: How do HCC metrics differ from existing JIT-SDP metrics?
 
@@ -382,15 +327,6 @@ $ python scripts/analysis.py plot-set-relationships --help
 │ --save-path        PATH  [default: data/plots/analysis/diff_plot.svg]                       │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
-
-<details>
-<summary>(Click to see the RQ2 results)</summary>
-<h4>Correlations (left), Set relationships between TPs (right)</h4>
-
-![RQ2_1](./data/plots/pre_analysis/hmap/BASELINE_HCC.svg)
-![RQ2_2](./data/plots/analysis/diff_plot.svg)
-
-</details>
 
 ### RQ3: Can HCC metrics improve the performance of JIT-SDP models?
 
@@ -448,63 +384,6 @@ $ python scripts/analysis.py table-performances data/output/random_forest_baseli
 $ python scripts/analysis.py table-performances data/output/xgboost_baseline.json data/output/xgboost_baseline+hcc.json
 ```
 
-<details>
-<summary>(Click to see the RQ3 results)</summary>
-<h4>RF (f1, mcc, brier)</h4>
-
-![rq3_1](./data/plots/analysis/radar_chart_rf_f1_macro.svg)
-![rq3_2](./data/plots/analysis/radar_chart_rf_mcc.svg)
-![rq3_3](./data/plots/analysis/radar_chart_rf_brier.svg)
-<p>red: baseline, green: baseline+HCC</p>
-<h4>XGBoost (f1, mcc, brier)</h4>
-
-![rq3_4](./data/plots/analysis/radar_chart_xgb_f1_macro.svg)
-![rq3_5](./data/plots/analysis/radar_chart_xgb_mcc.svg)
-![rq3_6](./data/plots/analysis/radar_chart_xgb_brier.svg)
-<p>orange: baseline, blue: baseline+HCC</p>
-
-<h4>RF</h4>
-
-| Project   | Features     | f1_macro       | mcc            | brier          |
-| --------- | ------------ | -------------- | -------------- | -------------- |
-| ActiveMQ  | baseline     | 0.54           | 0.10           | 0.19           |
-|           | baseline+hcc | 0.55 0.245 [s] | 0.11 0.787 [*] | 0.12 0.000 [l] |
-| Camel     | baseline     | 0.53           | 0.06           | 0.09           |
-|           | baseline+hcc | 0.54 0.190 [s] | 0.08 0.239 [s] | 0.08 0.000 [l] |
-| Flink     | baseline     | 0.60           | 0.20           | 0.16           |
-|           | baseline+hcc | 0.60 0.372 [s] | 0.22 0.304 [s] | 0.14 0.267 [s] |
-| Groovy    | baseline     | 0.61           | 0.21           | 0.14           |
-|           | baseline+hcc | 0.64 0.001 [l] | 0.29 0.000 [l] | 0.14 0.330 [s] |
-| Cassandra | baseline     | 0.62           | 0.25           | 0.24           |
-|           | baseline+hcc | 0.65 0.000 [l] | 0.31 0.000 [l] | 0.20 0.000 [l] |
-| HBase     | baseline     | 0.60           | 0.22           | 0.27           |
-|           | baseline+hcc | 0.61 0.003 [l] | 0.25 0.000 [l] | 0.26 0.003 [l] |
-| Hive      | baseline     | 0.64           | 0.34           | 0.34           |
-|           | baseline+hcc | 0.64 0.685 [*] | 0.35 0.892 [*] | 0.34 0.978 [*] |
-| Ignite    | baseline     | 0.57           | 0.14           | 0.20           |
-|           | baseline+hcc | 0.56 0.705 [*] | 0.14 0.829 [*] | 0.18 0.004 [l] |
-
-<h4>XGBoost</h4>
-
-| Project   | Features     | f1_macro       | mcc            | brier          |
-| --------- | ------------ | -------------- | -------------- | -------------- |
-| ActiveMQ  | baseline     | 0.52           | 0.08           | 0.22           |
-|           | baseline+hcc | 0.55 0.002 [l] | 0.10 0.267 [s] | 0.17 0.000 [l] |
-| Camel     | baseline     | 0.52           | 0.05           | 0.09           |
-|           | baseline+hcc | 0.53 0.144 [s] | 0.07 0.234 [s] | 0.08 0.004 [l] |
-| Flink     | baseline     | 0.59           | 0.18           | 0.17           |
-|           | baseline+hcc | 0.59 0.871 [*] | 0.18 0.871 [*] | 0.16 0.968 [*] |
-| Groovy    | baseline     | 0.58           | 0.16           | 0.15           |
-|           | baseline+hcc | 0.66 0.000 [l] | 0.31 0.000 [l] | 0.13 0.005 [l] |
-| Cassandra | baseline     | 0.59           | 0.19           | 0.26           |
-|           | baseline+hcc | 0.63 0.000 [l] | 0.25 0.000 [l] | 0.22 0.000 [l] |
-| HBase     | baseline     | 0.59           | 0.20           | 0.27           |
-|           | baseline+hcc | 0.59 0.978 [*] | 0.22 0.213 [s] | 0.28 0.014 [m] |
-| Hive      | baseline     | 0.61           | 0.30           | 0.37           |
-|           | baseline+hcc | 0.62 0.088 [s] | 0.32 0.070 [m] | 0.36 0.050 [m] |
-| Ignite    | baseline     | 0.55           | 0.12           | 0.20           |
-|           | baseline+hcc | 0.56 0.213 [s] | 0.14 0.048 [m] | 0.18 0.042 [m] |
-</details>
 
 ### Discussion: More Actionable JIT-SDP with HCC metrics
 
@@ -546,20 +425,3 @@ $ python scripts/analysis.py table-actionable --help
 │ --fmt         TEXT  [default: github]                        │
 ╰──────────────────────────────────────────────────────────────╯
 ```
-
-<details>
-<summary>(Click to see the discussion results)</summary>
-
-| Project   | baseline+HCC | baseline | Wilcoxon, Cliff's Delta |
-| --------- | ------------ | -------- | ----------------------- |
-| activemq  | 66.1         | 65.8     | 0.883 [*]               |
-| camel     | 67.4         | 65.9     | 0.444 [*]               |
-| flink     | 73.5         | 68.4     | 0.000 [s]               |
-| groovy    | 66.4         | 49.7     | 0.000 [l]               |
-| cassandra | 74.7         | 58.8     | 0.000 [l]               |
-| hbase     | 79.0         | 71.1     | 0.000 [s]               |
-| hive      | 82.0         | 75.8     | 0.000 [s]               |
-| ignite    | 77.1         | 65.9     | 0.000 [m]               |
-| Average   | 73.3         | 65.2     |                         |
-
-</details>

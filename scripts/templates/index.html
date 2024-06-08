@@ -139,7 +139,7 @@
     </div>
     <h2>{{ repo }} ({{ num_tp }} samples)</h2>
     {% for commit_hash, code_pairs in commit_code_pairs.items() %}
-    {% if ((code_pairs|length) >= 1) %}
+    {% if ((code_pairs|length) == 1) %}
     <details>
         <summary>{{ commit_hash }} <a href="https://github.com/apache/{{repo}}/commit/{{commit_hash}}" target="_blank">GitHub</a>
 

@@ -30,7 +30,7 @@ from environment import (
     BASELINE,
     BASELINE_HCC,
     FEATURE_SET,
-    INACTIONABLE_FEATURES,
+    ACTIONABLE_FEATURES,
     PROJECTS,
     SEED,
     PERFORMANCE_METRICS,
@@ -164,7 +164,7 @@ def actionable(
         "data/dataset/hcc"
     ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
-    load_model: Annotated[bool, Option(help="Load models")] = False,
+    load_model: Annotated[bool, Option(help="Load models")] = True,
     pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
 ):
     """
@@ -189,38 +189,38 @@ def actionable(
 
         for i, (train, test) in enumerate(splitter.split()):
 
-            our_X_train, baseline_X_train, y_train = (
+            basehcc_X_train, baseline_X_train, y_train = (
                 train[BASELINE_HCC],
                 train[BASELINE],
                 train["buggy"],
             )
-            our_X_test, baseline_X_test, y_test = (
+            basehcc_X_test, baseline_X_test, y_test = (
                 test[BASELINE_HCC],
                 test[BASELINE],
                 test["buggy"],
             )
 
             if load_model:
-                our_model = pickle.load(
+                basehcc_model = pickle.load(
                     open(pickles_dir / model / "baseline+hcc" / project / f"{i}.pkl", "rb")
                 )
                 baseline_model = pickle.load(
                     open(pickles_dir / model / "baseline" / project / f"{i}.pkl", "rb")
                 )
             else:
-                our_model = simple_pipeline(get_model(model), smote=smote)
+                basehcc_model = simple_pipeline(get_model(model), smote=smote)
                 baseline_model = simple_pipeline(get_model(model), smote=smote)
 
-                our_model.fit(our_X_train, y_train)
+                basehcc_model.fit(basehcc_X_train, y_train)
                 baseline_model.fit(baseline_X_train, y_train)
 
-            our_y_pred = our_model.predict(our_X_test)
+            hcc_y_pred = basehcc_model.predict(basehcc_X_test)
             base_y_pred = baseline_model.predict(baseline_X_test)
 
             # LIME explanation
             our_explainer = LimeTabularExplainer(
-                our_X_train.values,
-                feature_names=our_X_train.columns,
+                basehcc_X_train.values,
+                feature_names=basehcc_X_train.columns,
                 class_names=["not buggy", "buggy"],
                 mode="classification",
                 discretize_continuous=False,
@@ -235,7 +235,7 @@ def actionable(
             )
 
             # Get the explanation for the common tp samples
-            tp_index = (y_test == 1) & (our_y_pred == 1) & (base_y_pred == 1)
+            tp_index = (y_test == 1) & (hcc_y_pred == 1) & (base_y_pred == 1)
             if sum(tp_index) == 0:
                 continue
 
@@ -243,7 +243,7 @@ def actionable(
                 commit_id = row.commit_id
                 our_explanation = our_explainer.explain_instance(
                     row[BASELINE_HCC],
-                    our_model.predict_proba,
+                    basehcc_model.predict_proba,
                     num_features=len(BASELINE_HCC),
                 )
 
@@ -255,7 +255,7 @@ def actionable(
 
                 our_top_features = our_explanation.as_map()[1]
                 our_top_feature_index = [f[0] for f in our_top_features]
-                our_top5_features = our_X_train.columns[our_top_feature_index].tolist()[
+                our_top5_features = basehcc_X_train.columns[our_top_feature_index].tolist()[
                     :5
                 ]
 
@@ -265,15 +265,12 @@ def actionable(
                     baseline_top_feature_index
                 ].tolist()[:5]
 
-                our_inactionable_ratio = (
-                    len(set(our_top5_features) & set(INACTIONABLE_FEATURES)) / 5
+                our_actionable_ratio = (
+                    len(set(our_top5_features) & set(ACTIONABLE_FEATURES)) / 5
                 )
-                baseline_inactionable_ratio = (
-                    len(set(baseline_top5_features) & set(INACTIONABLE_FEATURES)) / 5
+                baseline_actionable_ratio = (
+                    len(set(baseline_top5_features) & set(ACTIONABLE_FEATURES)) / 5
                 )
-
-                our_actionable_ratio = 1 - our_inactionable_ratio
-                baseline_actionable_ratio = 1 - baseline_inactionable_ratio
 
                 scores.append(
                     {
@@ -305,7 +302,7 @@ def tp_samples(
         "data/dataset/hcc"
     ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
-    load_model: Annotated[bool, Option(help="Load models")] = False,
+    load_model: Annotated[bool, Option(help="Load models")] = True,
     pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
 ):
     """
@@ -314,7 +311,7 @@ def tp_samples(
     
     console = Console(quiet=not display)
 
-
+    total_data = load_data()
 
     for project in track(
         PROJECTS,
@@ -322,19 +319,9 @@ def tp_samples(
         console=console,
         total=len(PROJECTS),
     ):
-        baseline_data = pd.read_csv(baseline_dir / f"{project}.csv")
-        baseline_data = baseline_data.drop(columns=["target", "ENT"])
-        hcc_data = pd.read_csv(hcc_dir / f"{project}.csv")
-        hcc_data = hcc_data.drop(columns=["fix_date", "target", "Unnamed: 0"])
-        data = hcc_data.merge(
-            baseline_data, on=["commit_id", "project", "gap", "buggy", "date", "repo"]
-        )
-
+        data = total_data.loc[total_data["project"] == project].copy()
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])
-
-        data = data.dropna(subset=list(set(data.columns) - {"gap"}))
-        data = data.drop_duplicates(subset=list(set(data.columns) - {"gap"}))
 
         splitter = KFoldDateSplit(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
@@ -505,8 +492,8 @@ def tp_samples(
                         )
                     )
 
-                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
-                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
+                hcc_row =  { f: round(row[HCC][f], 3) for f in HCC }
+                baseline_row = { f: round(row[BASELINE][f], 3) for f in BASELINE }
 
                 metric_pairs[commit_id] = {
                     'hcc': hcc_row,
