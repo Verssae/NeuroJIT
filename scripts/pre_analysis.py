@@ -14,14 +14,14 @@ from matplotlib import font_manager as fm
 from hcc_cal.commit import Mining
 from visualization import visualize_hmap
 from hcc_cal.tools.correlation import group_difference, significances
-from environment import BASE_ALL, HCC_ALL, PROJECTS, BASELINE_HCC, HCC, BASELINE
+from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
 warnings.filterwarnings("ignore")
 
 app = typer.Typer()
 
 
-def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
+def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     """
     2 x 2 plot
     """
@@ -37,30 +37,30 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     hcc_color = palette[2]
     greys = sns.color_palette("Greys", n_colors=9)
 
-    results_kc["jit-sdp"] = results_kc["metric"].apply(
+    results_combined["jit-sdp"] = results_combined["metric"].apply(
         lambda x: "baseline" if x in BASELINE else "understandability"
     )
 
-    results_hcc["metric"] = results_hcc["metric"].apply(
+    results_cuf["metric"] = results_cuf["metric"].apply(
         lambda x: x.replace("DD_HV", "DD/HV")
     )
 
-    results_kc["metric"] = results_kc["metric"].apply(
+    results_combined["metric"] = results_combined["metric"].apply(
         lambda x: x.replace("DD_HV", "DD/HV")
     )
 
-    results_hcc["adjusted_odds"] = results_hcc["lr_odds_ratio"].apply(lambda x: x - 1)
-    results_hcc["abs_odds"] = results_hcc["adjusted_odds"].abs()
+    results_cuf["adjusted_odds"] = results_cuf["lr_odds_ratio"].apply(lambda x: x - 1)
+    results_cuf["abs_odds"] = results_cuf["adjusted_odds"].abs()
 
-    results_kc["adjusted_odds"] = results_kc["lr_odds_ratio"].apply(lambda x: x - 1)
-    results_kc["abs_odds"] = results_kc["adjusted_odds"].abs()
+    results_combined["adjusted_odds"] = results_combined["lr_odds_ratio"].apply(lambda x: x - 1)
+    results_combined["abs_odds"] = results_combined["adjusted_odds"].abs()
 
-    results_hcc = results_hcc.sort_values(by="abs_odds", ascending=False)
-    results_kc = results_kc.sort_values(by="abs_odds", ascending=False)
+    results_cuf = results_cuf.sort_values(by="abs_odds", ascending=False)
+    results_combined = results_combined.sort_values(by="abs_odds", ascending=False)
 
     plt.figure(figsize=(3, 3.5))
 
-    for i, row in results_hcc.iterrows():
+    for i, row in results_cuf.iterrows():
         plt.errorbar(
             x=row["lr_odds_ratio"],
             y=row["metric"],
@@ -75,7 +75,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     ax = sns.pointplot(
         x="lr_odds_ratio",
         y="metric",
-        data=results_hcc,
+        data=results_cuf,
         join=False,
         color=hcc_color,
         ci=None,
@@ -83,7 +83,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         capsize=0.1,
     )
 
-    plt.yticks(range(len(results_hcc)), results_hcc["metric"])
+    plt.yticks(range(len(results_cuf)), results_cuf["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
     plt.xlabel("")
     # plt.title("HCC features", fontweight="bold", fontsize=16, pad=10)
@@ -93,8 +93,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     for text in ax.get_yticklabels():
         # if significant, bold
         if (
-            results_hcc.loc[
-                results_hcc["metric"] == text.get_text(), "lr_p_value"
+            results_cuf.loc[
+                results_cuf["metric"] == text.get_text(), "lr_p_value"
             ].values[0]
             < 0.05
         ):
@@ -116,7 +116,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
 
     plt.figure(figsize=(3, 3.5))
     
-    for i, row in results_kc[:top_k].iterrows():
+    for i, row in results_combined[:top_k].iterrows():
         plt.errorbar(
             x=row["lr_odds_ratio"],
             y=row["metric"],
@@ -131,7 +131,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     ax = sns.pointplot(
         x="lr_odds_ratio",
         y="metric",
-        data=results_kc[:top_k],
+        data=results_combined[:top_k],
         join=False,
         hue="jit-sdp",
         hue_order=["baseline", "understandability"],
@@ -141,7 +141,7 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
         capsize=0.1,
     )
 
-    plt.yticks(range(len(results_kc[:top_k])), results_kc[:top_k]["metric"])
+    plt.yticks(range(len(results_combined[:top_k])), results_combined[:top_k]["metric"])
     plt.axvline(1, color=greys[8], linestyle="--")
     plt.xlabel("")
     # plt.title("Top 9 baseline+HCC features", fontweight="bold", fontsize=16, pad=10)
@@ -151,8 +151,8 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     for text in ax.get_yticklabels():
         # if significant, bold
         if (
-            results_kc[:top_k]
-            .loc[results_kc[:top_k]["metric"] == text.get_text(), "lr_p_value"]
+            results_combined[:top_k]
+            .loc[results_combined[:top_k]["metric"] == text.get_text(), "lr_p_value"]
             .values[0]
             < 0.05
         ):
@@ -172,63 +172,6 @@ def corr_plot(results_hcc, results_kc, save_dir, top_k=10):
     )
     plt.close()
 
-    plt.figure(figsize=(4, 3.2))
-    results_hcc = results_hcc.sort_values(by="rf_feature_importance", ascending=False)
-    ax = sns.barplot(
-        data=results_hcc[:top_k],
-        y="metric",
-        x="rf_feature_importance",
-        color=hcc_color,
-        ci=None,
-    )
-    ax.set_yticklabels(labels=ax.get_yticklabels(), fontsize=16)
-    ax.set_xticks(ticks=[0, 0.1, 0.2])
-    ax.set_xticklabels(labels=ax.get_xticks(), fontsize=16)
-    ax.set_xlabel("Gini Importance", fontsize=16, labelpad=5)
-    ax.set_ylabel("")
-    sns.despine(top=True, right=True)
-    plt.savefig(
-        save_dir / "corr_hcc_rf.svg",
-        bbox_inches="tight",
-        dpi=300,
-        format="svg",
-    )
-
-    plt.close()
-
-    plt.figure(figsize=(4, 3.2))
-    results_kc = results_kc.sort_values(by="rf_feature_importance", ascending=False)
-    ax = sns.barplot(
-        data=results_kc[:top_k],
-        y="metric",
-        x="rf_feature_importance",
-        hue="jit-sdp",
-        hue_order=["baseline", "understandability"],
-        palette=(base_color, hcc_color),
-        ci=None,
-    )
-
-    ax.set_yticklabels(labels=ax.get_yticklabels(), fontsize=16)
-    ax.set_xticks(ticks=[0, 0.1, 0.2])
-    ax.set_xticklabels(labels=ax.get_xticks(), fontsize=16)
-    ax.set_xlabel("Gini Importance", fontsize=16, labelpad=5)
-    ax.set_ylabel(None)
-
-    ax.legend(
-        loc="lower right",
-        fontsize=12,
-        title="features",
-        title_fontsize=14,
-        labels=["baseline", "understandability"],
-    )
-    sns.despine(top=True, right=True)
-    plt.savefig(
-        save_dir / "corr_baseline+hcc_rf.svg",
-        bbox_inches="tight",
-        dpi=300,
-        format="svg",
-    )
-    plt.close()
 
 
 def load_data():
@@ -255,12 +198,12 @@ def plot_corr():
     y = data["buggy"]
 
 
-    X = data[HCC]
+    X = data[CUF]
 
-    results_ccc = significances(X, y, metrics=HCC)
+    results_ccc = significances(X, y, metrics=CUF)
 
-    X = data[BASELINE_HCC]
-    results_kc = significances(X, y, metrics=BASELINE_HCC)
+    X = data[COMBINED]
+    results_kc = significances(X, y, metrics=COMBINED)
 
     save_dir = Path("data/plots/pre_analysis/significance_ase")
     save_dir.mkdir(exist_ok=True, parents=True)
@@ -281,11 +224,11 @@ def plot_hmap():
     """
     data = load_data()
 
-    X = data[BASELINE + HCC]
+    X = data[BASELINE + CUF]
     save_path = "data/plots/pre_analysis/hmap/ALL.svg"
     visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
-    X = data[HCC_ALL]
+    X = data[CUF_ALL]
     save_path = "data/plots/pre_analysis/hmap/ALL_H.svg"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
@@ -305,7 +248,7 @@ def table_group_diff(
     no_defects = data.loc[data["buggy"] == 0]
     defects = data.loc[data["buggy"] == 1]
     table = []
-    for metric in HCC:
+    for metric in CUF:
         gd = ranksums(no_defects[metric], defects[metric]).pvalue
         d, res = cliffs_delta(no_defects[metric], defects[metric])
         table.append([metric, gd, abs(d), res])
@@ -342,13 +285,13 @@ def table_group_diff_projects(
         no_defects = data.loc[(data["buggy"] == 0) & (data["project"] == project)]
         defects = data.loc[(data["buggy"] == 1) & (data["project"] == project)]
         row = [PROJECTS[project]]
-        for metric in HCC:
+        for metric in CUF:
             gd = group_difference(no_defects[metric], defects[metric], fmt="pair")
             row.append(gd)
         table.append(row)
     output = tabulate(
         table,
-        headers=["Project"] + HCC,
+        headers=["Project"] + CUF,
         tablefmt=fmt,
         floatfmt=".3f",
     )

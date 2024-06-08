@@ -11,7 +11,7 @@ PROJECTS = {
     "ignite": "Ignite",
 }
 
-HCC_ALL = [
+CUF_ALL = [
     "HV",
     "DD",
     "MDNL",
@@ -33,16 +33,16 @@ BASE_ALL = [
 
 BASELINE =['LA', 'NUC', 'LT', 'LD', 'Entropy', 'SEXP', 'EXP', 'AGE', 'NS']
 
-HCC = ['NOGV', 'MDNL', 'TE', 'II', 'NOP', 'NB', 'EC', 'DD_HV', 'NOMT']
+CUF = ['NOGV', 'MDNL', 'TE', 'II', 'NOP', 'NB', 'EC', 'DD_HV', 'NOMT']
 
-BASELINE_HCC = BASELINE + HCC
+COMBINED = BASELINE + CUF
 
 FEATURE_SET = {
     "baseline": BASELINE,
-    "hcc": HCC,
-    "baseline+hcc": BASELINE + HCC,
+    "cuf": CUF,
+    "combined": BASELINE + CUF,
 }
 
 PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier"]
 
-ACTIONABLE_FEATURES = HCC + ["LA", "LD", "LT", "NS"]
+ACTIONABLE_FEATURES = CUF + ["LA", "LD", "LT", "NS"]

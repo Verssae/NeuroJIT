@@ -1,46 +1,25 @@
-# Human-centric Code Complexity (HCC) Metrics Calculator
+# NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers
 
-This replication package contains the source code and data used in the paper *"The Impact of Understandability on Defect-inducing Risks of Software Changes"* and the implementation of the human-centric code complexity (HCC) metrics calculator, `hcc_cal`.
+This replication package contains the source code and data used in the paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"* and the implementation of the commit understandability metrics calculator.
 
 ## Table of Contents
 
-- [Human-centric Code Complexity (HCC) Metrics Calculator](#human-centric-code-complexity-hcc-metrics-calculator)
-  - [Table of Contents](#table-of-contents)
-- [`hcc_cal`](#hcc_cal)
-  - [Structure](#structure)
-  - [Pre-requisites](#pre-requisites)
-  - [Installation](#installation)
-  - [Building from Source](#building-from-source)
-- [The Replication Package](#the-replication-package)
-  - [0. Setup](#0-setup)
-  - [1. Building Dataset](#1-building-dataset)
-    - [1) Collecting the Changes and Contexts](#1-collecting-the-changes-and-contexts)
-      - [(Option 1) From Scratch](#option-1-from-scratch)
-      - [(Option 2) From Pre-filtered Commits](#option-2-from-pre-filtered-commits)
-    - [2) Computing HCC Metrics](#2-computing-hcc-metrics)
-  - [2. Reproducing the Results](#2-reproducing-the-results)
-    - [Pre-analysis](#pre-analysis)
-    - [RQ1: Do HCC metrics correlate with defect-inducing risk?](#rq1-do-hcc-metrics-correlate-with-defect-inducing-risk)
-    - [RQ2: How do HCC metrics differ from existing JIT-SDP metrics?](#rq2-how-do-hcc-metrics-differ-from-existing-jit-sdp-metrics)
-    - [RQ3: Can HCC metrics improve the performance of JIT-SDP models?](#rq3-can-hcc-metrics-improve-the-performance-of-jit-sdp-models)
-    - [Discussion: More Actionable JIT-SDP with HCC metrics](#discussion-more-actionable-jit-sdp-with-hcc-metrics)
+# NeuroJIT
 
-# `hcc_cal`
+`neurojit` is a python package that calculates the commit understandability features.
 
-`hcc_cal` is a python package that calculates the human-centric code complexity (HCC) of a commit.
-
-We provide `hcc_cal` as a standalone package for collecting commits with modified methods and calculating the HCC metrics.
+We provide `neurojit` as a standalone package for collecting commits with modified methods and calculating the commit understandability features.
 
 ## Structure
 
 ```bash
- src/hcc_cal
+ src/neurojit
  ├── commit.py # The core module that contains the classes for the commit and its changes.
- ├── hcc
+ ├── neurojit
  │  ├── __init__.py
  │  ├── cfg.py
  │  ├── halstead.py
- │  ├── metrics.py # The module that calculates the HCC metrics.
+ │  ├── metrics.py # The module that calculates the commit understandability features.
  │  └── rii.py
  └── tools
     ├── __init__.py
@@ -50,27 +29,9 @@ We provide `hcc_cal` as a standalone package for collecting commits with modifie
 
 ## Pre-requisites
 
-- python 3.10+
+- python 3.12+
 - pip
 - wheel
-
-## Installation
-
-Currently, you can install `hcc_cal` via a .whl file. Download [hcc_cal-0.1.0-py3-none-any.whl](dist/hcc_cal-0.1.0-py3-none-any.whl) to your project and install it using pip wheel.
-
-```bash
-$ pip install hcc_cal-0.1.0-py3-none-any.whl
-```
-
-We will provide the package via PyPI in the future.
-
-## Building from Source
-
-Also, you can build the package from the source code via `rye`.
-
-```bash
-$ rye build --clean --wheel
-```
 
 # The Replication Package
 
@@ -82,15 +43,15 @@ This repository includes all the scripts, data and trained models to reproduce t
 │  ├── output # generated output from `jit_sdp.py`
 │  ├── plots # generated plots
 │  └── archives # zipped trained models (pickles) in our experiment
-├── dist # hcc_cal wheel file
-├── hcc_cal # hcc_cal source code, see `hcc_cal`
+├── dist # neurojit wheel file
+├── neurojit # neurojit source code, see `neurojit`
 └── scripts # scripts for reproducing the results
 ```
 
 
 ## 0. Setup
 
-- [rye](https://rye-up.com): We recommend to use `rye`, a hassle-free python package manager. After installing rye, run the following command to install all dependencies for the replication and `hcc_cal`.
+- [rye](https://rye-up.com): We recommend to use `rye`, a hassle-free python package manager. After installing rye, run the following command to install all dependencies for the replication and `neurojit`.
 
     ```bash
     $ rye pin 3.12 # pin the python version you want to use
@@ -103,18 +64,11 @@ This repository includes all the scripts, data and trained models to reproduce t
     ```bash
     $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
     ```
-- trained models: unzip the pickles.zip in the `data/archives` directory
-
-    ```bash
-    $ zip -s 0 data/archives/pickles.zip --out data/pickles.zip
-    $ unzip data/pickles.zip -d data/pickles
-    ```
-
 ## 1. Building Dataset
 
 To calculate the verification latency gap (i.e., average fixing time, gap), we slightly modified the code of the [ApacheJIT](https://github.com/hosseinkshvrz/apachejit) repository to create an apachejit dataset that includes a fixed_date, and constructed `data/dataset/apachejit_gap.csv`, which is composed of a total of 8 projects that include the gap.
 
-Then, we calculated the HCC of the ApacheJIT commits using the `hcc_cal` package. Additionally, we calculated the `LT` for the ApacheJIT commits because the `LT` is a widely used metric in the literature.
+Then, we calculated the HCC of the ApacheJIT commits using the `neurojit` package. Additionally, we calculated the `LT` for the ApacheJIT commits because the `LT` is a widely used metric in the literature.
 
 ```bash
 data/dataset
@@ -129,7 +83,7 @@ data/dataset
 ├── commits   # Filtered commits
 │  ├── activemq.csv
 │  ├── ...
-└── hcc   # HCC dataset
+└── neurojit  
    ├── ...
 ```
 
@@ -194,40 +148,29 @@ Or to save the change contexts for all commits that modified existing methods wi
 ╰───────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-`hcc_cal.commit.MethodChangesCommit` instances are saved to `data/cache/<project>/<commit_hash>.pkl`.
+`neurojit.commit.MethodChangesCommit` instances are saved to `data/cache/<project>/<commit_hash>.pkl`.
 
-### 2) Computing HCC Metrics
+### 2) Computing commit understandability features
 
+To compute the commit understandability features from the saved changes and its contexts (i.e., `MethodChangesCommit` instances),
 ```bash
-$ python scripts/compute.py hcc --help
+python scripts/compute.py --help
 
  Usage: compute.py [OPTIONS] COMMAND [ARGS]...
 
-╭─ Commands ──────────────────────────────────────────────────────╮
-│ hcc                 Compute specific HCC metrics for a project  │
-│ hcc-all             Compute all HCC metrics for a project       │
-│ lt                  Compute LT for apachejit_metrics            │
-╰─────────────────────────────────────────────────────────────────╯
+╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --install-completion          Install completion for the current shell.                                                                                             │
+│ --show-completion             Show completion for the current shell, to copy it or customize the installation.                                                      │
+│ --help                        Show this message and exit.                                                                                                           │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ cuf                        Compute specific CUF metrics for a project                                                                                               │
+│ cuf-all                    Compute all CUF for a project                                                                                                            │
+│ lt                         Compute LT for apachejit_metrics                                                                                                         │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-To compute the HCC metrics from the saved changes and its contexts (i.e., `MethodChangesCommit` instances),
 
-```bash
- Usage: compute.py hcc-all [OPTIONS] PROJECT
-
- Compute all HCC metrics for a project
-
-╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    project      TEXT  Project name [default: None] [required]                                                │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --save-dir                              PATH  [default: data/dataset/hcc]                                      │
-│ --quiet                   --no-quiet          Disable progress bar [default: no-quiet]                         │
-│ --checkstyle-path                       TEXT  Path to checkstyle jar [default: checkstyle.jar]                 │
-│ --xml-path                              TEXT  Path to checkstyle xml config [default: indentation_config.xml]  │
-│ --checkstyle-cache-dir                  TEXT  Path to checkstyle cache [default: data/cache/checkstyle]        │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
 
 Additionally, to compute the `LT` for the baseline dataset,
 
@@ -245,13 +188,17 @@ Additionally, to compute the `LT` for the baseline dataset,
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Or just use the pre-computed HCC metrics and baseline dataset in `data/dataset/hcc` and `data/dataset/baseline`, respectively.
+### 3) Filtering the Dataset
+
+To filter the dataset for the JIT-SDP, run `scripts/filtering.ipynb`.
+
+Or just use the pre-computed commit understandability features and baseline dataset in `data/dataset/filtered`.
 
 ## 2. Reproducing the Results
 
 ### Pre-analysis
 
-To reproduce the pre-analysis results, i.e., the distribution of the dataset and the correlation between HCC features and defect-inducing risks, run the `table-distribution` and `plot-hmap`. `plot-hmap` also generates the collinearity between features for RQ2.
+To reproduce the pre-analysis results, i.e., the distribution of the dataset and the correlation between CUF and defect-inducing risks, run the `table-distribution` and `plot-hmap`. `plot-hmap` also generates the collinearity between features for RQ2.
 
 ```bash
 $ python scripts/pre_analysis.py --help
@@ -259,7 +206,7 @@ $ python scripts/pre_analysis.py --help
  Usage: pre_analysis.py [OPTIONS] COMMAND [ARGS]...
 
 ╭─ Commands ─────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ plot-corr                    [RQ1] Generate plots for Correlations between HCC Features and Defect-inducing Risks  │
+│ plot-corr                    [RQ1] Generate plots for Correlations between CUF and Defect-inducing Risks  │
 │ plot-hmap                    [RQ2] Generate plots for Collinearity between Features                                │
 │ table-distribution           Tabulate the distribution of the dataset                                              │
 │ table-group-diff             [RQ1] Tabulate the group differences between buggy and clean commits for HCC          │
@@ -267,7 +214,7 @@ $ python scripts/pre_analysis.py --help
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-### RQ1: Do HCC metrics correlate with defect-inducing risk?
+### RQ1: Does the understandability of commits have predictive power for defect-inducing commits?
 
 ```bash
 $ python scripts/pre_analysis.py plot-corr
@@ -275,91 +222,57 @@ $ python scripts/pre_analysis.py plot-corr
 $ python scripts/pre_analysis.py table-group-diff
 ```
 
-### RQ2: How do HCC metrics differ from existing JIT-SDP metrics?
+### RQ2: Does the understandability of commits provide exclusive information to predict defect-inducing commits?
 
-To reproduce the results of RQ2, run just-in-time software defect prediction (JIT-SDP) on the our dataset with the HCC metrics and the baseline metrics model.
-
-```bash
-$ python scripts/jit_sdp.py train-test --help
-
- Usage: jit_sdp.py train-test [OPTIONS] MODEL FEATURES
-
- Train and test the baseline/HCC/baseline+HCC model with 20 folds Just-In-Time Software Defect Prediction
- (JIT-SDP)
-
-╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    model         TEXT  Model to use: random_forest|xgboost [default: None] [required]                  │
-│ *    features      TEXT  Feature set to use: baseline|HCC|baseline+HCC [default: None] [required]        │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --smote           --no-smote               Use SMOTE for oversampling [default: smote]                   │
-│ --display         --no-display             Display progress bar [default: no-display]                    │
-│ --baseline-dir                       PATH  Baseline data directory [default: data/dataset/baseline]      │
-│ --hcc-dir                            PATH  HCC data directory [default: data/dataset/hcc]                │
-│ --output-dir                         PATH  Output directory [default: data/output]                       │
-│ --save-model      --no-save-model          Save models [default: no-save-model]                          │
-│ --load-model      --no-load-model          Load models [default: no-load-model]                          │
-│ --save-dir                           PATH  Save directory [default: data/pickles]                        │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
-
-In RQ2, we used the `random_forest` model with the `baseline`, `HCC` features, and applied the `SMOTE` technique for oversampling.
+To reproduce the results of RQ2, run just-in-time software defect prediction (JIT-SDP) on the our dataset with the commit understandability features and the baseline metrics model.
 
 ```bash
-$ python scripts/jit_sdp.py train-test random_forest baseline   # --load-model for loading the trained models from `data/pickles`
-$ python scripts/jit_sdp.py train-test random_forest hcc    # --save-model for saving the trained models to `data/pickles`
+$ python scripts/jit_sdp.py --help
+
+ Usage: jit_sdp.py [OPTIONS] COMMAND [ARGS]...
+
+╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --install-completion          Install completion for the current shell.                                                                                             │
+│ --show-completion             Show completion for the current shell, to copy it or customize the installation.                                                      │
+│ --help                        Show this message and exit.                                                                                                           │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ actionable    Compute the ratios of actionable features for the baseline and combined models for the true positive samples in the 20 folds JIT-SDP                  │
+│ tp-samples    Save TP samples as json                                                                                                                               │
+│ train-test    Train and test the baseline/cuf/combined model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)                                        │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Then, to generate the set relationships between the HCC model and the baseline model,
+
+Then, to generate the set relationships between the cuf model and the baseline model,
 
 ```bash
 $ python scripts/analysis.py plot-set-relationships --help
 
- Usage: analysis.py plot-set-relationships [OPTIONS] [BASELINE_JSON] [HCC_JSON]
+ Usage: analysis.py plot-set-relationships [OPTIONS] [BASELINE_JSON] [CUF_JSON]
 
- Generate plots for TPs predicted by baseline model only vs HCC model only
+ Generate plots for TPs predicted by baseline model only vs cuf model only
 
 ╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────╮
 │   baseline_json      [BASELINE_JSON]  [default: data/output/random_forest_baseline.json]    │
-│   hcc_json           [HCC_JSON]       [default: data/output/random_forest_hcc.json]         │
+│   cuf_json           [CUF_JSON]       [default: data/output/random_forest_cuf.json]         │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ───────────────────────────────────────────────────────────────────────────────────╮
 │ --save-path        PATH  [default: data/plots/analysis/diff_plot.svg]                       │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-### RQ3: Can HCC metrics improve the performance of JIT-SDP models?
+### RQ3: Can the understandability of commits improve the performance of just-in-time defect prediction models?
 
-To reproduce the results of RQ3, run the RF and XGBoost models with the baseline and baseline+HCC features
+To reproduce the results of RQ3, run the RF and XGBoost models with the baseline and baseline+CUF(combined)
 
 ```bash
-$ python scripts/jit_sdp.py train-test random_forest baseline+hcc 
+$ python scripts/jit_sdp.py train-test random_forest combined 
 $ python scripts/jit_sdp.py train-test xgboost baseline 
-$ python scripts/jit_sdp.py train-test xgboost baseline+hcc
+$ python scripts/jit_sdp.py train-test xgboost combined
 ```
 
-Then, to generate the performance comparison radar charts between the baseline model and the baseline+HCC model,
-
-```bash
-$ python scripts/analysis.py plot-radars --help
-
- Usage: analysis.py plot-radars [OPTIONS] [RF_BASELINE] [RF_BASELINE_HCC]
-                                [XGB_BASELINE] [XGB_BASELINE_HCC]
-
- Generate radar charts for performance comparison between models
-
-╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────╮
-│   rf_baseline           [RF_BASELINE]       [default: data/output/random_forest_baseline.json]      │
-│   rf_baseline_hcc       [RF_BASELINE_HCC]   [default: data/output/random_forest_baseline+hcc.json]  │
-│   xgb_baseline          [XGB_BASELINE]      [default: data/output/xgboost_baseline.json]            │
-│   xgb_baseline_hcc      [XGB_BASELINE_HCC]  [default: data/output/xgboost_baseline+hcc.json]        │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────╮
-│ --save-dir        PATH  [default: data/plots/analysis]                                              │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
-
-You can also generate the table version:
+You can  generate the table for performance comparison between models,
 
 ```bash
 $ python scripts/analysis.py table-performances --help
@@ -379,35 +292,16 @@ $ python scripts/analysis.py table-performances --help
 ```
 
 ```bash
-$ python scripts/analysis.py table-performances data/output/random_forest_baseline.json data/output/random_forest_baseline+hcc.json
+$ python scripts/analysis.py table-performances data/output/random_forest_baseline.json data/output/random_forest_combined.json
 
-$ python scripts/analysis.py table-performances data/output/xgboost_baseline.json data/output/xgboost_baseline+hcc.json
+$ python scripts/analysis.py table-performances data/output/xgboost_baseline.json data/output/xgboost_combined.json
 ```
 
 
-### Discussion: More Actionable JIT-SDP with HCC metrics
+### Discussion: Toward More Actionable Guidance
 
-To generate the actionable JIT-SDP results,
+To generate the actionable JIT-SDP results, run the `actionable` command.
 
-```bash
- Usage: jit_sdp.py actionable [OPTIONS] MODEL
-
- Compute the ratios of actionable features for the baseline and baseline+HCC models for the true
- positive samples in the 20 folds JIT-SDP
-
-╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    model      TEXT  Model to use: random_forest|xgboost [default: None] [required]                │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --smote           --no-smote               Use SMOTE for oversampling [default: smote]               │
-│ --display         --no-display             Display progress bar [default: no-display]                │
-│ --baseline-dir                       PATH  Baseline data directory [default: data/dataset/baseline]  │
-│ --hcc-dir                            PATH  HCC data directory [default: data/dataset/hcc]            │
-│ --output-dir                         PATH  Output directory [default: data/output]                   │
-│ --load-model      --no-load-model          Load models [default: no-load-model]                      │
-│ --pickles-dir                        PATH  Pickles directory [default: data/pickles]                 │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
 
 Then, to tabulate the results,
 

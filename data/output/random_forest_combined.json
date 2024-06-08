@@ -16,7 +16,7 @@
         "buggy": 35,
         "project": "activemq",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5437763713080169,
@@ -33,7 +33,7 @@
         "buggy": 35,
         "project": "activemq",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5467914438502673,
@@ -51,7 +51,7 @@
         "buggy": 32,
         "project": "activemq",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5555200681358459,
@@ -69,7 +69,7 @@
         "buggy": 30,
         "project": "activemq",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5555555555555556,
@@ -86,7 +86,7 @@
         "buggy": 28,
         "project": "activemq",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5499021526418787,
@@ -103,7 +103,7 @@
         "buggy": 28,
         "project": "activemq",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5858282600839518,
@@ -123,7 +123,7 @@
         "buggy": 27,
         "project": "activemq",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5632384856522787,
@@ -141,7 +141,7 @@
         "buggy": 26,
         "project": "activemq",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5741392801251957,
@@ -159,7 +159,7 @@
         "buggy": 25,
         "project": "activemq",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5452205749084714,
@@ -175,7 +175,7 @@
         "buggy": 24,
         "project": "activemq",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5273109243697479,
@@ -191,7 +191,7 @@
         "buggy": 24,
         "project": "activemq",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5441555049807857,
@@ -207,7 +207,7 @@
         "buggy": 24,
         "project": "activemq",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5222701149425287,
@@ -222,7 +222,7 @@
         "buggy": 21,
         "project": "activemq",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5475341286434633,
@@ -238,7 +238,7 @@
         "buggy": 21,
         "project": "activemq",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5393023255813953,
@@ -254,7 +254,7 @@
         "buggy": 21,
         "project": "activemq",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5419808155370466,
@@ -270,7 +270,7 @@
         "buggy": 21,
         "project": "activemq",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5139133497710461,
@@ -285,7 +285,7 @@
         "buggy": 19,
         "project": "activemq",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5304834054834056,
@@ -300,7 +300,7 @@
         "buggy": 18,
         "project": "activemq",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5252173913043479,
@@ -315,7 +315,7 @@
         "buggy": 18,
         "project": "activemq",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5756141537074599,
@@ -332,7 +332,7 @@
         "buggy": 17,
         "project": "activemq",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5118066102552976,
@@ -346,7 +346,7 @@
         "buggy": 43,
         "project": "camel",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5409663865546218,
@@ -362,7 +362,7 @@
         "buggy": 43,
         "project": "camel",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5090448013524936,
@@ -376,7 +376,7 @@
         "buggy": 44,
         "project": "camel",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.523352483013865,
@@ -392,7 +392,7 @@
         "buggy": 48,
         "project": "camel",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5242101588409844,
@@ -408,7 +408,7 @@
         "buggy": 46,
         "project": "camel",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5357074215425167,
@@ -425,7 +425,7 @@
         "buggy": 47,
         "project": "camel",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5150429021396763,
@@ -440,7 +440,7 @@
         "buggy": 42,
         "project": "camel",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5245573623955719,
@@ -456,7 +456,7 @@
         "buggy": 43,
         "project": "camel",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5493054364602984,
@@ -474,7 +474,7 @@
         "buggy": 44,
         "project": "camel",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5494042538663754,
@@ -492,7 +492,7 @@
         "buggy": 46,
         "project": "camel",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5115192349489242,
@@ -507,7 +507,7 @@
         "buggy": 45,
         "project": "camel",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5493796356427522,
@@ -525,7 +525,7 @@
         "buggy": 42,
         "project": "camel",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5643141340754778,
@@ -544,7 +544,7 @@
         "buggy": 42,
         "project": "camel",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5282966386374821,
@@ -560,7 +560,7 @@
         "buggy": 39,
         "project": "camel",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5381858625803262,
@@ -577,7 +577,7 @@
         "buggy": 33,
         "project": "camel",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5403806440810404,
@@ -594,7 +594,7 @@
         "buggy": 32,
         "project": "camel",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5594875912516298,
@@ -612,7 +612,7 @@
         "buggy": 30,
         "project": "camel",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.548418491484185,
@@ -629,7 +629,7 @@
         "buggy": 30,
         "project": "camel",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5690436241610738,
@@ -648,7 +648,7 @@
         "buggy": 30,
         "project": "camel",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.575109649122807,
@@ -667,7 +667,7 @@
         "buggy": 30,
         "project": "camel",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6113404210965186,
@@ -701,7 +701,7 @@
         "buggy": 66,
         "project": "flink",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6257849402611837,
@@ -735,7 +735,7 @@
         "buggy": 61,
         "project": "flink",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6419354838709677,
@@ -772,7 +772,7 @@
         "buggy": 63,
         "project": "flink",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6267761472163987,
@@ -803,7 +803,7 @@
         "buggy": 56,
         "project": "flink",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6013894919669995,
@@ -830,7 +830,7 @@
         "buggy": 55,
         "project": "flink",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6162172982461543,
@@ -859,7 +859,7 @@
         "buggy": 56,
         "project": "flink",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5711058361299828,
@@ -883,7 +883,7 @@
         "buggy": 54,
         "project": "flink",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5569509345794392,
@@ -906,7 +906,7 @@
         "buggy": 47,
         "project": "flink",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5884804850322092,
@@ -930,7 +930,7 @@
         "buggy": 45,
         "project": "flink",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5872713414634146,
@@ -953,7 +953,7 @@
         "buggy": 44,
         "project": "flink",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5951910472873828,
@@ -976,7 +976,7 @@
         "buggy": 45,
         "project": "flink",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5837301204819277,
@@ -999,7 +999,7 @@
         "buggy": 46,
         "project": "flink",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5939972080037226,
@@ -1023,7 +1023,7 @@
         "buggy": 41,
         "project": "flink",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6050654107796964,
@@ -1046,7 +1046,7 @@
         "buggy": 34,
         "project": "flink",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6082949308755761,
@@ -1067,7 +1067,7 @@
         "buggy": 31,
         "project": "flink",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5855474996166736,
@@ -1088,7 +1088,7 @@
         "buggy": 31,
         "project": "flink",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5539010989010988,
@@ -1105,7 +1105,7 @@
         "buggy": 26,
         "project": "flink",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5495096488453022,
@@ -1122,7 +1122,7 @@
         "buggy": 26,
         "project": "flink",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5313427299703264,
@@ -1137,7 +1137,7 @@
         "buggy": 21,
         "project": "flink",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5630071203841696,
@@ -1155,7 +1155,7 @@
         "buggy": 22,
         "project": "flink",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.7085906087199749,
@@ -1216,7 +1216,7 @@
         "buggy": 82,
         "project": "groovy",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.7142128297314319,
@@ -1269,7 +1269,7 @@
         "buggy": 75,
         "project": "groovy",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.7186034392912976,
@@ -1321,7 +1321,7 @@
         "buggy": 68,
         "project": "groovy",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6865375531412375,
@@ -1367,7 +1367,7 @@
         "buggy": 60,
         "project": "groovy",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.7070073557878436,
@@ -1410,7 +1410,7 @@
         "buggy": 54,
         "project": "groovy",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.7029110936270653,
@@ -1452,7 +1452,7 @@
         "buggy": 55,
         "project": "groovy",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6437917637917638,
@@ -1486,7 +1486,7 @@
         "buggy": 51,
         "project": "groovy",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6609869998737852,
@@ -1521,7 +1521,7 @@
         "buggy": 48,
         "project": "groovy",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6575250910630145,
@@ -1554,7 +1554,7 @@
         "buggy": 47,
         "project": "groovy",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6264775413711584,
@@ -1583,7 +1583,7 @@
         "buggy": 44,
         "project": "groovy",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6842528775845782,
@@ -1617,7 +1617,7 @@
         "buggy": 41,
         "project": "groovy",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6640381619937694,
@@ -1648,7 +1648,7 @@
         "buggy": 40,
         "project": "groovy",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6709041438065926,
@@ -1682,7 +1682,7 @@
         "buggy": 40,
         "project": "groovy",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6471168656141703,
@@ -1712,7 +1712,7 @@
         "buggy": 38,
         "project": "groovy",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6680851063829787,
@@ -1742,7 +1742,7 @@
         "buggy": 35,
         "project": "groovy",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6211230623642156,
@@ -1768,7 +1768,7 @@
         "buggy": 33,
         "project": "groovy",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6430055955235812,
@@ -1796,7 +1796,7 @@
         "buggy": 32,
         "project": "groovy",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6161040145985401,
@@ -1823,7 +1823,7 @@
         "buggy": 32,
         "project": "groovy",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6379518825834967,
@@ -1850,7 +1850,7 @@
         "buggy": 31,
         "project": "groovy",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5822073226075627,
@@ -1872,7 +1872,7 @@
         "buggy": 28,
         "project": "groovy",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6478870336013194,
@@ -1925,7 +1925,7 @@
         "buggy": 106,
         "project": "cassandra",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6372727908841846,
@@ -1974,7 +1974,7 @@
         "buggy": 105,
         "project": "cassandra",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6295020912463237,
@@ -2028,7 +2028,7 @@
         "buggy": 103,
         "project": "cassandra",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6249758533769936,
@@ -2085,7 +2085,7 @@
         "buggy": 103,
         "project": "cassandra",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6425202429149797,
@@ -2140,7 +2140,7 @@
         "buggy": 101,
         "project": "cassandra",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6499212880856067,
@@ -2198,7 +2198,7 @@
         "buggy": 96,
         "project": "cassandra",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6538791384124452,
@@ -2258,7 +2258,7 @@
         "buggy": 96,
         "project": "cassandra",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6480966811646542,
@@ -2314,7 +2314,7 @@
         "buggy": 94,
         "project": "cassandra",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6518318318318318,
@@ -2375,7 +2375,7 @@
         "buggy": 92,
         "project": "cassandra",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6383213931149212,
@@ -2429,7 +2429,7 @@
         "buggy": 92,
         "project": "cassandra",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6689438617026066,
@@ -2485,7 +2485,7 @@
         "buggy": 91,
         "project": "cassandra",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.649207304836444,
@@ -2539,7 +2539,7 @@
         "buggy": 90,
         "project": "cassandra",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6582766439909297,
@@ -2594,7 +2594,7 @@
         "buggy": 89,
         "project": "cassandra",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6286449749285128,
@@ -2643,7 +2643,7 @@
         "buggy": 88,
         "project": "cassandra",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6607790105057865,
@@ -2695,7 +2695,7 @@
         "buggy": 86,
         "project": "cassandra",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6361149110807114,
@@ -2749,7 +2749,7 @@
         "buggy": 85,
         "project": "cassandra",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6591790042921701,
@@ -2801,7 +2801,7 @@
         "buggy": 84,
         "project": "cassandra",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6534673972396392,
@@ -2854,7 +2854,7 @@
         "buggy": 85,
         "project": "cassandra",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6650502298654861,
@@ -2905,7 +2905,7 @@
         "buggy": 82,
         "project": "cassandra",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6532929303438589,
@@ -2958,7 +2958,7 @@
         "buggy": 81,
         "project": "cassandra",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6285920902050818,
@@ -3011,7 +3011,7 @@
         "buggy": 90,
         "project": "hbase",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6138642910487571,
@@ -3064,7 +3064,7 @@
         "buggy": 87,
         "project": "hbase",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6238993458012763,
@@ -3117,7 +3117,7 @@
         "buggy": 85,
         "project": "hbase",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6189882127492653,
@@ -3172,7 +3172,7 @@
         "buggy": 87,
         "project": "hbase",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6236699950892126,
@@ -3226,7 +3226,7 @@
         "buggy": 85,
         "project": "hbase",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6146341463414634,
@@ -3280,7 +3280,7 @@
         "buggy": 79,
         "project": "hbase",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6024003097173829,
@@ -3332,7 +3332,7 @@
         "buggy": 79,
         "project": "hbase",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6236832034161178,
@@ -3385,7 +3385,7 @@
         "buggy": 76,
         "project": "hbase",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6085769311945969,
@@ -3437,7 +3437,7 @@
         "buggy": 74,
         "project": "hbase",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6155873695477656,
@@ -3489,7 +3489,7 @@
         "buggy": 76,
         "project": "hbase",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6127803094668005,
@@ -3544,7 +3544,7 @@
         "buggy": 79,
         "project": "hbase",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5953033268101762,
@@ -3595,7 +3595,7 @@
         "buggy": 78,
         "project": "hbase",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6029101935534684,
@@ -3647,7 +3647,7 @@
         "buggy": 78,
         "project": "hbase",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6207785162077852,
@@ -3700,7 +3700,7 @@
         "buggy": 76,
         "project": "hbase",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5955041225519229,
@@ -3751,7 +3751,7 @@
         "buggy": 74,
         "project": "hbase",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5786463666750391,
@@ -3802,7 +3802,7 @@
         "buggy": 73,
         "project": "hbase",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5949944792050055,
@@ -3853,7 +3853,7 @@
         "buggy": 73,
         "project": "hbase",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5996845340077779,
@@ -3904,7 +3904,7 @@
         "buggy": 71,
         "project": "hbase",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6021284398591189,
@@ -3954,7 +3954,7 @@
         "buggy": 69,
         "project": "hbase",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5901247291369378,
@@ -4005,7 +4005,7 @@
         "buggy": 69,
         "project": "hbase",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6580818965517241,
@@ -4120,7 +4120,7 @@
         "buggy": 141,
         "project": "hive",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6920381272778245,
@@ -4244,7 +4244,7 @@
         "buggy": 143,
         "project": "hive",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.698394623057494,
@@ -4369,7 +4369,7 @@
         "buggy": 140,
         "project": "hive",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6607424071991002,
@@ -4480,7 +4480,7 @@
         "buggy": 134,
         "project": "hive",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6407820864342604,
@@ -4578,7 +4578,7 @@
         "buggy": 122,
         "project": "hive",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6311940486697769,
@@ -4679,7 +4679,7 @@
         "buggy": 121,
         "project": "hive",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6505428950192538,
@@ -4776,7 +4776,7 @@
         "buggy": 112,
         "project": "hive",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6394368382267386,
@@ -4872,7 +4872,7 @@
         "buggy": 108,
         "project": "hive",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6436215753424658,
@@ -4967,7 +4967,7 @@
         "buggy": 103,
         "project": "hive",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6254588839941262,
@@ -5057,7 +5057,7 @@
         "buggy": 99,
         "project": "hive",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6381881619168185,
@@ -5145,7 +5145,7 @@
         "buggy": 99,
         "project": "hive",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6580882352941176,
@@ -5234,7 +5234,7 @@
         "buggy": 97,
         "project": "hive",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6278891780192868,
@@ -5320,7 +5320,7 @@
         "buggy": 92,
         "project": "hive",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6429063360881542,
@@ -5403,7 +5403,7 @@
         "buggy": 90,
         "project": "hive",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6058887339222068,
@@ -5482,7 +5482,7 @@
         "buggy": 87,
         "project": "hive",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6204686254063669,
@@ -5565,7 +5565,7 @@
         "buggy": 87,
         "project": "hive",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6352849640147831,
@@ -5647,7 +5647,7 @@
         "buggy": 88,
         "project": "hive",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6290562486719485,
@@ -5733,7 +5733,7 @@
         "buggy": 88,
         "project": "hive",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6269635126777984,
@@ -5813,7 +5813,7 @@
         "buggy": 84,
         "project": "hive",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6127119429259705,
@@ -5888,7 +5888,7 @@
         "buggy": 80,
         "project": "hive",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5786679536679536,
@@ -5916,7 +5916,7 @@
         "buggy": 78,
         "project": "ignite",
         "fold": 0,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.6062560270009643,
@@ -5949,7 +5949,7 @@
         "buggy": 76,
         "project": "ignite",
         "fold": 1,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.597454444839717,
@@ -5981,7 +5981,7 @@
         "buggy": 75,
         "project": "ignite",
         "fold": 2,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5783735325506937,
@@ -6009,7 +6009,7 @@
         "buggy": 74,
         "project": "ignite",
         "fold": 3,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5753311258278146,
@@ -6036,7 +6036,7 @@
         "buggy": 74,
         "project": "ignite",
         "fold": 4,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5739433811802233,
@@ -6062,7 +6062,7 @@
         "buggy": 74,
         "project": "ignite",
         "fold": 5,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.573387698274576,
@@ -6089,7 +6089,7 @@
         "buggy": 71,
         "project": "ignite",
         "fold": 6,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5432428735281428,
@@ -6112,7 +6112,7 @@
         "buggy": 77,
         "project": "ignite",
         "fold": 7,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5642962417096536,
@@ -6138,7 +6138,7 @@
         "buggy": 80,
         "project": "ignite",
         "fold": 8,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5815863101047563,
@@ -6165,7 +6165,7 @@
         "buggy": 74,
         "project": "ignite",
         "fold": 9,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5780831814524736,
@@ -6191,7 +6191,7 @@
         "buggy": 68,
         "project": "ignite",
         "fold": 10,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5952112351790031,
@@ -6216,7 +6216,7 @@
         "buggy": 56,
         "project": "ignite",
         "fold": 11,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5796103251427153,
@@ -6237,7 +6237,7 @@
         "buggy": 46,
         "project": "ignite",
         "fold": 12,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5286816894853198,
@@ -6254,7 +6254,7 @@
         "buggy": 41,
         "project": "ignite",
         "fold": 13,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5619047619047619,
@@ -6273,7 +6273,7 @@
         "buggy": 36,
         "project": "ignite",
         "fold": 14,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5483993902439024,
@@ -6292,7 +6292,7 @@
         "buggy": 37,
         "project": "ignite",
         "fold": 15,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5317857142857143,
@@ -6309,7 +6309,7 @@
         "buggy": 34,
         "project": "ignite",
         "fold": 16,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5639886242445787,
@@ -6328,7 +6328,7 @@
         "buggy": 34,
         "project": "ignite",
         "fold": 17,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5586440677966101,
@@ -6347,7 +6347,7 @@
         "buggy": 31,
         "project": "ignite",
         "fold": 18,
-        "features": "baseline+hcc"
+        "features": "combined"
     },
     {
         "f1_macro": 0.5341787439613527,
@@ -6363,6 +6363,6 @@
         "buggy": 27,
         "project": "ignite",
         "fold": 19,
-        "features": "baseline+hcc"
+        "features": "combined"
     }
 ]

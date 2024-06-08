@@ -13,9 +13,9 @@ app = Typer()
 
 
 @app.command()
-def HCC_all(
+def CUF_ALL(
     project: Annotated[str, Argument(..., help="Pactivemq|camel|cassandra|flink|groovy|hbase|hive|ignite")],
-    save_dir: Annotated[Path, Option()] = Path("data/dataset/hcc"),
+    save_dir: Annotated[Path, Option()] = Path("data/dataset/cuf"),
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
     checkstyle_path: Annotated[
         str, Option(help="Path to checkstyle jar")
@@ -28,7 +28,7 @@ def HCC_all(
     ] = "data/cache/checkstyle",
 ):
     """
-    Compute all HCC metrics for a project
+    Compute all CUF for a project
     """
     save_path = save_dir / f"{project}.csv"
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
@@ -41,7 +41,7 @@ def HCC_all(
 
     for commit_id, row in track(
         df.iterrows(),
-        f"Computing HCC for {project}...",
+        f"Computing cuf for {project}...",
         total=df.shape[0],
         disable=quiet,
     ):
@@ -64,12 +64,12 @@ def HCC_all(
 
 
 @app.command()
-def HCC(
+def CUF(
     project: Annotated[str, Argument(..., help="Project name")],
     metrics: Annotated[
         List[str], Argument(..., help="Metrics to compute (e.g. V DD_V ENT)")
     ],
-    save_dir: Annotated[Path, Option()] = Path("data/dataset/hcc"),
+    save_dir: Annotated[Path, Option()] = Path("data/dataset/cuf"),
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
     checkstyle_path: Annotated[
         str, Option(help="Path to checkstyle jar")
@@ -82,7 +82,7 @@ def HCC(
     ] = "data/cache/checkstyle",
 ):
     """
-    Compute specific HCC metrics for a project
+    Compute specific CUF metrics for a project
     """
     save_path = save_dir / f"{project}.csv"
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
@@ -99,7 +99,7 @@ def HCC(
 
     for commit_id, row in track(
         df.iterrows(),
-        f"Computing HCC {', '.join(metrics)} for {project}...",
+        f"Computing CUF {', '.join(metrics)} for {project}...",
         total=df.shape[0],
         disable=quiet,
     ):

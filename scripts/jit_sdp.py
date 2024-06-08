@@ -14,21 +14,19 @@ from sklearn.metrics import (
     matthews_corrcoef,
     brier_score_loss,
 )
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from lime.lime_tabular import LimeTabularExplainer
-from tabulate import tabulate
 from typer import Typer, Argument, Option
 
 from hcc_cal.commit import Mining
 from hcc_cal.tools.data_utils import KFoldDateSplit
-from hcc_cal.tools.correlation import group_difference
 from environment import (
-    HCC,
+    CUF,
     BASELINE,
-    BASELINE_HCC,
+    COMBINED,
     FEATURE_SET,
     ACTIONABLE_FEATURES,
     PROJECTS,
@@ -75,23 +73,17 @@ def simple_pipeline(base_model, smote=True):
 def train_test(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
     features: Annotated[
-        str, Argument(help="Feature set to use: baseline|HCC|baseline+HCC")
+        str, Argument(help="Feature set to use: baseline|cuf|combined")
     ],
     smote: Annotated[bool, Option(help="Use SMOTE for oversampling")] = True,
     display: Annotated[bool, Option(help="Display progress bar")] = False,
-    baseline_dir: Annotated[Path, Option(help="Baseline data directory")] = Path(
-        "data/dataset/baseline"
-    ),
-    hcc_dir: Annotated[Path, Option(help="HCC data directory")] = Path(
-        "data/dataset/hcc"
-    ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
     save_model: Annotated[bool, Option(help="Save models")] = True,
     load_model: Annotated[bool, Option(help="Load models")] = False,
     save_dir: Annotated[Path, Option(help="Save directory")] = Path("data/pickles"),
 ):
     """
-    Train and test the baseline/HCC/baseline+HCC model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)
+    Train and test the baseline/cuf/combined model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)
     """
     console = Console(quiet=not display)
     scores = []
@@ -157,18 +149,12 @@ def actionable(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
     smote: Annotated[bool, Option(help="Use SMOTE for oversampling")] = True,
     display: Annotated[bool, Option(help="Display progress bar")] = False,
-    baseline_dir: Annotated[Path, Option(help="Baseline data directory")] = Path(
-        "data/dataset/baseline"
-    ),
-    hcc_dir: Annotated[Path, Option(help="HCC data directory")] = Path(
-        "data/dataset/hcc"
-    ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
     load_model: Annotated[bool, Option(help="Load models")] = True,
     pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
 ):
     """
-    Compute the ratios of actionable features for the baseline and baseline+HCC models for the true positive samples in the 20 folds JIT-SDP
+    Compute the ratios of actionable features for the baseline and combined models for the true positive samples in the 20 folds JIT-SDP
     """
     console = Console(quiet=not display)
     scores = []
@@ -189,38 +175,38 @@ def actionable(
 
         for i, (train, test) in enumerate(splitter.split()):
 
-            basehcc_X_train, baseline_X_train, y_train = (
-                train[BASELINE_HCC],
+            combined_X_train, baseline_X_train, y_train = (
+                train[COMBINED],
                 train[BASELINE],
                 train["buggy"],
             )
-            basehcc_X_test, baseline_X_test, y_test = (
-                test[BASELINE_HCC],
+            combined_X_test, baseline_X_test, y_test = (
+                test[COMBINED],
                 test[BASELINE],
                 test["buggy"],
             )
 
             if load_model:
-                basehcc_model = pickle.load(
-                    open(pickles_dir / model / "baseline+hcc" / project / f"{i}.pkl", "rb")
+                combined_model = pickle.load(
+                    open(pickles_dir / model / "combined" / project / f"{i}.pkl", "rb")
                 )
                 baseline_model = pickle.load(
                     open(pickles_dir / model / "baseline" / project / f"{i}.pkl", "rb")
                 )
             else:
-                basehcc_model = simple_pipeline(get_model(model), smote=smote)
+                combined_model = simple_pipeline(get_model(model), smote=smote)
                 baseline_model = simple_pipeline(get_model(model), smote=smote)
 
-                basehcc_model.fit(basehcc_X_train, y_train)
+                combined_model.fit(combined_X_train, y_train)
                 baseline_model.fit(baseline_X_train, y_train)
 
-            hcc_y_pred = basehcc_model.predict(basehcc_X_test)
+            cuf_y_pred = combined_model.predict(combined_X_test)
             base_y_pred = baseline_model.predict(baseline_X_test)
 
             # LIME explanation
             our_explainer = LimeTabularExplainer(
-                basehcc_X_train.values,
-                feature_names=basehcc_X_train.columns,
+                combined_X_train.values,
+                feature_names=combined_X_train.columns,
                 class_names=["not buggy", "buggy"],
                 mode="classification",
                 discretize_continuous=False,
@@ -235,16 +221,16 @@ def actionable(
             )
 
             # Get the explanation for the common tp samples
-            tp_index = (y_test == 1) & (hcc_y_pred == 1) & (base_y_pred == 1)
+            tp_index = (y_test == 1) & (cuf_y_pred == 1) & (base_y_pred == 1)
             if sum(tp_index) == 0:
                 continue
 
             for idx, row in test.loc[tp_index].iterrows():
                 commit_id = row.commit_id
                 our_explanation = our_explainer.explain_instance(
-                    row[BASELINE_HCC],
-                    basehcc_model.predict_proba,
-                    num_features=len(BASELINE_HCC),
+                    row[COMBINED],
+                    combined_model.predict_proba,
+                    num_features=len(COMBINED),
                 )
 
                 baseline_explanation = baseline_explainer.explain_instance(
@@ -255,7 +241,7 @@ def actionable(
 
                 our_top_features = our_explanation.as_map()[1]
                 our_top_feature_index = [f[0] for f in our_top_features]
-                our_top5_features = basehcc_X_train.columns[our_top_feature_index].tolist()[
+                our_top5_features = combined_X_train.columns[our_top_feature_index].tolist()[
                     :5
                 ]
 
@@ -295,12 +281,6 @@ def tp_samples(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
     smote: Annotated[bool, Option(help="Use SMOTE for oversampling")] = True,
     display: Annotated[bool, Option(help="Display progress bar")] = False,
-    baseline_dir: Annotated[Path, Option(help="Baseline data directory")] = Path(
-        "data/dataset/baseline"
-    ),
-    hcc_dir: Annotated[Path, Option(help="HCC data directory")] = Path(
-        "data/dataset/hcc"
-    ),
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
     load_model: Annotated[bool, Option(help="Load models")] = True,
     pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
@@ -327,7 +307,7 @@ def tp_samples(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
         )
 
-        hcc_pairs = {}
+        cuf_pairs = {}
         baseline_pairs = {}
         common_pairs = {}
         
@@ -335,40 +315,40 @@ def tp_samples(
 
         for i, (train, test) in enumerate(splitter.split()):
 
-            hcc_X_train, baseline_X_train, y_train = (
-                train[HCC],
+            cuf_X_train, baseline_X_train, y_train = (
+                train[CUF],
                 train[BASELINE],
                 train["buggy"],
             )
-            hcc_X_test, baseline_X_test, y_test = (
-                test[HCC],
+            cuf_X_test, baseline_X_test, y_test = (
+                test[CUF],
                 test[BASELINE],
                 test["buggy"],
             )
 
             if load_model:
-                hcc_model = pickle.load(
-                    open(pickles_dir / model / "hcc" / project / f"{i}.pkl", "rb")
+                cuf_model = pickle.load(
+                    open(pickles_dir / model / "cuf" / project / f"{i}.pkl", "rb")
                 )
                 baseline_model = pickle.load(
                     open(pickles_dir / model / "baseline" / project / f"{i}.pkl", "rb")
                 )
             else:
-                hcc_model = simple_pipeline(get_model(model), smote=smote)
+                cuf_model = simple_pipeline(get_model(model), smote=smote)
                 baseline_model = simple_pipeline(get_model(model), smote=smote)
 
-                hcc_model.fit(hcc_X_train, y_train)
+                cuf_model.fit(cuf_X_train, y_train)
                 baseline_model.fit(baseline_X_train, y_train)
 
-            hcc_y_pred = hcc_model.predict(hcc_X_test)
+            cuf_y_pred = cuf_model.predict(cuf_X_test)
             base_y_pred = baseline_model.predict(baseline_X_test)
 
-            hcc_only_tp_index = (y_test == 1) & (hcc_y_pred == 1) & (base_y_pred == 0)
-            baseline_only_tp_index = (y_test == 1) & (hcc_y_pred == 0) & (base_y_pred == 1)
-            common_tp_index = (y_test == 1) & (hcc_y_pred == 1) & (base_y_pred == 1)
+            cuf_only_tp_index = (y_test == 1) & (cuf_y_pred == 1) & (base_y_pred == 0)
+            baseline_only_tp_index = (y_test == 1) & (cuf_y_pred == 0) & (base_y_pred == 1)
+            common_tp_index = (y_test == 1) & (cuf_y_pred == 1) & (base_y_pred == 1)
 
 
-            for idx, row in test.loc[hcc_only_tp_index].iterrows():
+            for idx, row in test.loc[cuf_only_tp_index].iterrows():
                 commit_id = row.commit_id
                 commit = Mining.load("data/cache", row["repo"], commit_id)
                 if commit is None:
@@ -392,9 +372,9 @@ def tp_samples(
                             'before_col': m.line_numbers_col(False)
                         }
 
-                hcc_pairs[commit_id] = []
+                cuf_pairs[commit_id] = []
                 for signature, m in methods.items():
-                    hcc_pairs[commit_id].append(
+                    cuf_pairs[commit_id].append(
                         (
                             signature,
                             m.get('before_col', ''),
@@ -404,11 +384,11 @@ def tp_samples(
                         )
                     )
                 
-                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
+                cuf_row =  { f: round(row[CUF][f], 2) for f in CUF }
                 baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
 
                 metric_pairs[commit_id] = {
-                    'hcc': hcc_row,
+                    'cuf': cuf_row,
                     'baseline': baseline_row
                 }
 
@@ -448,11 +428,11 @@ def tp_samples(
                         )
                     )
 
-                hcc_row =  { f: round(row[HCC][f], 2) for f in HCC }
+                cuf_row =  { f: round(row[CUF][f], 2) for f in CUF }
                 baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
 
                 metric_pairs[commit_id] = {
-                    'hcc': hcc_row,
+                    'cuf': cuf_row,
                     'baseline': baseline_row
                 }
 
@@ -492,26 +472,26 @@ def tp_samples(
                         )
                     )
 
-                hcc_row =  { f: round(row[HCC][f], 3) for f in HCC }
+                cuf_row =  { f: round(row[CUF][f], 3) for f in CUF }
                 baseline_row = { f: round(row[BASELINE][f], 3) for f in BASELINE }
 
                 metric_pairs[commit_id] = {
-                    'hcc': hcc_row,
+                    'cuf': cuf_row,
                     'baseline': baseline_row
                 }
 
         will_delete = set()
-        for commit_id in hcc_pairs.keys():
+        for commit_id in cuf_pairs.keys():
             if commit_id in baseline_pairs or commit_id in common_pairs:
                 will_delete.add(commit_id)
 
         for commit_id in baseline_pairs.keys():
-            if commit_id in hcc_pairs or commit_id in common_pairs:
+            if commit_id in cuf_pairs or commit_id in common_pairs:
                 will_delete.add(commit_id)
 
         for commit_id in will_delete:
-            if commit_id in hcc_pairs:
-                del hcc_pairs[commit_id]
+            if commit_id in cuf_pairs:
+                del cuf_pairs[commit_id]
 
             if commit_id in baseline_pairs:
                 del baseline_pairs[commit_id]
@@ -524,9 +504,9 @@ def tp_samples(
             
 
         output_dir.mkdir(exist_ok=True, parents=True)
-        save_path = output_dir / f"{project}_hcc.json"
+        save_path = output_dir / f"{project}_cuf.json"
         with open(save_path, "w") as f:
-            json.dump(hcc_pairs, f, indent=4)
+            json.dump(cuf_pairs, f, indent=4)
         
 
 
@@ -543,62 +523,6 @@ def tp_samples(
             json.dump(metric_pairs, f, indent=4)
             
         console.print(f"Results saved at {save_path}")
-
-
-
-            # for idx, row in test.loc[baseline_only_tp_index].iterrows():
-            #     commit_id = row.commit_id
-            #     console.print(f"Baseline only: {commit_id}")
-
-            
-            # for idx, row in test.loc[tp_index].iterrows():
-            #     commit_id = row.commit_id
-            #     our_explanation = our_explainer.explain_instance(
-            #         row[BASELINE_HCC],
-            #         our_model.predict_proba,
-            #         num_features=len(BASELINE_HCC),
-            #     )
-
-            #     baseline_explanation = baseline_explainer.explain_instance(
-            #         row[BASELINE],
-            #         baseline_model.predict_proba,
-            #         num_features=len(BASELINE),
-            #     )
-
-            #     our_top_features = our_explanation.as_map()[1]
-            #     our_top_feature_index = [f[0] for f in our_top_features]
-            #     our_top5_features = our_X_train.columns[our_top_feature_index].tolist()[
-            #         :5
-            #     ]
-
-            #     baseline_top_features = baseline_explanation.as_map()[1]
-            #     baseline_top_feature_index = [f[0] for f in baseline_top_features]
-            #     baseline_top5_features = baseline_X_train.columns[
-            #         baseline_top_feature_index
-            #     ].tolist()[:5]
-
-            #     our_actionable_ratio = (
-            #         len(set(our_top5_features) & set(ACTIONABLE_FEATURES)) / 5
-            #     )
-            #     baseline_actionable_ratio = (
-            #         len(set(baseline_top5_features) & set(ACTIONABLE_FEATURES)) / 5
-            #     )
-
-            #     scores.append(
-            #         {
-            #             "commit_id": commit_id,
-            #             "project": project,
-            #             "fold": i,
-            #             "our_actionable_ratio": our_actionable_ratio,
-            #             "baseline_actionable_ratio": baseline_actionable_ratio,
-            #         }
-            #     )
-
-    # scores_df = pd.DataFrame(scores)
-    # output_dir.mkdir(exist_ok=True, parents=True)
-    # save_path = output_dir / "actionable.csv"
-    # scores_df.to_csv(save_path, index=False)
-    # console.print(f"Results saved at {save_path}")
 
 if __name__ == "__main__":
     app()
