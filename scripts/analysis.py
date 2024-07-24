@@ -195,8 +195,8 @@ def table_performances(
                 performance,
             ]
             significance = group_difference(score_1, score_2, fmt="str")
-            row1.extend([f"{score_1.agg('median'):.2f}"])
-            row2.extend([f"{score_2.agg('median'):.2f} {significance}"])
+            row1.extend([f"{score_1.agg('median'):.3f}"])
+            row2.extend([f"{score_2.agg('median'):.3f} {significance}"])
 
         table.append(row1)
         table.append(row2)

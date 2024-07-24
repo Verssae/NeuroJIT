@@ -43,6 +43,6 @@ FEATURE_SET = {
     "combined": BASELINE + CUF,
 }
 
-PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier"]
+PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier", "fpr", "auc"]
 
 ACTIONABLE_FEATURES = CUF + ["LA", "LD", "LT", "NS"]

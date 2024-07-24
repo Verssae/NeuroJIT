@@ -13,6 +13,8 @@ from sklearn.metrics import (
     f1_score,
     matthews_corrcoef,
     brier_score_loss,
+    confusion_matrix,
+    roc_auc_score
 )
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
@@ -39,11 +41,15 @@ warnings.filterwarnings("ignore")
 app = Typer()
 
 
-def evaluate(y_test, y_pred):
+def evaluate(y_test, y_pred, y_pred_proba):
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+    fpr = fp / (fp + tn)
     score = {
         "f1_macro": f1_score(y_test, y_pred, average="macro"),
         "mcc": matthews_corrcoef(y_test, y_pred),
-        "brier": brier_score_loss(y_test, y_pred),
+        "brier": brier_score_loss(y_test, y_pred_proba),
+        "fpr": fpr,
+        "auc": roc_auc_score(y_test, y_pred_proba)
     }
     return {k: v for k, v in score.items() if k in PERFORMANCE_METRICS}
 
@@ -117,7 +123,8 @@ def train_test(
                 pipeline.fit(X_train, y_train)
 
             y_pred = pipeline.predict(X_test)
-            score = evaluate(y_test, y_pred)
+            y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
+            score = evaluate(y_test, y_pred, y_pred_proba)
             # True positive samples
             tp_index = (y_test == 1) & (y_pred == 1)
             score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()
