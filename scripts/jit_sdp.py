@@ -9,6 +9,11 @@ from rich.console import Console
 from rich.progress import track
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (
     f1_score,
     matthews_corrcoef,
@@ -24,7 +29,7 @@ from lime.lime_tabular import LimeTabularExplainer
 from typer import Typer, Argument, Option
 
 from neurojit.commit import Mining
-from neurojit.tools.data_utils import KFoldDateSplit
+from neurojit.tools.data_utils import KFoldDateSplit, EarlySplit
 from environment import (
     CUF,
     BASELINE,
@@ -49,7 +54,7 @@ def evaluate(y_test, y_pred, y_pred_proba):
         "mcc": matthews_corrcoef(y_test, y_pred),
         "brier": brier_score_loss(y_test, y_pred_proba),
         "fpr": fpr,
-        "auc": roc_auc_score(y_test, y_pred_proba)
+        "auc": roc_auc_score(y_test, y_pred)
     }
     return {k: v for k, v in score.items() if k in PERFORMANCE_METRICS}
 
@@ -59,6 +64,16 @@ def get_model(model: str):
         return RandomForestClassifier(random_state=SEED, n_jobs=1)
     elif model == "xgboost":
         return XGBClassifier(random_state=SEED, n_jobs=1)
+    elif model == "naive_bayes":
+        return GaussianNB()
+    elif model == "logistic_regression":
+        return LogisticRegression(random_state=SEED)
+    elif model == "svm":
+        return SVC(random_state=SEED, probability=True)
+    elif model == "knn":
+        return KNeighborsClassifier()
+    elif model == "decision_tree":
+        return DecisionTreeClassifier(random_state=SEED)
     else:
         raise ValueError(f"Not supported model: {model}")
 
@@ -128,6 +143,11 @@ def train_test(
             # True positive samples
             tp_index = (y_test == 1) & (y_pred == 1)
             score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()
+
+            # Positive samples
+            pos_index = y_pred == 1
+            score["pos_samples"] = test.loc[pos_index, "commit_id"].tolist()
+
             score["test"] = len(y_test)
             score["buggy"] = sum(y_test)
             score["project"] = project
@@ -150,6 +170,79 @@ def train_test(
     console.print(f"Results saved at {save_path}")
 
 
+@app.command()
+def early_train_test(
+    model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
+    features: Annotated[
+        str, Argument(help="Feature set to use: baseline|cuf|combined")
+    ],
+    test_k: Annotated[int, Option(help="Number of test folds")] = 30,
+    display: Annotated[bool, Option(help="Display progress bar")] = False,
+    output_dir: Annotated[Path, Option(help="Output directory")] = Path("rebuttal/output"),
+    save_model: Annotated[bool, Option(help="Save models")] = False,
+    save_dir: Annotated[Path, Option(help="Save directory")] = Path("rebuttal/pickles"),
+):
+    """
+    Early Train and test the baseline/cuf/combined model with {test_k} folds JIT-SDP
+    """
+    console = Console(quiet=not display)
+    scores = []
+    total_data = load_data()
+    for project in track(
+        PROJECTS,
+        description="Projects...",
+        console=console,
+        total=len(PROJECTS),
+    ):
+        data = total_data.loc[total_data["project"] == project].copy()
+        data["date"] = pd.to_datetime(data["date"])
+        data = data.set_index(["date"])
+        
+
+        splitter = EarlySplit(data, k=test_k)
+
+        for i, (train, test) in enumerate(splitter.split()):
+            X_train, y_train = train[FEATURE_SET[features]], train["buggy"]
+            X_test, y_test = test[FEATURE_SET[features]], test["buggy"]
+
+
+            # print(f"Project: {project} Fold: {i} Train: {len(y_train)} (bug: {y_train.sum()}) Test: {len(y_test)} (bug: {y_test.sum()})")
+
+            if i == 0:
+                print(f"{project} #buggy samples in train: {y_train.sum()}/{len(y_train)}")
+
+                pipeline = simple_pipeline(get_model(model), smote=False)
+                pipeline.fit(X_train, y_train)
+
+                if save_model:
+                    pickes_dir = save_dir / model / features / project
+                    pickes_dir.mkdir(exist_ok=True, parents=True)
+                    save_path = pickes_dir / f"{i}.pkl"
+                    with open(save_path, "wb") as f:
+                        pickle.dump(pipeline, f)
+
+
+            y_pred = pipeline.predict(X_test)
+            y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
+            score = evaluate(y_test, y_pred, y_pred_proba)
+            # True positive samples
+            tp_index = (y_test == 1) & (y_pred == 1)
+            score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()
+            score["test"] = len(y_test)
+            score["buggy"] = sum(y_test)
+            score["project"] = project
+            score["fold"] = i
+            score["features"] = features
+
+            scores.append(score)
+
+        # print(f"{project} test number: {i+1}")
+
+    output_dir.mkdir(exist_ok=True, parents=True)
+    save_path = output_dir / f"{model}_{features}.json"
+    with open(save_path, "w") as f:
+        json.dump(scores, f, indent=4)
+    console.print(f"Results saved at {save_path}")
 
 @app.command()
 def actionable(
