@@ -113,7 +113,7 @@ def radar_factory(num_vars, frame="circle"):
     return theta
 
 
-def visualize_hmap(corr_matrix, size=6, save_path=None, format="svg"):
+def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
     font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
     font_files = [ f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:

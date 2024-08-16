@@ -56,13 +56,13 @@ def plot_radars(
     baseline = rf_baseline.stem.split("_")[-1]
 
     rf = (
-        rf_df.drop(columns=["tp_samples"])
+        rf_df.drop(columns=["tp_samples", "pos_samples"])
         .groupby(["project", "features"])
         .agg("median")
     )
 
     xgb = (
-        xgb_df.drop(columns=["tp_samples"])
+        xgb_df.drop(columns=["tp_samples", "pos_samples"])
         .groupby(["project", "features"])
         .agg("median")
     )
@@ -70,11 +70,12 @@ def plot_radars(
     sns.plotting_context("paper")
     plt.rc("font", family="Times New Roman")
     palette_rf = ["#8DE5A1", "#FF9F9B"]
-    palette_xgb = ["#A1C9F4", "#FFB482"]
+    palette_xgb = ["#8DE5A1", "#FF9F9B"]
+    # palette_xgb = ["#A1C9F4", "#FFB482"]
     grey = sns.color_palette("Greys", n_colors=9)
 
     for i in range(len(PERFORMANCE_METRICS)):
-        fig = plt.figure(figsize=(8, 8))
+        fig = plt.figure(figsize=(6, 6))
 
         performance_df = rf[PERFORMANCE_METRICS[i]].unstack()
 
@@ -85,40 +86,54 @@ def plot_radars(
 
         ax = fig.add_subplot(1, 1, 1, projection="radar")
 
-        if i == len(PERFORMANCE_METRICS) - 1:
-            # reverse case_data order
-            case_data = case_data[::-1]
-            palette_rf = palette_rf[::-1]
+        if PERFORMANCE_METRICS[i] in ["f1_macro", "mcc", "auc"]:
+            ax.plot(
+                theta,
+                case_data[0],
+                label=performance_df.index[0],
+                color=palette_rf[0],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[0], alpha=0.3, color=palette_rf[0])
+            ax.fill(theta, case_data[1], alpha=1, color="white")
 
-        ax.plot(
-            theta,
-            case_data[0],
-            label=performance_df.index[0],
-            color=palette_rf[0],
-            linewidth=3,
-        )
-        ax.fill(theta, case_data[0], alpha=0.3, color=palette_rf[0])
+            ax.plot(
+                theta,
+                case_data[1],
+                label=performance_df.index[1],
+                color=palette_rf[1],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[1], alpha=0.3, color=palette_rf[1])
+        else:
+            ax.plot(
+                theta,
+                case_data[1],
+                label=performance_df.index[1],
+                color=palette_rf[1],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[1], alpha=0.3, color=palette_rf[1])
+            ax.fill(theta, case_data[0], alpha=1, color="white")
 
-        ax.fill(theta, case_data[1], alpha=1, color="white")
-
-        ax.plot(
-            theta,
-            case_data[1],
-            label=performance_df.index[1],
-            color=palette_rf[1],
-            linewidth=3,
-        )
-        ax.fill(theta, case_data[1], alpha=0.3, color=palette_rf[1])
+            ax.plot(
+                theta,
+                case_data[0],
+                label=performance_df.index[0],
+                color=palette_rf[0],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[0], alpha=0.3, color=palette_rf[0])
 
         lines, texts = ax.set_varlabels([])
-        ax.tick_params(labelsize=16, pad=20, colors=grey[4])
+        ax.tick_params(labelsize=20, pad=20, colors=grey[4])
 
         save_path = save_dir / f"radar_chart_rf_{PERFORMANCE_METRICS[i]}.svg"
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(save_path, dpi=300, format="svg", bbox_inches="tight")
 
     for i in range(len(PERFORMANCE_METRICS)):
-        fig = plt.figure(figsize=(8, 8))
+        fig = plt.figure(figsize=(6, 6))
 
         performance_df = xgb[PERFORMANCE_METRICS[i]].unstack()
 
@@ -129,33 +144,47 @@ def plot_radars(
 
         ax = fig.add_subplot(1, 1, 1, projection="radar")
 
-        if i == len(PERFORMANCE_METRICS) - 1:
-            # reverse case_data order
-            case_data = case_data[::-1]
-            palette_xgb = palette_xgb[::-1]
+        if PERFORMANCE_METRICS[i] in ["f1_macro", "mcc", "auc"]:
+            ax.plot(
+                theta,
+                case_data[0],
+                label=performance_df.index[0],
+                color=palette_xgb[0],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[0], alpha=0.3, color=palette_xgb[0])
+            ax.fill(theta, case_data[1], alpha=1, color="white")
 
-        ax.plot(
-            theta,
-            case_data[0],
-            label=performance_df.index[0],
-            color=palette_xgb[0],
-            linewidth=3,
-        )
-        ax.fill(theta, case_data[0], alpha=0.3, color=palette_xgb[0])
+            ax.plot(
+                theta,
+                case_data[1],
+                label=performance_df.index[1],
+                color=palette_xgb[1],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[1], alpha=0.3, color=palette_xgb[1])
+        else:
+            ax.plot(
+                theta,
+                case_data[1],
+                label=performance_df.index[1],
+                color=palette_xgb[1],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[1], alpha=0.3, color=palette_xgb[1])
+            ax.fill(theta, case_data[0], alpha=1, color="white")
 
-        ax.fill(theta, case_data[1], alpha=1, color="white")
-
-        ax.plot(
-            theta,
-            case_data[1],
-            label=performance_df.index[1],
-            color=palette_xgb[1],
-            linewidth=3,
-        )
-        ax.fill(theta, case_data[1], alpha=0.3, color=palette_xgb[1])
+            ax.plot(
+                theta,
+                case_data[0],
+                label=performance_df.index[0],
+                color=palette_xgb[0],
+                linewidth=3,
+            )
+            ax.fill(theta, case_data[0], alpha=0.3, color=palette_xgb[0])
 
         lines, texts = ax.set_varlabels([])
-        ax.tick_params(labelsize=16, pad=20, colors=grey[4])
+        ax.tick_params(labelsize=20, pad=20, colors=grey[4])
 
         save_path = save_dir / f"radar_chart_xgb_{PERFORMANCE_METRICS[i]}.svg"
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -495,7 +524,7 @@ def table_actionable(
         )
         our_mean = project_df.our_actionable_ratio.mean() * 100
         baseline_mean = project_df.baseline_actionable_ratio.mean() * 100
-        table.append([project, our_mean, baseline_mean, gd])
+        table.append([project, baseline_mean, our_mean, gd])
 
     table.append(
         [
@@ -508,7 +537,7 @@ def table_actionable(
     print(
         tabulate(
             table,
-            headers=["Project", "combined", "baseline", "Wilcoxon, Cliff's Delta"],
+            headers=["Project", "baseline", "combined", "Wilcoxon, Cliff's Delta"],
             tablefmt=fmt,
             floatfmt=".1f",
         )

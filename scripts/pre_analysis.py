@@ -22,14 +22,10 @@ app = typer.Typer()
 
 
 def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
-    """
-    2 x 2 plot
-    """
     font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
     font_files = [ f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
-    # sns.set_context("paper")
     plt.rcParams["font.family"] = "Linux Libertine"
 
     palette = sns.color_palette("pastel", n_colors=4)
@@ -190,8 +186,6 @@ def plot_corr():
     data = load_data()
 
     y = data["buggy"]
-
-
     X = data[CUF]
 
     results_ccc = significances(X, y, metrics=CUF)
@@ -219,15 +213,15 @@ def plot_hmap():
     data = load_data()
 
     X = data[BASELINE + CUF]
-    save_path = "data/plots/pre_analysis/hmap/ALL.svg"
+    save_path = "data/plots/pre_analysis/hmap/ALL.png"
     visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
     X = data[CUF_ALL]
-    save_path = "data/plots/pre_analysis/hmap/ALL_H.svg"
+    save_path = "data/plots/pre_analysis/hmap/ALL_CUF.png"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
     X = data[BASE_ALL]
-    save_path = "data/plots/pre_analysis/hmap/ALL_B.svg"
+    save_path = "data/plots/pre_analysis/hmap/ALL_Baseline.png"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
 

@@ -29,7 +29,7 @@ from lime.lime_tabular import LimeTabularExplainer
 from typer import Typer, Argument, Option
 
 from neurojit.commit import Mining
-from neurojit.tools.data_utils import KFoldDateSplit, EarlySplit
+from neurojit.tools.data_utils import KFoldDateSplit
 from environment import (
     CUF,
     BASELINE,
@@ -170,79 +170,6 @@ def train_test(
     console.print(f"Results saved at {save_path}")
 
 
-@app.command()
-def early_train_test(
-    model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
-    features: Annotated[
-        str, Argument(help="Feature set to use: baseline|cuf|combined")
-    ],
-    test_k: Annotated[int, Option(help="Number of test folds")] = 30,
-    display: Annotated[bool, Option(help="Display progress bar")] = False,
-    output_dir: Annotated[Path, Option(help="Output directory")] = Path("rebuttal/output"),
-    save_model: Annotated[bool, Option(help="Save models")] = False,
-    save_dir: Annotated[Path, Option(help="Save directory")] = Path("rebuttal/pickles"),
-):
-    """
-    Early Train and test the baseline/cuf/combined model with {test_k} folds JIT-SDP
-    """
-    console = Console(quiet=not display)
-    scores = []
-    total_data = load_data()
-    for project in track(
-        PROJECTS,
-        description="Projects...",
-        console=console,
-        total=len(PROJECTS),
-    ):
-        data = total_data.loc[total_data["project"] == project].copy()
-        data["date"] = pd.to_datetime(data["date"])
-        data = data.set_index(["date"])
-        
-
-        splitter = EarlySplit(data, k=test_k)
-
-        for i, (train, test) in enumerate(splitter.split()):
-            X_train, y_train = train[FEATURE_SET[features]], train["buggy"]
-            X_test, y_test = test[FEATURE_SET[features]], test["buggy"]
-
-
-            # print(f"Project: {project} Fold: {i} Train: {len(y_train)} (bug: {y_train.sum()}) Test: {len(y_test)} (bug: {y_test.sum()})")
-
-            if i == 0:
-                print(f"{project} #buggy samples in train: {y_train.sum()}/{len(y_train)}")
-
-                pipeline = simple_pipeline(get_model(model), smote=False)
-                pipeline.fit(X_train, y_train)
-
-                if save_model:
-                    pickes_dir = save_dir / model / features / project
-                    pickes_dir.mkdir(exist_ok=True, parents=True)
-                    save_path = pickes_dir / f"{i}.pkl"
-                    with open(save_path, "wb") as f:
-                        pickle.dump(pipeline, f)
-
-
-            y_pred = pipeline.predict(X_test)
-            y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
-            score = evaluate(y_test, y_pred, y_pred_proba)
-            # True positive samples
-            tp_index = (y_test == 1) & (y_pred == 1)
-            score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()
-            score["test"] = len(y_test)
-            score["buggy"] = sum(y_test)
-            score["project"] = project
-            score["fold"] = i
-            score["features"] = features
-
-            scores.append(score)
-
-        # print(f"{project} test number: {i+1}")
-
-    output_dir.mkdir(exist_ok=True, parents=True)
-    save_path = output_dir / f"{model}_{features}.json"
-    with open(save_path, "w") as f:
-        json.dump(scores, f, indent=4)
-    console.print(f"Results saved at {save_path}")
 
 @app.command()
 def actionable(
@@ -370,7 +297,7 @@ def actionable(
 
     scores_df = pd.DataFrame(scores)
     output_dir.mkdir(exist_ok=True, parents=True)
-    save_path = output_dir / "actionable.csv"
+    save_path = output_dir / f"actionable_{model}.csv"
     scores_df.to_csv(save_path, index=False)
     console.print(f"Results saved at {save_path}")
 

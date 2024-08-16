@@ -30,7 +30,7 @@ def incorrect_indentation_ratio(
     if not save_file.exists():
         if not java_file.exists():
             java_file.write_text(method.code)
-        ck_output = run_checkstyle(java_file)
+        ck_output = run_checkstyle(java_file, checkstyle_path, xml_path)
 
         incorrect = sum(
             1

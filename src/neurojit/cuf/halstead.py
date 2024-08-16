@@ -117,6 +117,7 @@ def halstead(method: Method) -> dict[float]:
             operators.append("assert")
         if isinstance(node, javalang.tree.ReturnStatement):
             operators.append("return")
+            
     # Calculate Halstead metrics
     n1 = len(set(operators))  # Number of distinct operators
     n2 = len(set(operands))  # Number of distinct operands

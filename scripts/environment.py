@@ -22,7 +22,7 @@ CUF_ALL = [
     "NOMT",
     "II",
     "TE",
-    "E_HV",
+    "TE_HV",
     "DD_HV",
     'TS'
 ]
@@ -43,6 +43,6 @@ FEATURE_SET = {
     "combined": BASELINE + CUF,
 }
 
-PERFORMANCE_METRICS = ["f1_macro", "mcc", "brier", "fpr", "auc"]
+PERFORMANCE_METRICS = ["f1_macro","auc","mcc",  "brier", "fpr"]
 
 ACTIONABLE_FEATURES = CUF + ["LA", "LD", "LT", "NS"]

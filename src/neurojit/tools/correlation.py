@@ -60,7 +60,6 @@ def correlation(X, y, metrics, method):
                     p_value = mannwhitneyu(buggy, clean).pvalue
                     results[metric] = {"p_value": p_value}
 
-
             case "random_forest":
                 X_selected = X[metrics]
                 scaler = StandardScaler()
@@ -76,18 +75,15 @@ def correlation(X, y, metrics, method):
                 for idx, metric in enumerate(scaled_X_df.columns):
                     results[metric] = {"feature_importance": importances[idx]}
 
-
             case _:
                 raise NotImplementedError(
                     "Method not implemented. Choose 'logistic_regression', 'point_biserial', or 'random_forest'."
                 )
-            
 
         return results
     except Exception as e:
         print(type(e))
         print(metrics)
-
 
 
 def group_difference(x1, x2, fmt="str"):
@@ -98,11 +94,7 @@ def group_difference(x1, x2, fmt="str"):
         d_str = (
             "*"
             if size == "negligible"
-            else "S"
-            if size == "small"
-            else "M"
-            if size == "medium"
-            else "L"
+            else "S" if size == "small" else "M" if size == "medium" else "L"
         )
         return f"({p_str}, {d_str})"
 
@@ -110,13 +102,11 @@ def group_difference(x1, x2, fmt="str"):
         p_str = (
             ""
             if p > 0.05
-            else "(*)"
-            if size == "negligible"
-            else "(S)"
-            if size == "small"
-            else "(M)"
-            if size == "medium"
-            else "(L)"
+            else (
+                "(*)"
+                if size == "negligible"
+                else "(S)" if size == "small" else "(M)" if size == "medium" else "(L)"
+            )
         )
         return p_str
 
@@ -124,19 +114,13 @@ def group_difference(x1, x2, fmt="str"):
         d_str = (
             "[*]"
             if size == "negligible"
-            else "[s]"
-            if size == "small"
-            else "[m]"
-            if size == "medium"
-            else "[l]"
+            else "[s]" if size == "small" else "[m]" if size == "medium" else "[l]"
         )
         return f"{p:.3f} {d_str}"
 
 
 def significances(X, y, metrics):
     lr_results = correlation(X, y, metrics=metrics, method="logistic_regression")
-    # spearman_results = correlation(X, y, metrics=metrics, method="spearman")
-    # manwhitneyu_results = correlation(X, y, metrics=metrics, method="manwhitneyu")
     rf_results = correlation(X, y, metrics=metrics, method="random_forest")
 
     lr_p_values = []
@@ -144,11 +128,7 @@ def significances(X, y, metrics):
     lr_errors = []
     lr_conf_lower = []
     lr_conf_upper = []
-    spearman_p_values = []
-    manwhitneyu_p_values = []
     rf_feature_importances = []
-    
-
 
     for metric in metrics:
         lr_p_values.append(lr_results[metric]["p_value"])
@@ -156,13 +136,8 @@ def significances(X, y, metrics):
         lr_errors.append(lr_results[metric]["error"])
         lr_conf_lower.append(lr_results[metric]["conf_lower"])
         lr_conf_upper.append(lr_results[metric]["conf_upper"])
-        # spearman_p_values.append(spearman_results[metric]["p_value"])
-        # manwhitneyu_p_values.append(manwhitneyu_results[metric]["p_value"])
 
         rf_feature_importances.append(rf_results[metric]["feature_importance"])
-
-
-
 
     results = pd.DataFrame(
         {
@@ -173,8 +148,6 @@ def significances(X, y, metrics):
             "lr_conf_lower": lr_conf_lower,
             "lr_conf_upper": lr_conf_upper,
             "rf_feature_importance": rf_feature_importances,
-            # "spearman_p_value": spearman_p_values,
-            # "manwhitneyu_p_value": manwhitneyu_p_values,
         }
     )
 

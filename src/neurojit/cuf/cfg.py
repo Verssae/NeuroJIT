@@ -4,6 +4,8 @@ from typing import List, Self, Union, Dict, Set, Tuple
 
 from javalang.ast import Node
 from javalang.tree import (
+    Cast,
+    This,
     IfStatement,
     WhileStatement,
     ForStatement,
@@ -30,10 +32,8 @@ from javalang.tree import (
     CatchClauseParameter,
     BinaryOperation,
     TernaryExpression,
-    Cast,
     MethodInvocation,
     ArrayInitializer,
-    This,
     SuperMethodInvocation,
 )
 

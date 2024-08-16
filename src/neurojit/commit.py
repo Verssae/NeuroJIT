@@ -17,6 +17,7 @@ from javalang.tree import (
     ConstructorDeclaration,
 )
 
+
 class Method:
     def __init__(self, ast: javalang.ast.Node, code: str, signature: str):
         self.ast = ast
@@ -126,7 +127,7 @@ class Method:
                     for i, line in enumerate(lines[self.start_line - 1 : self.end_line])
                 ]
             )
-    
+
     def line_numbered_snippet(self, show_after: bool = True) -> str:
         lines = self.code.split("\n")
         if show_after:
@@ -175,17 +176,14 @@ class Method:
             if isinstance(p, ClassDeclaration):
                 names.append(p.name)
             elif isinstance(p, (MethodDeclaration, ConstructorDeclaration)):
-                # 메서드나 생성자의 파라미터 타입을 가져와서 시그니처를 생성합니다.
                 param_types = [param.type.name for param in p.parameters]
                 names.append(f'{p.name}({",".join(param_types)})')
 
-        # 마지막 노드(현재 메서드 또는 생성자)의 시그니처를 추가합니다.
         if isinstance(node, (MethodDeclaration, ConstructorDeclaration)):
             param_types = [param.type.name for param in node.parameters]
             names.append(f'{node.name}({",".join(param_types)})')
-        # 계층 구조를 "::"로 연결하여 전체 시그니처를 반환합니다.
-        return "::".join(names)
 
+        return "::".join(names)
 
 
 @dataclass
@@ -193,7 +191,7 @@ class MethodChangesCommit:
     repo: str
     commit_hash: str
     methods_before: Set[Method]
-    methods_after: Set[Method] 
+    methods_after: Set[Method]
 
 
 class Mining:
@@ -236,7 +234,7 @@ class Mining:
             ):
                 if before != after:
                     return None
-                
+
                 # Ignore methods that are trivially changed (i.e., no ast changes)
                 before_repr = ""
                 for path, node in before.ast:
@@ -245,7 +243,7 @@ class Mining:
                 after_repr = ""
                 for path, node in after.ast:
                     after_repr += node.__repr__()
-                    
+
                 if before_repr == after_repr:
                     continue
 
@@ -319,7 +317,7 @@ class Mining:
     def check(base_dir: str, repo: str, commit_hash: str) -> bool:
         path = Path(base_dir) / repo / f"{commit_hash}.pkl"
         return path.exists()
-    
+
 
 def commit_from(
     project: str, commit_hash: str, base_dir: str = "data/repo"

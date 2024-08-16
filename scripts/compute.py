@@ -125,6 +125,7 @@ def LT(
     Compute LT for apachejit_metrics
     """
     save_path = save_dir / f"{project}.csv"
+
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
     if not Path(save_path).exists():
         df = pd.read_csv("data/dataset/apachejit_metrics.csv", index_col="commit_id")
