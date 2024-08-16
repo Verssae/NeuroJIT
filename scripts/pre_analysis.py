@@ -12,7 +12,8 @@ from cliffs_delta import cliffs_delta
 from matplotlib import font_manager as fm
 
 from neurojit.commit import Mining
-from visualization import visualize_hmap
+from data_utils import load_project_data
+from visualization import corr_plot, visualize_hmap
 from neurojit.tools.correlation import group_difference, significances
 from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
@@ -21,169 +22,12 @@ warnings.filterwarnings("ignore")
 app = typer.Typer()
 
 
-def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
-    font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
-    font_files = [ f for f in font_files if "LinLibertine" in f]
-    for font_file in font_files:
-        fm.fontManager.addfont(font_file)
-    plt.rcParams["font.family"] = "Linux Libertine"
-
-    palette = sns.color_palette("pastel", n_colors=4)
-    base_color = palette[3]
-    cuf_color = palette[2]
-    greys = sns.color_palette("Greys", n_colors=9)
-
-    results_combined["jit-sdp"] = results_combined["metric"].apply(
-        lambda x: "baseline" if x in BASELINE else "understandability"
-    )
-
-    results_cuf["metric"] = results_cuf["metric"].apply(
-        lambda x: x.replace("DD_HV", "DD/HV")
-    )
-
-    results_combined["metric"] = results_combined["metric"].apply(
-        lambda x: x.replace("DD_HV", "DD/HV")
-    )
-
-    results_cuf["adjusted_odds"] = results_cuf["lr_odds_ratio"].apply(lambda x: x - 1)
-    results_cuf["abs_odds"] = results_cuf["adjusted_odds"].abs()
-
-    results_combined["adjusted_odds"] = results_combined["lr_odds_ratio"].apply(lambda x: x - 1)
-    results_combined["abs_odds"] = results_combined["adjusted_odds"].abs()
-
-    results_cuf = results_cuf.sort_values(by="abs_odds", ascending=False)
-    results_combined = results_combined.sort_values(by="abs_odds", ascending=False)
-
-    plt.figure(figsize=(3, 3.5))
-
-    for i, row in results_cuf.iterrows():
-        plt.errorbar(
-            x=row["lr_odds_ratio"],
-            y=row["metric"],
-            xerr=[
-                [row["lr_odds_ratio"] - row["lr_conf_lower"]],
-                [row["lr_conf_upper"] - row["lr_odds_ratio"]],
-            ],
-            fmt="none",
-            ecolor=greys[-2],
-        )
-
-    ax = sns.pointplot(
-        x="lr_odds_ratio",
-        y="metric",
-        data=results_cuf,
-        join=False,
-        color=cuf_color,
-        ci=None,
-        markers="o",
-        capsize=0.1,
-    )
-
-    plt.yticks(range(len(results_cuf)), results_cuf["metric"])
-    plt.axvline(1, color=greys[8], linestyle="--")
-    plt.xlabel("")
-
-    plt.ylabel("")
-
-    for text in ax.get_yticklabels():
-        # if significant, bold
-        if (
-            results_cuf.loc[
-                results_cuf["metric"] == text.get_text(), "lr_p_value"
-            ].values[0]
-            < 0.05
-        ):
-            text.set_fontweight("bold")
-        text.set_fontsize(16)
-
-    for text in ax.get_xticklabels():
-        text.set_fontsize(16)
-
-    plt.tight_layout()
-    sns.despine(top=True, right=True)
-    plt.savefig(
-        save_dir / "corr_cuf_lr.svg",
-        bbox_inches="tight",
-        dpi=300,
-        format="svg",
-    )
-    plt.close()
-
-    plt.figure(figsize=(3, 3.5))
-    
-    for i, row in results_combined[:top_k].iterrows():
-        plt.errorbar(
-            x=row["lr_odds_ratio"],
-            y=row["metric"],
-            xerr=[
-                [row["lr_odds_ratio"] - row["lr_conf_lower"]],
-                [row["lr_conf_upper"] - row["lr_odds_ratio"]],
-            ],
-            fmt="none",
-            ecolor=greys[-2],
-        )
-
-    ax = sns.pointplot(
-        x="lr_odds_ratio",
-        y="metric",
-        data=results_combined[:top_k],
-        join=False,
-        hue="jit-sdp",
-        hue_order=["baseline", "understandability"],
-        palette=(base_color, cuf_color),
-        ci=None,
-        markers="o",
-        capsize=0.1,
-    )
-
-    plt.yticks(range(len(results_combined[:top_k])), results_combined[:top_k]["metric"])
-    plt.axvline(1, color=greys[8], linestyle="--")
-    plt.xlabel("")
-
-    plt.ylabel("")
-
-    for text in ax.get_yticklabels():
-        # if significant, bold
-        if (
-            results_combined[:top_k]
-            .loc[results_combined[:top_k]["metric"] == text.get_text(), "lr_p_value"]
-            .values[0]
-            < 0.05
-        ):
-            text.set_fontweight("bold")
-        text.set_fontsize(16)
-
-    for text in ax.get_xticklabels():
-        text.set_fontsize(16)
-    plt.legend().remove()
-    plt.tight_layout()
-    sns.despine(top=True, right=True)
-    plt.savefig(
-        save_dir / "corr_baseline+cuf_lr.svg",
-        bbox_inches="tight",
-        dpi=300,
-        format="svg",
-    )
-    plt.close()
-
-
-
-def load_data():
-    total = []
-    for project in PROJECTS:
-        data = pd.read_csv(f"data/dataset/filtered/{project}.csv")
-        total.append(data)
-    data = pd.concat(total)
- 
-    return data
-
-
 @app.command()
 def plot_corr():
     """
     Generate plots for Correlations between cuf Features and Defect-inducing Risks
     """
-    data = load_data()
+    data = load_project_data()
 
     y = data["buggy"]
     X = data[CUF]
@@ -199,7 +43,7 @@ def plot_corr():
     corr_plot(results_ccc, results_kc, save_dir=save_dir, top_k=9)
 
     from rich import console
-    
+
     console = console.Console()
     df = pd.DataFrame(results_ccc)
     console.print(df.T)
@@ -210,7 +54,7 @@ def plot_hmap():
     """
     Generate plots for Collinearity between Features
     """
-    data = load_data()
+    data = load_project_data()
 
     X = data[BASELINE + CUF]
     save_path = "data/plots/pre_analysis/hmap/ALL.png"
@@ -232,7 +76,7 @@ def table_group_diff(
     """
     Tabulate the group differences between buggy and clean commits for cuf
     """
-    data = load_data()
+    data = load_project_data()
     no_defects = data.loc[data["buggy"] == 0]
     defects = data.loc[data["buggy"] == 1]
     table = []
@@ -243,7 +87,7 @@ def table_group_diff(
 
     # sort by delta
     table = sorted(table, key=lambda x: x[2], reverse=True)
-    
+
     output = tabulate(
         table,
         headers=["Metric", "Wilcoxon P-value", "Cliff's Delta", "Res"],
@@ -262,7 +106,7 @@ def table_group_diff_projects(
     """
     Tabulate the group differences between buggy and clean commits for cuf (each project)
     """
-    data = load_data()
+    data = load_project_data()
     data["date"] = pd.to_datetime(data["date"])
     data = data.set_index(["date"])
 
@@ -298,8 +142,8 @@ def table_distribution(
     table = []
 
     for project in PROJECTS:
- 
-        data = pd.read_csv(f"data/dataset/filtered/{project}.csv")
+
+        data = pd.read_csv(f"data/dataset/combined/{project}.csv")
 
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])

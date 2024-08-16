@@ -40,7 +40,7 @@ from environment import (
     SEED,
     PERFORMANCE_METRICS,
 )
-from pre_analysis import load_data
+from data_utils import load_project_data
 
 warnings.filterwarnings("ignore")
 app = Typer()
@@ -108,7 +108,7 @@ def train_test(
     """
     console = Console(quiet=not display)
     scores = []
-    total_data = load_data()
+    total_data = load_project_data()
     for project in track(
         PROJECTS,
         description="Projects...",
@@ -185,7 +185,7 @@ def actionable(
     """
     console = Console(quiet=not display)
     scores = []
-    total_data = load_data()
+    total_data = load_project_data()
     for project in track(
         PROJECTS,
         description="Projects...",
@@ -318,7 +318,7 @@ def tp_samples(
     
     console = Console(quiet=not display)
 
-    total_data = load_data()
+    total_data = load_project_data()
 
     for project in track(
         PROJECTS,

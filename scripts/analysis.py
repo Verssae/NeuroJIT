@@ -12,22 +12,12 @@ from tabulate import tabulate
 import matplotlib.font_manager as fm
 
 from neurojit.tools.correlation import group_difference
+from data_utils import load_jsons
 from visualization import radar_factory
 from environment import PROJECTS, PERFORMANCE_METRICS
 
 
 app = typer.Typer()
-
-
-def load_data(
-    jsons: List[Path],
-) -> pd.DataFrame:
-    data = []
-    for json_file in jsons:
-        with open(json_file) as f:
-            data.extend(json.load(f))
-
-    return pd.DataFrame(data)
 
 
 @app.command()
@@ -49,8 +39,8 @@ def plot_radars(
     """
     Generate radar charts for performance comparison between models
     """
-    rf_df = load_data([rf_baseline_cuf, rf_baseline])
-    xgb_df = load_data([xgb_baseline_cuf, xgb_baseline])
+    rf_df = load_jsons([rf_baseline_cuf, rf_baseline])
+    xgb_df = load_jsons([xgb_baseline_cuf, xgb_baseline])
 
     ours = rf_baseline_cuf.stem.split("_")[-1]
     baseline = rf_baseline.stem.split("_")[-1]
@@ -203,7 +193,7 @@ def table_performances(
     """
     Generate table for performance comparison between models
     """
-    result_df = load_data([json1, json2])
+    result_df = load_jsons([json1, json2])
     table = []
     features_1 = json1.stem.split("_")[-1]
     features_2 = json2.stem.split("_")[-1]
@@ -249,12 +239,12 @@ def table_set_relationships(
     cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     fmt: Annotated[str, typer.Option()] = "github",
     quiet: Annotated[bool, typer.Option()] = False,
-    only_tp: Annotated[bool, typer.Option()] = True
+    only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
     Generate table for TPs predicted by baseline model only vs cuf model only
     """
-    result_df = load_data([baseline_json, cuf_json])
+    result_df = load_jsons([baseline_json, cuf_json])
     features_1 = baseline_json.stem
     features_2 = cuf_json.stem
     table = []
@@ -300,13 +290,16 @@ def table_set_relationships(
                     continue
 
                 only_1_ratio.append(
-                    len(pos_samples_1 - pos_samples_2) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_1 - pos_samples_2)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
                 only_2_ratio.append(
-                    len(pos_samples_2 - pos_samples_1) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_2 - pos_samples_1)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
                 intersection_ratio.append(
-                    len(pos_samples_1 & pos_samples_2) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_1 & pos_samples_2)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
 
         table.append(
@@ -341,17 +334,21 @@ def table_set_relationships(
 
 @app.command()
 def plot_set_relationships(
-    baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/random_forest_baseline.json"),
-    cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/random_forest_cuf.json"),
+    baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path(
+        "data/output/random_forest_baseline.json"
+    ),
+    cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path(
+        "data/output/random_forest_cuf.json"
+    ),
     save_path: Annotated[Path, typer.Option()] = Path(
         "data/plots/analysis/diff_plot.svg"
     ),
-    only_tp: Annotated[bool, typer.Option()] = True
+    only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
     Generate plots for TPs predicted by baseline model only vs cuf model only
     """
-    result_df = load_data([baseline_json, cuf_json])
+    result_df = load_jsons([baseline_json, cuf_json])
     features_1 = baseline_json.stem.split("_")[-1]
     features_2 = cuf_json.stem.split("_")[-1]
     table = []
@@ -397,15 +394,17 @@ def plot_set_relationships(
                     continue
 
                 only_1_ratio.append(
-                    len(pos_samples_1 - pos_samples_2) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_1 - pos_samples_2)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
                 only_2_ratio.append(
-                    len(pos_samples_2 - pos_samples_1) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_2 - pos_samples_1)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
                 intersection_ratio.append(
-                    len(pos_samples_1 & pos_samples_2) / len(pos_samples_1 | pos_samples_2)
+                    len(pos_samples_1 & pos_samples_2)
+                    / len(pos_samples_1 | pos_samples_2)
                 )
-
 
         table.append(
             [
@@ -423,10 +422,10 @@ def plot_set_relationships(
     plt.figure(figsize=(4.5, 6))
     # sns.plotting_context("paper")
     font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
-    font_files = [ f for f in font_files if "LinLibertine" in f]
+    font_files = [f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
-    
+
     plt.rcParams["font.family"] = "Linux Libertine"
 
     df = df.sort_values(by="cuf", ascending=False)
@@ -507,7 +506,9 @@ def plot_set_relationships(
 
 @app.command()
 def table_actionable(
-    path: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path("data/output/actionable.csv"),
+    path: Annotated[Path, typer.Argument(exists=True, file_okay=True)] = Path(
+        "data/output/actionable.csv"
+    ),
     fmt: Annotated[str, typer.Option()] = "github",
 ):
     """

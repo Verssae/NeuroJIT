@@ -28,7 +28,7 @@ def CUF_ALL(
     ] = "data/cache/checkstyle",
 ):
     """
-    Compute all CUF for a project
+    Calculate all CUF for a project
     """
     save_path = save_dir / f"{project}.csv"
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
@@ -67,7 +67,7 @@ def CUF_ALL(
 def CUF(
     project: Annotated[str, Argument(..., help="Project name")],
     metrics: Annotated[
-        List[str], Argument(..., help="Metrics to compute (e.g. V DD_V ENT)")
+        List[str], Argument(..., help="Metrics to Calculate (e.g. V DD_V ENT)")
     ],
     save_dir: Annotated[Path, Option()] = Path("data/dataset/cuf"),
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
@@ -82,7 +82,7 @@ def CUF(
     ] = "data/cache/checkstyle",
 ):
     """
-    Compute specific CUF metrics for a project
+    Calculate specific CUF metrics for a project
     """
     save_path = save_dir / f"{project}.csv"
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
@@ -122,13 +122,13 @@ def LT(
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
 ):
     """
-    Compute LT for apachejit_metrics
+    Calculate LT for apachejit_metrics(baseline)
     """
     save_path = save_dir / f"{project}.csv"
 
     Path(save_path).parent.mkdir(exist_ok=True, parents=True)
     if not Path(save_path).exists():
-        df = pd.read_csv("data/dataset/apachejit_metrics.csv", index_col="commit_id")
+        df = pd.read_csv("data/dataset/baseline.csv", index_col="commit_id")
         df = df[df["project"] == project]
         df["target"] = "not_yet"
     else:
