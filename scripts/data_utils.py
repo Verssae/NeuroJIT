@@ -152,6 +152,9 @@ def save_methods(
 
         method_changes_commit = mining.only_method_changes(row["project"], commit_id)
 
+        if method_changes_commit is None:
+            continue
+
         mining.save(method_changes_commit, "data/cache")
 
 
