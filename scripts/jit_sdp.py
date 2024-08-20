@@ -95,11 +95,7 @@ def train_test(
             score = evaluate(y_test, y_pred, y_pred_proba)
             # True positive samples
             tp_index = (y_test == 1) & (y_pred == 1)
-            score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()
-
-            # Positive samples
-            pos_index = y_pred == 1
-            score["pos_samples"] = test.loc[pos_index, "commit_id"].tolist()
+            score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()     
 
             score["test"] = len(y_test)
             score["buggy"] = sum(y_test)

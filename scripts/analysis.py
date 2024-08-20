@@ -235,18 +235,17 @@ def table_performances(
 
 @app.command()
 def table_set_relationships(
-    baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
+    baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     fmt: Annotated[str, typer.Option()] = "github",
     quiet: Annotated[bool, typer.Option()] = False,
-    only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
     (RQ2) Generate table for TPs predicted by baseline model only vs cuf model only
     """
-    result_df = load_jsons([baseline_json, cuf_json])
-    features_1 = baseline_json.stem
-    features_2 = cuf_json.stem
+    result_df = load_jsons([cuf_json, baseline_json])
+    features_1 = cuf_json.stem.split("_")[-1]
+    features_2 = baseline_json.stem.split("_")[-1]
     table = []
 
     for project in PROJECTS:
@@ -254,7 +253,7 @@ def table_set_relationships(
         only_2_ratio = []
         intersection_ratio = []
 
-        for i in range(10):
+        for i in range(20):
             project_df = result_df.loc[
                 (result_df["project"] == project)
                 & (result_df["features"] == features_1)
@@ -266,52 +265,34 @@ def table_set_relationships(
                 & (result_df["fold"] == i)
             ]
 
-            if only_tp:
-                tp_samples_1 = set(project_df["tp_samples"].explode())
-                tp_samples_2 = set(project_df_2["tp_samples"].explode())
+          
+            tp_samples_1 = set(project_df["tp_samples"].explode())
+            tp_samples_2 = set(project_df_2["tp_samples"].explode())
 
-                if len(tp_samples_1 | tp_samples_2) == 0:
-                    continue
+            if len(tp_samples_1 | tp_samples_2) == 0:
+                continue
 
-                only_1_ratio.append(
-                    len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
-                )
-                only_2_ratio.append(
-                    len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
-                )
-                intersection_ratio.append(
-                    len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
-                )
-            else:
-                pos_samples_1 = set(project_df["pos_samples"].explode())
-                pos_samples_2 = set(project_df_2["pos_samples"].explode())
-
-                if len(pos_samples_1 | pos_samples_2) == 0:
-                    continue
-
-                only_1_ratio.append(
-                    len(pos_samples_1 - pos_samples_2)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
-                only_2_ratio.append(
-                    len(pos_samples_2 - pos_samples_1)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
-                intersection_ratio.append(
-                    len(pos_samples_1 & pos_samples_2)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
+            only_1_ratio.append(
+                len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+            )
+            only_2_ratio.append(
+                len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
+            )
+            intersection_ratio.append(
+                len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+            )
+ 
 
         table.append(
             [
                 PROJECTS[project],
-                f"{pd.Series(only_1_ratio).agg('mean') * 100:2.1f}%",
-                f"{pd.Series(intersection_ratio).agg('mean') * 100:2.1f}%",
-                f"{pd.Series(only_2_ratio).agg('mean') * 100:2.1f}%",
+                round(pd.Series(only_1_ratio).agg("mean") * 100, 1),
+                round(pd.Series(intersection_ratio).agg("mean") * 100, 1),
+                round(pd.Series(only_2_ratio).agg("mean") * 100, 1),
             ]
         )
 
-    table = sorted(table, key=lambda x: float(x[1].replace("%", "")), reverse=True)
+    table = sorted(table, key=lambda x: x[1], reverse=True)
 
     output = tabulate(
         table,
@@ -321,12 +302,11 @@ def table_set_relationships(
             "Intersection",
             f"{features_2.split('_')[0]} only",
         ],
-        floatfmt=".2f",
+        floatfmt=".1f",
         tablefmt=fmt,
     )
 
     if not quiet:
-        print(f"{features_1} vs {features_2}")
         print(output)
 
     return output
@@ -342,8 +322,7 @@ def plot_set_relationships(
     ),
     save_path: Annotated[Path, typer.Option()] = Path(
         "data/plots/analysis/diff_plot.svg"
-    ),
-    only_tp: Annotated[bool, typer.Option()] = True,
+    )
 ):
     """
     (RQ2) Generate plots for TPs predicted by baseline model only vs cuf model only
@@ -370,41 +349,23 @@ def plot_set_relationships(
                 & (result_df["fold"] == i)
             ]
 
-            if only_tp:
-                tp_samples_1 = set(project_df["tp_samples"].explode())
-                tp_samples_2 = set(project_df_2["tp_samples"].explode())
+          
+            tp_samples_1 = set(project_df["tp_samples"].explode())
+            tp_samples_2 = set(project_df_2["tp_samples"].explode())
 
-                if len(tp_samples_1 | tp_samples_2) == 0:
-                    continue
+            if len(tp_samples_1 | tp_samples_2) == 0:
+                continue
 
-                only_1_ratio.append(
-                    len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
-                )
-                only_2_ratio.append(
-                    len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
-                )
-                intersection_ratio.append(
-                    len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
-                )
-            else:
-                pos_samples_1 = set(project_df["pos_samples"].explode())
-                pos_samples_2 = set(project_df_2["pos_samples"].explode())
-
-                if len(pos_samples_1 | pos_samples_2) == 0:
-                    continue
-
-                only_1_ratio.append(
-                    len(pos_samples_1 - pos_samples_2)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
-                only_2_ratio.append(
-                    len(pos_samples_2 - pos_samples_1)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
-                intersection_ratio.append(
-                    len(pos_samples_1 & pos_samples_2)
-                    / len(pos_samples_1 | pos_samples_2)
-                )
+            only_1_ratio.append(
+                len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+            )
+            only_2_ratio.append(
+                len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
+            )
+            intersection_ratio.append(
+                len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+            )
+ 
 
         table.append(
             [
@@ -425,8 +386,8 @@ def plot_set_relationships(
     font_files = [f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
-
-    plt.rcParams["font.family"] = "Linux Libertine"
+    if "Linux Libertine" in fm.fontManager.ttflist:
+        plt.rcParams["font.family"] = "Linux Libertine"
 
     df = df.sort_values(by="cuf", ascending=False)
     df["bar2"] = df["cuf"] + df["Intersection"]

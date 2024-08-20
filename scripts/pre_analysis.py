@@ -32,22 +32,29 @@ def plot_corr():
     y = data["buggy"]
     X = data[CUF]
 
-    results_ccc = significances(X, y, metrics=CUF)
+    results_cuf = significances(X, y, metrics=CUF)
 
     X = data[COMBINED]
-    results_kc = significances(X, y, metrics=COMBINED)
+    results_combined = significances(X, y, metrics=COMBINED)
 
     save_dir = Path("data/plots/pre_analysis/significance")
     save_dir.mkdir(exist_ok=True, parents=True)
 
-    corr_plot(results_ccc, results_kc, save_dir=save_dir, top_k=9)
+    corr_plot(results_cuf, results_combined, save_dir=save_dir, top_k=9)
 
     from rich import console
 
+    df_cuf = pd.DataFrame(results_cuf)
+    df_cuf = df_cuf.drop(["adjusted_odds", "abs_odds"], axis=1)
+    df_combined = pd.DataFrame(results_combined)
+    df_combined = df_combined.drop(["adjusted_odds", "abs_odds", "jit-sdp"], axis=1)
     console = console.Console()
-    df = pd.DataFrame(results_ccc)
-    console.print(df.T)
 
+    console.print("Saved plots to data/plots/pre_analysis/significance")
+    console.print(df_cuf.T)
+    console.print(df_combined.T)
+
+    
 
 @app.command()
 def plot_hmap():

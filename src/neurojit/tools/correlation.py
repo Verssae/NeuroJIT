@@ -77,7 +77,7 @@ def correlation(X, y, metrics, method):
 
             case _:
                 raise NotImplementedError(
-                    "Method not implemented. Choose 'logistic_regression', 'point_biserial', or 'random_forest'."
+                    "Method not implemented. "
                 )
 
         return results
@@ -121,14 +121,12 @@ def group_difference(x1, x2, fmt="str"):
 
 def significances(X, y, metrics):
     lr_results = correlation(X, y, metrics=metrics, method="logistic_regression")
-    rf_results = correlation(X, y, metrics=metrics, method="random_forest")
 
     lr_p_values = []
     lr_odds_ratios = []
     lr_errors = []
     lr_conf_lower = []
     lr_conf_upper = []
-    rf_feature_importances = []
 
     for metric in metrics:
         lr_p_values.append(lr_results[metric]["p_value"])
@@ -137,7 +135,6 @@ def significances(X, y, metrics):
         lr_conf_lower.append(lr_results[metric]["conf_lower"])
         lr_conf_upper.append(lr_results[metric]["conf_upper"])
 
-        rf_feature_importances.append(rf_results[metric]["feature_importance"])
 
     results = pd.DataFrame(
         {
@@ -147,7 +144,6 @@ def significances(X, y, metrics):
             "lr_errors": lr_errors,
             "lr_conf_lower": lr_conf_lower,
             "lr_conf_upper": lr_conf_upper,
-            "rf_feature_importance": rf_feature_importances,
         }
     )
 

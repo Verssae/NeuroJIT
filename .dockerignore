@@ -16,6 +16,5 @@ wheels/
 
 checkstyle.jar
 
-data/repo/
-data/cache/
-data/pickles/
+data/
+archive/

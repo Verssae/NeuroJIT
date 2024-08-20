@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  neurojit-ase:
+    build: .
+    image: neurojit-ase
+    volumes:
+      - ./data:/app/data
+      - ./archive:/app/archive
+      - ./dist:/app/dist
+    command: /bin/sh -c "
+      if [ ! -d /app/data/pickles ]; then
+        cat /app/archive/pickles_part_* > /app/pickles.tar.gz &&
+        tar --warning=no-unknown-keyword -xzf /app/pickles.tar.gz -C /app;
+      fi;
+      exec /bin/sh"
+    container_name: neurojit-ase
+    stdin_open: true
+    tty: true

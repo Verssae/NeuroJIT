@@ -13,4 +13,6 @@ RUN --mount=source=dist,target=/dist PYTHONDONTWRITEBYTECODE=1 pip install --no-
 
 RUN curl -L -o checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar
 
-CMD echo "To replicate the results of the paper, run the following command: docker exec -it neurojit python scripts/*.py --help"
+RUN chmod +x scripts/*.sh
+
+CMD ["/bin/sh"]

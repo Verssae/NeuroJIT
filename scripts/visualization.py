@@ -119,8 +119,8 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
     font_files = [ f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
-    
-    plt.rcParams["font.family"] = "Linux Libertine"
+    if "Linux Libertine" in fm.fontManager.ttflist:
+        plt.rcParams["font.family"] = "Linux Libertine"
 
     # plt.figure(figsize=(6, 6))
     plt.figure(figsize=(size, size))
@@ -176,7 +176,8 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     font_files = [ f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
-    plt.rcParams["font.family"] = "Linux Libertine"
+    if "Linux Libertine" in fm.fontManager.ttflist:
+        plt.rcParams["font.family"] = "Linux Libertine"
 
     palette = sns.color_palette("pastel", n_colors=4)
     base_color = palette[3]
