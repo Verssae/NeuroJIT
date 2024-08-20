@@ -90,6 +90,66 @@ def simple_pipeline(base_model, smote=True):
         return Pipeline(steps)
 
 
+
+@app.command()
+def check_imb(
+):
+    """
+    Train and test the baseline/cuf/combined model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)
+    """
+    console = Console()
+    total_data = load_project_data()
+    console.print("Checking imbalance...")
+    project_dist = {}
+    for project in track(
+        PROJECTS,
+        description="Projects...",
+        console=console,
+        total=len(PROJECTS),
+    ):
+        data = total_data.loc[total_data["project"] == project].copy()
+        data["date"] = pd.to_datetime(data["date"])
+        data = data.set_index(["date"])
+        
+
+        splitter = KFoldDateSplit(
+            data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
+        )
+
+        dist_train = []
+        dist_test = []
+        for i, (train, test) in enumerate(splitter.split()):
+            X_train, y_train = train, train["buggy"]
+            X_test, y_test = test, test["buggy"]
+
+            dist_train.append(sum(y_train) / len(y_train))
+            dist_test.append(sum(y_test) / len(y_test))
+
+        project_dist[project] = {
+            "train": dist_train,
+            "test": dist_test
+        }
+
+    console.print(project_dist)
+
+    # visualize
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    fig, axs = plt.subplots(2, 4, figsize=(20, 10))
+    for i, (project, dist) in enumerate(project_dist.items()):
+        ax = axs[i // 4, i % 4]
+        ax.plot(np.arange(20), dist["train"], label="train")
+        ax.plot(np.arange(20), dist["test"], label="test")
+        ax.set_title(project)
+        ax.legend()
+    plt.show()
+
+    
+
+
+
+
 @app.command()
 def train_test(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],

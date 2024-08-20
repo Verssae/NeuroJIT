@@ -13,8 +13,8 @@ app = Typer()
 
 
 @app.command()
-def CUF_ALL(
-    project: Annotated[str, Argument(..., help="Pactivemq|camel|cassandra|flink|groovy|hbase|hive|ignite")],
+def cuf_all(
+    project: Annotated[str, Argument(..., help="activemq|camel|cassandra|flink|groovy|hbase|hive|ignite")],
     save_dir: Annotated[Path, Option()] = Path("data/dataset/cuf"),
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
     checkstyle_path: Annotated[
@@ -47,7 +47,7 @@ def CUF_ALL(
     ):
         if row["target"] == "done":
             continue
-        commit = Mining.load("data/cache", row["repo"], commit_id)
+        commit = Mining.load("data/cache", row["project"], commit_id)
         if commit is None:
             df.loc[commit_id, "target"] = "error"
             df.to_csv(save_path)
@@ -64,10 +64,10 @@ def CUF_ALL(
 
 
 @app.command()
-def CUF(
+def cuf_metrics(
     project: Annotated[str, Argument(..., help="Project name")],
     metrics: Annotated[
-        List[str], Argument(..., help="Metrics to Calculate (e.g. V DD_V ENT)")
+        List[str], Argument(..., help="Metrics to Calculate (e.g. V TE)")
     ],
     save_dir: Annotated[Path, Option()] = Path("data/dataset/cuf"),
     quiet: Annotated[bool, Option(help="Disable progress bar")] = False,
@@ -103,7 +103,7 @@ def CUF(
         total=df.shape[0],
         disable=quiet,
     ):
-        commit = Mining.load("data/cache", row["repo"], commit_id)
+        commit = Mining.load("data/cache", row["project"], commit_id)
         if commit is None:
             continue
         cuf = CommitUnderstandabilityFeatures(commit, checkstyle_path, xml_path, checkstyle_cache_dir)
@@ -142,7 +142,7 @@ def LT(
     ):
         if row["target"] == "done":
             continue
-        commit = Mining.load("data/cache", row["repo"], commit_id)
+        commit = Mining.load("data/cache", row["project"], commit_id)
         if commit is None:
             df.loc[commit_id, "target"] = "error"
             df.to_csv(save_path)
