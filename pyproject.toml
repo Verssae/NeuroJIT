@@ -1,6 +1,6 @@
 [project]
 name = "neurojit"
-version = "0.1.0"
+version = "1.0.0"
 description = "NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"
 dependencies = [
     "javalang>=0.13.0",
@@ -11,8 +11,6 @@ dependencies = [
     "scikit-learn>=1.4.1.post1",
     "statsmodels>=0.14.1",
     "numpy>=1.26.4",
-    "flask>=3.0.3",
-    "diff-match-patch>=20230430",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"

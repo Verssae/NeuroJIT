@@ -8,33 +8,18 @@
 #   with-sources: false
 
 -e file:.
-blinker==1.8.2
-    # via flask
-click==8.1.7
-    # via flask
 cliffs-delta==1.0.0
-    # via neurojit
-diff-match-patch==20230430
-    # via neurojit
-flask==3.0.3
     # via neurojit
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via pydriller
-itsdangerous==2.2.0
-    # via flask
 javalang==0.13.0
     # via neurojit
-jinja2==3.1.4
-    # via flask
 joblib==1.3.2
     # via scikit-learn
 lizard==1.17.10
     # via pydriller
-markupsafe==2.1.5
-    # via jinja2
-    # via werkzeug
 numpy==1.26.4
     # via neurojit
     # via pandas
@@ -76,5 +61,3 @@ types-pytz==2024.1.0.20240203
     # via pydriller
 tzdata==2024.1
     # via pandas
-werkzeug==3.0.3
-    # via flask
