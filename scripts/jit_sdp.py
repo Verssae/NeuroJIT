@@ -162,14 +162,16 @@ def actionable(
                 test[BASELINE],
                 test["buggy"],
             )
-
+  
             if load_model:
-                combined_model = pickle.load(
-                    open(pickles_dir / model / "combined" / project / f"{i}.pkl", "rb")
-                )
-                baseline_model = pickle.load(
-                    open(pickles_dir / model / "baseline" / project / f"{i}.pkl", "rb")
-                )
+                load_path = pickles_dir / model / "combined" / project / f"{i}.pkl"
+                with open(load_path, "rb") as f:
+                    combined_model = pickle.load(f)
+                
+                load_path = pickles_dir / model / "baseline" / project / f"{i}.pkl"
+                with open(load_path, "rb") as f:
+                    baseline_model = pickle.load(f)
+
             else:
                 combined_model = simple_pipeline(get_model(model), smote=smote)
                 baseline_model = simple_pipeline(get_model(model), smote=smote)
