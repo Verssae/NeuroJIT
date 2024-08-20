@@ -19,13 +19,13 @@ from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
 warnings.filterwarnings("ignore")
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False, help="Statistical pre-analysis for CUF, Baseline and Dataset")
 
 
 @app.command()
 def plot_corr():
     """
-    Generate plots for Correlations between cuf Features and Defect-inducing Risks
+    (RQ1) Generate plots for Correlations between cuf Features and Defect-inducing Risks
     """
     data = load_project_data()
 
@@ -37,7 +37,7 @@ def plot_corr():
     X = data[COMBINED]
     results_kc = significances(X, y, metrics=COMBINED)
 
-    save_dir = Path("data/plots/pre_analysis/significance_ase")
+    save_dir = Path("data/plots/pre_analysis/significance")
     save_dir.mkdir(exist_ok=True, parents=True)
 
     corr_plot(results_ccc, results_kc, save_dir=save_dir, top_k=9)
@@ -74,7 +74,7 @@ def table_group_diff(
     fmt: Annotated[str, typer.Option()] = "github",
 ):
     """
-    Tabulate the group differences between buggy and clean commits for cuf
+    (RQ1) Tabulate the group differences between buggy and clean commits for cuf
     """
     data = load_project_data()
     no_defects = data.loc[data["buggy"] == 0]
@@ -149,6 +149,8 @@ def table_distribution(
         data = data.set_index(["date"])
         data = data.sort_index()
 
+        data = data.drop_duplicates()
+
         data = data.loc[data["project"] == project]
 
         buggy = data.loc[data["project"] == project].buggy.sum()
@@ -194,11 +196,13 @@ def table_distribution(
             ]
         )
 
+    defective_sum = sum([int(row[1].split('(')[0].strip()) for row in table])
+    clean_sum = sum([int(row[2].split('(')[0].strip()) for row in table])
     table.append(
         [
-            "Total",
-            "",
-            "",
+            "Total", 
+            f"{defective_sum} ({defective_sum / (defective_sum + clean_sum) * 100:.2f}%)",
+            f"{clean_sum} ({clean_sum / (defective_sum + clean_sum) * 100:.2f}%)",
             sum([row[3] for row in table]) / len(PROJECTS),
             sum([row[4] for row in table]) / len(PROJECTS),
             sum([row[5] for row in table]) / len(PROJECTS),

@@ -28,10 +28,8 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 from lime.lime_tabular import LimeTabularExplainer
 from typer import Typer, Argument, Option
 
-from neurojit.commit import Mining
 from neurojit.tools.data_utils import KFoldDateSplit
 from environment import (
-    CUF,
     BASELINE,
     COMBINED,
     FEATURE_SET,
@@ -43,51 +41,7 @@ from environment import (
 from data_utils import load_project_data
 
 warnings.filterwarnings("ignore")
-app = Typer()
-
-
-def evaluate(y_test, y_pred, y_pred_proba):
-    tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
-    fpr = fp / (fp + tn)
-    score = {
-        "f1_macro": f1_score(y_test, y_pred, average="macro"),
-        "mcc": matthews_corrcoef(y_test, y_pred),
-        "brier": brier_score_loss(y_test, y_pred_proba),
-        "fpr": fpr,
-        "auc": roc_auc_score(y_test, y_pred),
-    }
-    return {k: v for k, v in score.items() if k in PERFORMANCE_METRICS}
-
-
-def get_model(model: str):
-    if model == "random_forest":
-        return RandomForestClassifier(random_state=SEED, n_jobs=1)
-    elif model == "xgboost":
-        return XGBClassifier(random_state=SEED, n_jobs=1)
-    elif model == "naive_bayes":
-        return GaussianNB()
-    elif model == "logistic_regression":
-        return LogisticRegression(random_state=SEED)
-    elif model == "svm":
-        return SVC(random_state=SEED, probability=True)
-    elif model == "knn":
-        return KNeighborsClassifier()
-    elif model == "decision_tree":
-        return DecisionTreeClassifier(random_state=SEED)
-    else:
-        raise ValueError(f"Not supported model: {model}")
-
-
-def simple_pipeline(base_model, smote=True):
-    steps = []
-    steps.append(("scaler", StandardScaler()))
-    if smote:
-        steps.append(("smote", SMOTE(random_state=SEED)))
-        steps.append(("model", base_model))
-        return ImbPipeline(steps)
-    else:
-        steps.append(("model", base_model))
-        return Pipeline(steps)
+app = Typer(add_completion=False, help="Experiments for Just-In-Time Software Defect Prediction (JIT-SDP)")
 
 
 @app.command()
@@ -104,7 +58,7 @@ def train_test(
     save_dir: Annotated[Path, Option(help="Save directory")] = Path("data/pickles"),
 ):
     """
-    Train and test the baseline/cuf/combined model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)
+    Train and test the baseline/cuf/combined model with 20 folds JIT-SDP
     """
     console = Console(quiet=not display)
     scores = []
@@ -300,6 +254,50 @@ def actionable(
     save_path = output_dir / f"actionable_{model}.csv"
     scores_df.to_csv(save_path, index=False)
     console.print(f"Results saved at {save_path}")
+
+
+def evaluate(y_test, y_pred, y_pred_proba):
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+    fpr = fp / (fp + tn)
+    score = {
+        "f1_macro": f1_score(y_test, y_pred, average="macro"),
+        "mcc": matthews_corrcoef(y_test, y_pred),
+        "brier": brier_score_loss(y_test, y_pred_proba),
+        "fpr": fpr,
+        "auc": roc_auc_score(y_test, y_pred),
+    }
+    return {k: v for k, v in score.items() if k in PERFORMANCE_METRICS}
+
+
+def get_model(model: str):
+    if model == "random_forest":
+        return RandomForestClassifier(random_state=SEED, n_jobs=1)
+    elif model == "xgboost":
+        return XGBClassifier(random_state=SEED, n_jobs=1)
+    elif model == "naive_bayes":
+        return GaussianNB()
+    elif model == "logistic_regression":
+        return LogisticRegression(random_state=SEED)
+    elif model == "svm":
+        return SVC(random_state=SEED, probability=True)
+    elif model == "knn":
+        return KNeighborsClassifier()
+    elif model == "decision_tree":
+        return DecisionTreeClassifier(random_state=SEED)
+    else:
+        raise ValueError(f"Not supported model: {model}")
+
+
+def simple_pipeline(base_model, smote=True):
+    steps = []
+    steps.append(("scaler", StandardScaler()))
+    if smote:
+        steps.append(("smote", SMOTE(random_state=SEED)))
+        steps.append(("model", base_model))
+        return ImbPipeline(steps)
+    else:
+        steps.append(("model", base_model))
+        return Pipeline(steps)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ from matplotlib.projections.polar import PolarAxes
 from matplotlib.spines import Spine
 from matplotlib.transforms import Affine2D
 import matplotlib.font_manager as fm
+from environment import BASELINE
 
 # See: https://stackoverflow.com/questions/52910187/how-to-make-a-polygon-radar-spider-chart-in-python
 

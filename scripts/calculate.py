@@ -9,7 +9,7 @@ from rich.progress import track
 from neurojit.commit import Mining
 from neurojit.cuf.metrics import CommitUnderstandabilityFeatures
 
-app = Typer()
+app = Typer(add_completion=False, help="Calculate metrics for CUF and Baseline")
 
 
 @app.command()

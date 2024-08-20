@@ -22,9 +22,7 @@ CUF_ALL = [
     "NOMT",
     "II",
     "TE",
-    "TE_HV",
-    "DD_HV",
-    'TS'
+    "DD_HV"
 ]
 
 BASE_ALL = [

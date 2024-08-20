@@ -14,7 +14,7 @@ from neurojit.commit import Mining
 
 from environment import PROJECTS
 
-app = Typer()
+app = Typer(add_completion=False, help="Data preprocessing and caching")
 
 
 @app.command()
@@ -156,6 +156,9 @@ def combine_dataset(
         "data/dataset/combined"
     ),
 ):
+    """
+    Combine the baseline and CUF datasets
+    """
     console = Console()
     if not combined_dir.exists():
         combined_dir.mkdir(parents=True)

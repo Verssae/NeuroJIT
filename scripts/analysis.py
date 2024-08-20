@@ -17,7 +17,7 @@ from visualization import radar_factory
 from environment import PROJECTS, PERFORMANCE_METRICS
 
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False, help="Table and plot generation for analysis")
 
 
 @app.command()
@@ -37,7 +37,7 @@ def plot_radars(
     save_dir: Annotated[Path, typer.Option()] = Path("data/plots/analysis"),
 ):
     """
-    Generate radar charts for performance comparison between models
+    (RQ3) Generate radar charts for performance comparison between models
     """
     rf_df = load_jsons([rf_baseline_cuf, rf_baseline])
     xgb_df = load_jsons([xgb_baseline_cuf, xgb_baseline])
@@ -191,7 +191,7 @@ def table_performances(
     quiet: Annotated[bool, typer.Option()] = False,
 ):
     """
-    Generate table for performance comparison between models
+    (RQ3) Generate table for performance comparison between models
     """
     result_df = load_jsons([json1, json2])
     table = []
@@ -242,7 +242,7 @@ def table_set_relationships(
     only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
-    Generate table for TPs predicted by baseline model only vs cuf model only
+    (RQ2) Generate table for TPs predicted by baseline model only vs cuf model only
     """
     result_df = load_jsons([baseline_json, cuf_json])
     features_1 = baseline_json.stem
@@ -346,7 +346,7 @@ def plot_set_relationships(
     only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
-    Generate plots for TPs predicted by baseline model only vs cuf model only
+    (RQ2) Generate plots for TPs predicted by baseline model only vs cuf model only
     """
     result_df = load_jsons([baseline_json, cuf_json])
     features_1 = baseline_json.stem.split("_")[-1]
@@ -512,7 +512,7 @@ def table_actionable(
     fmt: Annotated[str, typer.Option()] = "github",
 ):
     """
-    Tabulate the results of the actionable features
+    (Toward More Actionable Guidance) Tabulate the results of the actionable features
     """
     scores_df = pd.read_csv(path)
     table = []
