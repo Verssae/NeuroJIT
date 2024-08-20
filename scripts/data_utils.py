@@ -16,20 +16,6 @@ from environment import PROJECTS
 
 app = Typer()
 
-"""
-If you want to compute commit understandability features(CUF), you need to save the method changes for each commit in the dataset to cache.
-
-1. Filter method changes for each commit in the dataset and save methods to cache
-    - [prepare-data] ApacheJIT(+bug_date column) dataset (apachejit_date.csv -> apachejit_gap.csv, baseline.csv)
-    - [filter-commits] Filter method changes for each commit in the dataset and save methods to cache (apachejit_gap.csv -> commits/{project}.csv)
-    - (Option) You can skip above step if you already have the commits/{project}.csv file.
-        - [save-methods] Save method changes for each commit in the dataset to cache (commits/{project}.csv)
-2. Compute commit understandability features(CUF) and LT 
-    - [CUF-ALL] Compute all CUF for a project (commits/{project}.csv -> cuf/{project}.csv)
-    - [LT] Compute LT for apachejit_metrics(baseline)
-      [combine-dataset] Combine baseline and CUF datasets (baseline/{project}.csv, cuf/{project}.csv -> combined/{project}.csv)
-"""
-
 
 @app.command()
 def prepare_data(
@@ -69,7 +55,7 @@ def prepare_data(
         lambda x: x.upper() if x not in meta_features else x
     )
     apachejit_metrics = apachejit_metrics.rename(
-        columns={"AEXP": "EXP", "AREXP": "REXP", "ASEXP": "SEXP"}
+        columns={"AEXP": "EXP", "AREXP": "REXP", "ASEXP": "SEXP", "ENT": "Entropy"}
     )
 
     apachejit_metrics.to_csv(dataset_dir / "baseline.csv", index=False)
@@ -171,65 +157,26 @@ def combine_dataset(
     ),
 ):
     console = Console()
+    if not combined_dir.exists():
+        combined_dir.mkdir(parents=True)
 
     for project in track(PROJECTS, f"Combining datasets...", console=console):
         baseline_data = pd.read_csv(baseline_dir / f"{project}.csv", index_col=0)
-        cuf = pd.read_csv(cuf_dir / f"{project}.csv", index_col=0)
-        assert set(baseline_data.index) == set(cuf.index)
-        data = pd.concat(
-            [
-                baseline_data,
-                cuf.drop(
-                    labels=[
-                        "buggy",
-                        "repo",
-                        "target",
-                        "project",
-                        "date",
-                        "gap",
-                        "Unnamed: 0",
-                    ],
-                    axis=1,
-                ),
+        cuf_data = pd.read_csv(cuf_dir / f"{project}.csv", index_col=0)
+        cuf_data = cuf_data.drop(
+            labels=[
+                "buggy",
+                "target",
+                "project",
+                "date",
+                "gap"
             ],
             axis=1,
         )
 
-        for commit_hash in data.index:
-            commit = Mining.load("data/cache", project, commit_hash)
-            if commit is None:
-                console.print(f"Commit {commit_hash} not found")
-                data.drop(index=commit_hash, inplace=True)
-                continue
-            methods_len = len(commit.methods_after)
-            asts = {}
-            will_remove = set()
-            for method in commit.methods_after:
-                representation = ""
-                for path, node in method.ast:
-                    representation += node.__repr__()
-                asts[method.signature] = representation
-
-            for method in commit.methods_before:
-                representation = ""
-                for path, node in method.ast:
-                    representation += node.__repr__()
-
-                if asts[method.signature] == representation:
-                    will_remove.add(method)
-
-            for method in will_remove:
-                commit.methods_after.remove(method)
-                commit.methods_before.remove(method)
-
-            if len(commit.methods_after) == 0:
-                console.print(f"Empty commit {commit_hash}")
-                # Remove commit from cache
-                os.remove(f"data/cache/{project}/{commit_hash}.pkl")
-                # Remove commit from data
-                data.drop(index=commit_hash, inplace=True)
-            elif methods_len != len(commit.methods_after):
-                Mining.save(commit, "../data/cache")
+        # Concatenate the two dataframes based cuf_data's index
+        data = pd.concat([baseline_data, cuf_data], axis=1, join="inner")
+        assert data.shape[0] == cuf_data.shape[0]
 
         data.to_csv(combined_dir / f"{project}.csv")
         console.print(f"combined {project}")

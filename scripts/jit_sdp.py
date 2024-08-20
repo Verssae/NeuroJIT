@@ -19,7 +19,7 @@ from sklearn.metrics import (
     matthews_corrcoef,
     brier_score_loss,
     confusion_matrix,
-    roc_auc_score
+    roc_auc_score,
 )
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
@@ -54,7 +54,7 @@ def evaluate(y_test, y_pred, y_pred_proba):
         "mcc": matthews_corrcoef(y_test, y_pred),
         "brier": brier_score_loss(y_test, y_pred_proba),
         "fpr": fpr,
-        "auc": roc_auc_score(y_test, y_pred)
+        "auc": roc_auc_score(y_test, y_pred),
     }
     return {k: v for k, v in score.items() if k in PERFORMANCE_METRICS}
 
@@ -90,66 +90,6 @@ def simple_pipeline(base_model, smote=True):
         return Pipeline(steps)
 
 
-
-@app.command()
-def check_imb(
-):
-    """
-    Train and test the baseline/cuf/combined model with 20 folds Just-In-Time Software Defect Prediction (JIT-SDP)
-    """
-    console = Console()
-    total_data = load_project_data()
-    console.print("Checking imbalance...")
-    project_dist = {}
-    for project in track(
-        PROJECTS,
-        description="Projects...",
-        console=console,
-        total=len(PROJECTS),
-    ):
-        data = total_data.loc[total_data["project"] == project].copy()
-        data["date"] = pd.to_datetime(data["date"])
-        data = data.set_index(["date"])
-        
-
-        splitter = KFoldDateSplit(
-            data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
-        )
-
-        dist_train = []
-        dist_test = []
-        for i, (train, test) in enumerate(splitter.split()):
-            X_train, y_train = train, train["buggy"]
-            X_test, y_test = test, test["buggy"]
-
-            dist_train.append(sum(y_train) / len(y_train))
-            dist_test.append(sum(y_test) / len(y_test))
-
-        project_dist[project] = {
-            "train": dist_train,
-            "test": dist_test
-        }
-
-    console.print(project_dist)
-
-    # visualize
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    fig, axs = plt.subplots(2, 4, figsize=(20, 10))
-    for i, (project, dist) in enumerate(project_dist.items()):
-        ax = axs[i // 4, i % 4]
-        ax.plot(np.arange(20), dist["train"], label="train")
-        ax.plot(np.arange(20), dist["test"], label="test")
-        ax.set_title(project)
-        ax.legend()
-    plt.show()
-
-    
-
-
-
-
 @app.command()
 def train_test(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
@@ -178,7 +118,6 @@ def train_test(
         data = total_data.loc[total_data["project"] == project].copy()
         data["date"] = pd.to_datetime(data["date"])
         data = data.set_index(["date"])
-        
 
         splitter = KFoldDateSplit(
             data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
@@ -230,7 +169,6 @@ def train_test(
     console.print(f"Results saved at {save_path}")
 
 
-
 @app.command()
 def actionable(
     model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
@@ -238,7 +176,9 @@ def actionable(
     display: Annotated[bool, Option(help="Display progress bar")] = False,
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
     load_model: Annotated[bool, Option(help="Load models")] = True,
-    pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
+    pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path(
+        "data/pickles"
+    ),
 ):
     """
     Compute the ratios of actionable features for the baseline and combined models for the true positive samples in the 20 folds JIT-SDP
@@ -328,9 +268,9 @@ def actionable(
 
                 our_top_features = our_explanation.as_map()[1]
                 our_top_feature_index = [f[0] for f in our_top_features]
-                our_top5_features = combined_X_train.columns[our_top_feature_index].tolist()[
-                    :5
-                ]
+                our_top5_features = combined_X_train.columns[
+                    our_top_feature_index
+                ].tolist()[:5]
 
                 baseline_top_features = baseline_explanation.as_map()[1]
                 baseline_top_feature_index = [f[0] for f in baseline_top_features]
@@ -361,255 +301,6 @@ def actionable(
     scores_df.to_csv(save_path, index=False)
     console.print(f"Results saved at {save_path}")
 
-
-
-@app.command()
-def tp_samples(
-    model: Annotated[str, Argument(help="Model to use: random_forest|xgboost")],
-    smote: Annotated[bool, Option(help="Use SMOTE for oversampling")] = True,
-    display: Annotated[bool, Option(help="Display progress bar")] = False,
-    output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
-    load_model: Annotated[bool, Option(help="Load models")] = True,
-    pickles_dir: Annotated[Path, Option(help="Pickles directory")] = Path("data/pickles"),
-):
-    """
-    Save TP samples as json
-    """
-    
-    console = Console(quiet=not display)
-
-    total_data = load_project_data()
-
-    for project in track(
-        PROJECTS,
-        description="Projects...",
-        console=console,
-        total=len(PROJECTS),
-    ):
-        data = total_data.loc[total_data["project"] == project].copy()
-        data["date"] = pd.to_datetime(data["date"])
-        data = data.set_index(["date"])
-
-        splitter = KFoldDateSplit(
-            data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
-        )
-
-        cuf_pairs = {}
-        baseline_pairs = {}
-        common_pairs = {}
-        
-        metric_pairs = {}
-
-        for i, (train, test) in enumerate(splitter.split()):
-
-            cuf_X_train, baseline_X_train, y_train = (
-                train[CUF],
-                train[BASELINE],
-                train["buggy"],
-            )
-            cuf_X_test, baseline_X_test, y_test = (
-                test[CUF],
-                test[BASELINE],
-                test["buggy"],
-            )
-
-            if load_model:
-                cuf_model = pickle.load(
-                    open(pickles_dir / model / "cuf" / project / f"{i}.pkl", "rb")
-                )
-                baseline_model = pickle.load(
-                    open(pickles_dir / model / "baseline" / project / f"{i}.pkl", "rb")
-                )
-            else:
-                cuf_model = simple_pipeline(get_model(model), smote=smote)
-                baseline_model = simple_pipeline(get_model(model), smote=smote)
-
-                cuf_model.fit(cuf_X_train, y_train)
-                baseline_model.fit(baseline_X_train, y_train)
-
-            cuf_y_pred = cuf_model.predict(cuf_X_test)
-            base_y_pred = baseline_model.predict(baseline_X_test)
-
-            cuf_only_tp_index = (y_test == 1) & (cuf_y_pred == 1) & (base_y_pred == 0)
-            baseline_only_tp_index = (y_test == 1) & (cuf_y_pred == 0) & (base_y_pred == 1)
-            common_tp_index = (y_test == 1) & (cuf_y_pred == 1) & (base_y_pred == 1)
-
-
-            for idx, row in test.loc[cuf_only_tp_index].iterrows():
-                commit_id = row.commit_id
-                commit = Mining.load("data/cache", row["repo"], commit_id)
-                if commit is None:
-                    console.log(f"Commit {commit_id} not found")
-                    continue
-                
-                methods = {}
-                for m in commit.methods_after:
-                    methods[m.signature] = {
-                        'after' : m.snippet,
-                        'after_col': m.line_numbers_col(True)
-                    }
-
-                for m in commit.methods_before:
-                    if m.signature in methods:
-                        methods[m.signature]['before'] = m.snippet
-                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
-                    else:
-                        methods[m.signature] = {
-                            'before' : m.snippet,
-                            'before_col': m.line_numbers_col(False)
-                        }
-
-                cuf_pairs[commit_id] = []
-                for signature, m in methods.items():
-                    cuf_pairs[commit_id].append(
-                        (
-                            signature,
-                            m.get('before_col', ''),
-                            m.get('before', ''),
-                            m.get('after_col', ''),
-                            m.get('after', ''),
-                        )
-                    )
-                
-                cuf_row =  { f: round(row[CUF][f], 2) for f in CUF }
-                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
-
-                metric_pairs[commit_id] = {
-                    'cuf': cuf_row,
-                    'baseline': baseline_row
-                }
-
-            for idx, row in test.loc[baseline_only_tp_index].iterrows():
-                commit_id = row.commit_id
-                commit = Mining.load("data/cache", row["repo"], commit_id)
-                if commit is None:
-                    console.log(f"Commit {commit_id} not found")
-                    continue
-
-                methods = {}
-                for m in commit.methods_after:
-                    methods[m.signature] = {
-                        'after' : m.snippet,
-                        'after_col': m.line_numbers_col(True)
-                    }
-
-                for m in commit.methods_before:
-                    if m.signature in methods:
-                        methods[m.signature]['before'] = m.snippet
-                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
-                    else:
-                        methods[m.signature] = {
-                            'before' : m.snippet,
-                            'before_col': m.line_numbers_col(False)
-                        }
-
-                baseline_pairs[commit_id] = []
-                for signature, m in methods.items():
-                    baseline_pairs[commit_id].append(
-                        (
-                            signature,
-                            m.get('before_col', ''),
-                            m.get('before', ''),
-                            m.get('after_col', ''),
-                            m.get('after', ''),
-                        )
-                    )
-
-                cuf_row =  { f: round(row[CUF][f], 2) for f in CUF }
-                baseline_row = { f: round(row[BASELINE][f], 2) for f in BASELINE }
-
-                metric_pairs[commit_id] = {
-                    'cuf': cuf_row,
-                    'baseline': baseline_row
-                }
-
-            for idx, row in test.loc[common_tp_index].iterrows():
-                commit_id = row.commit_id
-                commit = Mining.load("data/cache", row["repo"], commit_id)
-                if commit is None:
-                    console.log(f"Commit {commit_id} not found")
-                    continue
-
-                methods = {}
-                for m in commit.methods_after:
-                    methods[m.signature] = {
-                        'after' : m.snippet,
-                        'after_col': m.line_numbers_col(True)
-                    }
-
-                for m in commit.methods_before:
-                    if m.signature in methods:
-                        methods[m.signature]['before'] = m.snippet
-                        methods[m.signature]['before_col'] = m.line_numbers_col(False)
-                    else:
-                        methods[m.signature] = {
-                            'before' : m.snippet,
-                            'before_col': m.line_numbers_col(False)
-                        }
-
-                common_pairs[commit_id] = []
-                for signature, m in methods.items():
-                    common_pairs[commit_id].append(
-                        (
-                            signature,
-                            m.get('before_col', ''),
-                            m.get('before', ''),
-                            m.get('after_col', ''),
-                            m.get('after', ''),
-                        )
-                    )
-
-                cuf_row =  { f: round(row[CUF][f], 3) for f in CUF }
-                baseline_row = { f: round(row[BASELINE][f], 3) for f in BASELINE }
-
-                metric_pairs[commit_id] = {
-                    'cuf': cuf_row,
-                    'baseline': baseline_row
-                }
-
-        will_delete = set()
-        for commit_id in cuf_pairs.keys():
-            if commit_id in baseline_pairs or commit_id in common_pairs:
-                will_delete.add(commit_id)
-
-        for commit_id in baseline_pairs.keys():
-            if commit_id in cuf_pairs or commit_id in common_pairs:
-                will_delete.add(commit_id)
-
-        for commit_id in will_delete:
-            if commit_id in cuf_pairs:
-                del cuf_pairs[commit_id]
-
-            if commit_id in baseline_pairs:
-                del baseline_pairs[commit_id]
-
-            if commit_id in common_pairs:
-                del common_pairs[commit_id]
-
-        console.print(f"Project: {project}: {len(will_delete)} commits are contradictory.")
-
-            
-
-        output_dir.mkdir(exist_ok=True, parents=True)
-        save_path = output_dir / f"{project}_cuf.json"
-        with open(save_path, "w") as f:
-            json.dump(cuf_pairs, f, indent=4)
-        
-
-
-        save_path = output_dir / f"{project}_baseline.json"
-        with open(save_path, "w") as f:
-            json.dump(baseline_pairs, f, indent=4)
-
-        save_path = output_dir / f"{project}_common.json"
-        with open(save_path, "w") as f:
-            json.dump(common_pairs, f, indent=4)
-
-        save_path = output_dir / f"{project}_metrics.json"
-        with open(save_path, "w") as f:
-            json.dump(metric_pairs, f, indent=4)
-            
-        console.print(f"Results saved at {save_path}")
 
 if __name__ == "__main__":
     app()

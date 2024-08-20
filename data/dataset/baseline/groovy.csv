@@ -1,4 +1,4 @@
-commit_id,project,buggy,date,repo,gap,LA,LD,NF,ND,NS,ENT,NDEV,AGE,NUC,EXP,REXP,SEXP,target,LT
+commit_id,project,buggy,date,repo,gap,LA,LD,NF,ND,NS,Entropy,NDEV,AGE,NUC,EXP,REXP,SEXP,target,LT
 a322a829a586cf03685152f06cc7025d66062202,groovy,False,2003-09-11 23:54:46,groovy,,58,0,1,1,1,0.0,1.0,0.0,1.0,10,10.0,6.0,done,812.0
 a93ff66772451264ef054ed19e98448d3f01953b,groovy,False,2003-09-11 23:58:05,groovy,,2,3,1,1,1,0.0,2.0,0.0,2.0,11,11.0,7.0,done,870.0
 fae44a3dbc26273587a40250d4fa94ff8b2c22a9,groovy,False,2003-09-11 23:59:22,groovy,,2,0,1,1,1,0.0,2.0,0.0,3.0,12,12.0,8.0,done,869.0

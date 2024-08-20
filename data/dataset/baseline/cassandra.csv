@@ -1,4 +1,4 @@
-commit_id,project,buggy,date,repo,gap,LA,LD,NF,ND,NS,ENT,NDEV,AGE,NUC,EXP,REXP,SEXP,target,LT
+commit_id,project,buggy,date,repo,gap,LA,LD,NF,ND,NS,Entropy,NDEV,AGE,NUC,EXP,REXP,SEXP,target,LT
 5506a44d0a1e04a3d471b43dcf00b21608edd50f,cassandra,False,2009-03-23 03:46:02,cassandra,,6,5,1,1,1,0.0,1.0,20.0,1.0,9,9.0,8.0,done,614.0
 af47dc8476a6e4e4856476e4acff1ac8321a6a39,cassandra,False,2009-03-25 14:25:23,cassandra,,3,5,1,1,1,0.0,2.0,0.0,2.0,11,11.0,10.0,done,524.0
 e9e08ff6b572c851ecfcfe49bc63de43dfe3ed04,cassandra,False,2009-03-27 11:18:54,cassandra,,4,1,1,1,1,0.0,2.0,0.0,2.0,8,8.0,5.0,done,148.0

@@ -128,7 +128,7 @@ class MethodUnderstandabilityFeatures:
         )
 
     @property
-    def NOTM(self):
+    def NOMT(self):
         """
         NumberOfMostTerms (NOMT): The number of terms in the line with the most terms.
         """
@@ -220,7 +220,7 @@ class CommitUnderstandabilityFeatures:
             "EC": self.EC,
             "NOP": self.NOP,
             "NOGV": self.NOGV,
-            "NOTM": self.NOTM,
+            "NOMT": self.NOMT,
             "II": self.II,
         }
 
@@ -261,8 +261,8 @@ class CommitUnderstandabilityFeatures:
         return self._aggregate("NOGV")
 
     @property
-    def NOTM(self):
-        return self._aggregate("NOTM")
+    def NOMT(self):
+        return self._aggregate("NOMT")
 
     @property
     def II(self):
