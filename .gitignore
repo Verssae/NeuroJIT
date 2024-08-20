@@ -21,7 +21,7 @@ wheels/
 data/repo/
 data/cache/
 data/pickles/
-# data/pickles.zip
+pickles.tar.gz
 
 # Mac
 
