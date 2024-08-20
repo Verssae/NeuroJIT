@@ -39,6 +39,7 @@ imageio==2.34.0
 imbalanced-learn==0.12.2
     # via imblearn
 imblearn==0.0
+    # via neurojit
 ipykernel==6.29.4
 ipython==8.23.0
     # via ipykernel
@@ -59,12 +60,14 @@ kiwisolver==1.4.5
 lazy-loader==0.4
     # via scikit-image
 lime==0.2.0.1
+    # via neurojit
 lizard==1.17.10
     # via pydriller
 markdown-it-py==3.0.0
     # via rich
 matplotlib==3.8.4
     # via lime
+    # via neurojit
     # via seaborn
 matplotlib-inline==0.1.6
     # via ipykernel
@@ -139,6 +142,7 @@ pyzmq==25.1.2
     # via ipykernel
     # via jupyter-client
 rich==13.7.1
+    # via neurojit
     # via typer
 scikit-image==0.22.0
     # via lime
@@ -155,6 +159,7 @@ scipy==1.13.0
     # via statsmodels
     # via xgboost
 seaborn==0.13.2
+    # via neurojit
 shellingham==1.5.4
     # via typer
 six==1.16.0
@@ -169,6 +174,7 @@ stack-data==0.6.3
 statsmodels==0.14.1
     # via neurojit
 tabulate==0.9.0
+    # via neurojit
 threadpoolctl==3.4.0
     # via imbalanced-learn
     # via scikit-learn
@@ -187,6 +193,7 @@ traitlets==5.14.2
     # via jupyter-core
     # via matplotlib-inline
 typer==0.12.1
+    # via neurojit
 types-pytz==2024.1.0.20240203
     # via pydriller
 typing-extensions==4.11.0
@@ -196,3 +203,4 @@ tzdata==2024.1
 wcwidth==0.2.13
     # via prompt-toolkit
 xgboost==2.0.3
+    # via neurojit
