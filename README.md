@@ -175,7 +175,7 @@ $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.
 To unzip the trained models (pickles) in our experiment, run the following command:
 
 ```Shell
-cat archive/pickles_part_* > pickles.tar.gz && tar -xzf pickles.tar.gz -C .
+$ cat archive/pickles_part_* > pickles.tar.gz && tar -xzf pickles.tar.gz -C .
 ```
 It will extract the pickles to the `data/pickles` directory.
 
