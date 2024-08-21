@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 import warnings
 from pathlib import Path
 from typing_extensions import Annotated
@@ -16,7 +20,9 @@ from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
 warnings.filterwarnings("ignore")
 
-app = typer.Typer(add_completion=False, help="Statistical pre-analysis for CUF, Baseline and Dataset")
+app = typer.Typer(
+    add_completion=False, help="Statistical pre-analysis for CUF, Baseline and Dataset"
+)
 
 
 @app.command()
@@ -51,7 +57,6 @@ def plot_corr():
     console.print(df_cuf.T)
     console.print(df_combined.T)
 
-    
 
 @app.command()
 def plot_hmap():
@@ -200,11 +205,11 @@ def table_distribution(
             ]
         )
 
-    defective_sum = sum([int(row[1].split('(')[0].strip()) for row in table])
-    clean_sum = sum([int(row[2].split('(')[0].strip()) for row in table])
+    defective_sum = sum([int(row[1].split("(")[0].strip()) for row in table])
+    clean_sum = sum([int(row[2].split("(")[0].strip()) for row in table])
     table.append(
         [
-            "Total", 
+            "Total",
             f"{defective_sum} ({defective_sum / (defective_sum + clean_sum) * 100:.2f}%)",
             f"{clean_sum} ({clean_sum / (defective_sum + clean_sum) * 100:.2f}%)",
             sum([row[3] for row in table]) / len(PROJECTS),

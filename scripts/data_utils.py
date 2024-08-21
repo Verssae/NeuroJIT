@@ -1,5 +1,8 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from typing import List

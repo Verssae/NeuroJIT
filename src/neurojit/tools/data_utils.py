@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 import pandas as pd
 
 
@@ -79,5 +83,3 @@ class KFoldDateSplit:
 
             window_start += pd.Timedelta(days=30 * self.sliding_months)
             window_end += pd.Timedelta(days=30 * self.sliding_months)
-
-

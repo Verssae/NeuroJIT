@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 from pathlib import Path
 import numpy as np
 
@@ -12,30 +16,15 @@ from matplotlib.transforms import Affine2D
 import matplotlib.font_manager as fm
 from environment import BASELINE
 
-# See: https://stackoverflow.com/questions/52910187/how-to-make-a-polygon-radar-spider-chart-in-python
 
-
+# This function is adapted from an example in Matplotlib.
+# Source: [https://matplotlib.org/stable/gallery/specialty_plots/radar_chart.html]
 def radar_factory(num_vars, frame="circle"):
-    """Create a radar chart with `num_vars` axes.
-
-    This function creates a RadarAxes projection and registers it.
-
-    Parameters
-    ----------
-    num_vars : int
-        Number of variables for radar chart.
-    frame : {'circle' | 'polygon'}
-        Shape of frame surrounding axes.
-
-    """
     # calculate evenly-spaced axis angles
     theta = np.linspace(0, 2 * np.pi, num_vars, endpoint=False)
 
     class RadarTransform(PolarAxes.PolarTransform):
         def transform_path_non_affine(self, path):
-            # Paths with non-unit interpolation steps correspond to gridlines,
-            # in which case we force interpolation (to defeat PolarTransform's
-            # autoconversion to circular arcs).
             if path._interpolation_steps > 1:
                 path = path.interpolated(num_vars)
             return MatPath(self.transform(path.vertices), path.codes)
@@ -116,7 +105,7 @@ def radar_factory(num_vars, frame="circle"):
 
 def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
     font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
-    font_files = [ f for f in font_files if "LinLibertine" in f]
+    font_files = [f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
     if "Linux Libertine" in fm.fontManager.ttflist:
@@ -127,24 +116,25 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
 
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
     ax = sns.heatmap(
-        corr_matrix, annot=False, cmap="coolwarm", mask=mask, vmin=-1, vmax=1, cbar=False, square=True
+        corr_matrix,
+        annot=False,
+        cmap="coolwarm",
+        mask=mask,
+        vmin=-1,
+        vmax=1,
+        cbar=False,
+        square=True,
     )
     labels = list(map(lambda x: x.replace("_", "/"), corr_matrix.columns))
 
-    
     ax.set_yticklabels(labels, rotation=0, fontsize=15)
     ax.set_xticklabels(labels, rotation=90, fontsize=15)
 
-    # ax.xaxis.tick_top()
-    # ax.xaxis.set_label_position("top")
-    # ax.yaxis.tick_right()
-    # ax.yaxis.set_label_position("right")
-    
     greys = sns.color_palette("Greys", n_colors=9)
     for i in range(corr_matrix.shape[0]):
         for j in range(corr_matrix.shape[1]):
             value = corr_matrix.iloc[i, j]
-            if  i > j:
+            if i > j:
                 ax.text(
                     j + 0.5,
                     i + 0.5,
@@ -155,11 +145,7 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
                     fontsize=15,
                     # fontweight="bold",
                 )
-    # plt.title(
-    #     title,
-    #     pad=10,
-    #     fontdict={"fontweight": "bold", "fontfamily": "serif", "fontsize": 25},
-    # )
+
     plt.tight_layout()
     if save_path:
         Path(save_path).parent.mkdir(exist_ok=True, parents=True)
@@ -170,10 +156,9 @@ def visualize_hmap(corr_matrix, size=6, save_path=None, format="png"):
     plt.close()
 
 
-
 def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     font_files = fm.findSystemFonts(fontpaths=fm.OSXFontDirectories[-1], fontext="ttf")
-    font_files = [ f for f in font_files if "LinLibertine" in f]
+    font_files = [f for f in font_files if "LinLibertine" in f]
     for font_file in font_files:
         fm.fontManager.addfont(font_file)
     if "Linux Libertine" in fm.fontManager.ttflist:
@@ -199,7 +184,9 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     results_cuf["adjusted_odds"] = results_cuf["lr_odds_ratio"].apply(lambda x: x - 1)
     results_cuf["abs_odds"] = results_cuf["adjusted_odds"].abs()
 
-    results_combined["adjusted_odds"] = results_combined["lr_odds_ratio"].apply(lambda x: x - 1)
+    results_combined["adjusted_odds"] = results_combined["lr_odds_ratio"].apply(
+        lambda x: x - 1
+    )
     results_combined["abs_odds"] = results_combined["adjusted_odds"].abs()
 
     results_cuf = results_cuf.sort_values(by="abs_odds", ascending=False)
@@ -261,7 +248,7 @@ def corr_plot(results_cuf, results_combined, save_dir, top_k=10):
     plt.close()
 
     plt.figure(figsize=(3, 3.5))
-    
+
     for i, row in results_combined[:top_k].iterrows():
         plt.errorbar(
             x=row["lr_odds_ratio"],

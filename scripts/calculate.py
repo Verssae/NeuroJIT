@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 from pathlib import Path
 from typing import List
 from typing_extensions import Annotated

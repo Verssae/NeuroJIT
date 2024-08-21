@@ -1,7 +1,7 @@
 [project]
 name = "neurojit"
 version = "1.0.0"
-description = "NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"
+description = "A Python package for calculating the commit understandability features of Java projects."
 dependencies = [
     "javalang>=0.13.0",
     "pandas>=2.2.1",
@@ -9,6 +9,8 @@ dependencies = [
     "numpy>=1.26.4",
 ]
 readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{ name = "Hansae Ju", email = "sparky@hanyang.ac.kr" }]
 requires-python = ">= 3.11"
 
 [project.optional-dependencies]

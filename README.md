@@ -12,6 +12,7 @@ This replication package contains the source code and data used in the paper *"N
 - [Reproducing the Results](#reproducing-the-results)
   - [(Option 1) Install via Docker (recommended)](#option-1-install-via-docker-recommended)
   - [(Option 2) Install locally](#option-2-install-locally)
+- [License](#license)
 
 ## `neurojit` 
 
@@ -186,3 +187,7 @@ $ python scripts/rq2.py
 $ python scripts/rq3.py
 $ python scripts/actionable.py
 ```
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

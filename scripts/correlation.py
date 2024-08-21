@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 import numpy as np
 import pandas as pd
 
@@ -76,9 +80,7 @@ def correlation(X, y, metrics, method):
                     results[metric] = {"feature_importance": importances[idx]}
 
             case _:
-                raise NotImplementedError(
-                    "Method not implemented. "
-                )
+                raise NotImplementedError("Method not implemented. ")
 
         return results
     except Exception as e:
@@ -134,7 +136,6 @@ def significances(X, y, metrics):
         lr_errors.append(lr_results[metric]["error"])
         lr_conf_lower.append(lr_results[metric]["conf_lower"])
         lr_conf_upper.append(lr_results[metric]["conf_upper"])
-
 
     results = pd.DataFrame(
         {

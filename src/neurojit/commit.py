@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 from dataclasses import dataclass
 from itertools import zip_longest
 import pickle
@@ -22,6 +26,7 @@ class Method:
     """
     This class represents a method in a Java file
     """
+
     def __init__(self, ast: javalang.ast.Node, code: str, signature: str):
         self.ast = ast
         self.code = code
@@ -201,6 +206,7 @@ class Mining:
     """
     This class is used to mine method changes from a commit
     """
+
     def __init__(self, ignore_comments: bool = True) -> None:
         self.ignore_comments = ignore_comments
 

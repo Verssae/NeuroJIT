@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Hansae Ju
+# Licensed under the Apache License, Version 2.0
+# See the LICENSE file in the project root for license terms.
+
 import javalang
 import numpy as np
 
@@ -117,7 +121,7 @@ def halstead(method: Method) -> dict[float]:
             operators.append("assert")
         if isinstance(node, javalang.tree.ReturnStatement):
             operators.append("return")
-            
+
     # Calculate Halstead metrics
     n1 = len(set(operators))  # Number of distinct operators
     n2 = len(set(operands))  # Number of distinct operands
