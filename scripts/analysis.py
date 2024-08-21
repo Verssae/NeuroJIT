@@ -1,6 +1,4 @@
-import json
 from pathlib import Path
-from typing import List
 from typing_extensions import Annotated
 
 import typer
@@ -11,7 +9,7 @@ import seaborn as sns
 from tabulate import tabulate
 import matplotlib.font_manager as fm
 
-from neurojit.tools.correlation import group_difference
+from correlation import group_difference
 from data_utils import load_jsons
 from visualization import radar_factory
 from environment import PROJECTS, PERFORMANCE_METRICS
