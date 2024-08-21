@@ -89,7 +89,7 @@ For more usage examples, see the [scripts](./scripts).
 
 To calculate the verification latency gap (i.e., average fixing time, gap), we slightly modified the code of the [ApacheJIT](https://github.com/hosseinkshvrz/apachejit) repository to create an apachejit dataset that includes a fixed_date, and constructed `data/dataset/apachejit_gap.csv`, which is composed of a total of 8 projects that include the gap.
 
-Then, we calculated the HCC of the ApacheJIT commits using the `neurojit` package. Additionally, we calculated the `LT` for the ApacheJIT commits because the `LT` is a widely used metric in the literature.
+Then, we calculated the CUF of the ApacheJIT commits using the `neurojit` package. Additionally, we calculated the `LT` for the ApacheJIT commits because the `LT` is a widely used metric in the literature.
 
 We provide the dataset in the `data/dataset` directory. The dataset is structured as follows:
 
