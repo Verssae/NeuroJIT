@@ -4,24 +4,28 @@ version = "1.0.0"
 description = "NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"
 dependencies = [
     "javalang>=0.13.0",
-    "scipy>=1.12.0",
     "pandas>=2.2.1",
     "PyDriller>=2.6",
+    "numpy>=1.26.4",
+]
+readme = "README.md"
+requires-python = ">= 3.12"
+
+[project.optional-dependencies]
+replication = [
+    "scipy>=1.12.0",
     "cliffs-delta>=1.0.0",
     "scikit-learn>=1.4.1.post1",
     "statsmodels>=0.14.1",
-    "numpy>=1.26.4",
     "imblearn>=0.0",
     "rich>=13.7.1",
     "tabulate>=0.9.0",
     "matplotlib>=3.8.3",
     "seaborn>=0.13.2",
     "xgboost>=2.0.3",
-    "typer[all]>=0.10.0",
     "lime>=0.2.0.1",
+    "typer>=0.12.4",
 ]
-readme = "README.md"
-requires-python = ">= 3.12"
 
 [build-system]
 requires = ["hatchling"]

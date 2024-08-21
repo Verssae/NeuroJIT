@@ -7,7 +7,6 @@ services:
     volumes:
       - ./data:/app/data
       - ./archive:/app/archive
-      - ./dist:/app/dist
     command: /bin/sh -c "
       if [ ! -d /app/data/pickles ]; then
         cat /app/archive/pickles_part_* > /app/pickles.tar.gz &&
