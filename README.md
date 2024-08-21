@@ -18,7 +18,7 @@ This replication package contains the source code and data used in the paper *"N
 
 `neurojit` is a python package that calculates the commit understandability features (CUF). The package is structured as follows:
 
-```bash
+```Shell
  src/neurojit
  ├── commit.py 
  ├── cuf
@@ -40,7 +40,7 @@ This replication package contains the source code and data used in the paper *"N
 ### Installation
 
 To install the `neurojit` package, run the following command:
-```bash
+```Shell
 $ pip install --no-cache-dir ./dist/neurojit-1.0.0-py3-none-any.whl
 ```
 Or to install the package with the optional dependencies for the replication, see [Install locally](#install-locally).
@@ -94,7 +94,7 @@ Then, we calculated the CUF of the ApacheJIT commits using the `neurojit` packag
 
 We provide the dataset in the `data/dataset` directory. The dataset is structured as follows:
 
-```bash
+```Shell
 data/dataset
 ├── apache_metrics_kamei.csv
 ├── apachejit_date.csv
@@ -110,7 +110,7 @@ data/dataset
 
 If you want to build the dataset from scratch, you can use the following scripts:
 
-```bash
+```Shell
 $ python scripts/data_utils.py prepare-data
 $ python scripts/data_utils.py filter-commits
 $ python scripts/calculate.py cuf-all
@@ -122,7 +122,7 @@ $ python scripts/data_utils.py combine
 
 This repository includes all the scripts, data and trained models to reproduce the results of the paper. The replication package is structured as follows:
 
-```bash
+```Shell
 ├── archive # zipped trained models (pickles) in our experiment
 ├── data
 │  ├── dataset # see `Building Dataset`
@@ -137,13 +137,13 @@ This repository includes all the scripts, data and trained models to reproduce t
 
 ### (Option 1) Install via Docker (recommended)
 
-```bash
+```Shell
 $ docker-compose up --build -d
 ```
 
 Then, you can run the replication scripts in the container.
 
-```bash
+```Shell
 $ docker exec -it neurojit-ase ./scripts/rq1.sh
 $ docker exec -it neurojit-ase ./scripts/rq2.sh
 $ docker exec -it neurojit-ase ./scripts/rq3.sh
@@ -154,34 +154,34 @@ $ docker exec -it neurojit-ase ./scripts/actionable.sh
 
 To install the package with the optional dependencies for the replication, run the following command:
 
-```bash
+```Shell
 $ pip install --no-cache-dir ./dist/neurojit-1.0.0-py3-none-any.whl[replication]
 ```
 
 Or install the dependencies manually with [pyproject.toml](./pyproject.toml) based dependency management tools (e.g., [poetry](https://python-poetry.org)). We used  [rye](https://rye-up.com) for the dependency management.
 
 
-```bash
+```Shell
 $ rye pin 3.12 # pin the python version you want to use
 $ rye sync --features=replication # install all dependencies
 ```
 
 [Checkstyle](https://github.com/checkstyle/checkstyle/releases/): Save to root directory as checkstyle.jar for easy replication. For example,
 
-```bash
+```Shell
 $ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
 ```
 
 To unzip the trained models (pickles) in our experiment, run the following command:
 
-```bash
+```Shell
 cat archive/pickles_part_* > pickles.tar.gz && tar -xzf pickles.tar.gz -C .
 ```
 It will extract the pickles to the `data/pickles` directory.
 
 Then, you can run the replication scripts in the virtual environment.
 
-```bash
+```Shell
 $ python scripts/rq1.py
 $ python scripts/rq2.py
 $ python scripts/rq3.py
