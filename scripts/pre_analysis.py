@@ -4,17 +4,14 @@ from typing_extensions import Annotated
 
 import typer
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from tabulate import tabulate
 from scipy.stats import ranksums
 from cliffs_delta import cliffs_delta
-from matplotlib import font_manager as fm
 
 from neurojit.commit import Mining
 from data_utils import load_project_data
 from visualization import corr_plot, visualize_hmap
-from neurojit.tools.correlation import group_difference, significances
+from correlation import group_difference, significances
 from environment import BASE_ALL, CUF_ALL, PROJECTS, COMBINED, CUF, BASELINE
 
 warnings.filterwarnings("ignore")

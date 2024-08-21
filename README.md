@@ -1,55 +1,109 @@
 # NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers
 
-This replication package contains the source code and data used in the paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"* and the implementation of the commit understandability metrics calculator.
+This replication package contains the source code and data used in the paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"* and the implementation of the commit understandability features calculator called `neurojit`.
 
 ## Table of Contents
 
-# NeuroJIT
+## `neurojit` 
 
-`neurojit` is a python package that calculates the commit understandability features.
-
-We provide `neurojit` as a standalone package for collecting commits with modified methods and calculating the commit understandability features.
-
-## Structure
+`neurojit` is a python package that calculates the commit understandability features (CUF). The package is structured as follows:
 
 ```bash
  src/neurojit
- ├── commit.py # The core module that contains the classes for the commit and its changes.
- ├── neurojit
- │  ├── __init__.py
+ ├── commit.py 
+ ├── cuf
  │  ├── cfg.py
  │  ├── halstead.py
- │  ├── metrics.py # The module that calculates the commit understandability features.
+ │  ├── metrics.py 
  │  └── rii.py
  └── tools
-    ├── __init__.py
-    ├── correlation.py # The module that calculates the correlation
-    └── data_utils.py # The module that processes the data for JIT-SDP.
+    └── data_utils.py 
 ```
-
-## Pre-requisites
+### Dependencies
 
 - python 3.12+
-- pip
-- wheel
+- PyDriller
+- javalang
+- pandas
+- numpy
 
-# The Replication Package
+### Usage
+(1) Filter commits that only modified existing methods and save the modified methods as `MethodChangesCommit` instances.
+
+```python
+from neurojit.commit import MethodChangesCommit, Mining, Method
+
+mining = Mining()
+target_commit = mining.only_method_changes(repo="activemq", commit_hash="8f40a7")
+if target_commit is not None:
+    mining.save(target_commit)
+```
+(2) Compute the commit understandability features (CUF) from the saved `MethodChangesCommit` instances.
+
+```python
+from neurojit.cuf.metrics import CommitUnderstandabilityFeatures
+
+cuf_calculator = CommitUnderstandabilityFeatures(target_commit)
+features = ["HV","DD", "MDNL", "NB", "EC", "NOP", "NOGV", "NOMT", "II", "TE", "DD_HV"]
+for feature in features:
+    value = getattr(cuf_calculator, feature)
+    print(f"{feature}: {value}")
+```
+(3) `KFoldDateSplit` is a utility class that splits the dataset into training and testing sets considering chronological order, verification latency and concept drifts. See e section 2.4 Just-in-Time Defect Prediction and Fig. 3 in the paper for more details.
+
+```python
+from neurojit.tools.data_utils import KFoldDateSplit
+
+data = pd.read_csv("...your jit-sdp dataset...")
+data["date"] = pd.to_datetime(data["date"])
+data = data.set_index(["date"])
+
+splitter = KFoldDateSplit(
+    data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
+)
+
+for i, (train, test) in enumerate(splitter.split()):
+    X_train, y_train = train[features], train["buggy"]
+    X_test, y_test = test[features], test["buggy"]
+````
+For more usage examples, see the [scripts](./scripts).
+
+
+## The Replication Package
 
 This repository includes all the scripts, data and trained models to reproduce the results of the paper. The replication package is structured as follows:
 
 ```bash
+├── archive # zipped trained models (pickles) in our experiment
 ├── data
 │  ├── dataset # see `Building Dataset`
-│  ├── output # generated output from `jit_sdp.py`
-│  ├── plots # generated plots
-│  └── archives # zipped trained models (pickles) in our experiment
-├── dist # neurojit wheel file
-├── neurojit # neurojit source code, see `neurojit`
-└── scripts # scripts for reproducing the results
+│  ├── output
+│  └── plots 
+├── dist # neurojit package distribution
+├── Dockerfile
+├── docker-compose.yml
+├── src/neurojit # neurojit source code, see `neurojit`
+└── scripts # scripts for the experiments
 ```
 
+### Setup
 
-## 0. Setup
+#### Install via Docker (recommended)
+
+```bash
+$ docker-compose up --build -d
+```
+
+Then, you can run the scripts in the container.
+
+```bash
+$ docker exec -it neurojit-ase ./scripts/rq1.sh
+$ docker exec -it neurojit-ase ./scripts/rq2.sh
+$ docker exec -it neurojit-ase ./scripts/rq3.sh
+$ docker exec -it neurojit-ase ./scripts/actionable.sh
+```
+
+#### Install locally
 
 - [rye](https://rye-up.com): We recommend to use `rye`, a hassle-free python package manager. After installing rye, run the following command to install all dependencies for the replication and `neurojit`.
 

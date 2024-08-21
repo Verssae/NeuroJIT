@@ -19,6 +19,9 @@ from javalang.tree import (
 
 
 class Method:
+    """
+    This class represents a method in a Java file
+    """
     def __init__(self, ast: javalang.ast.Node, code: str, signature: str):
         self.ast = ast
         self.code = code
@@ -195,6 +198,9 @@ class MethodChangesCommit:
 
 
 class Mining:
+    """
+    This class is used to mine method changes from a commit
+    """
     def __init__(self, ignore_comments: bool = True) -> None:
         self.ignore_comments = ignore_comments
 
