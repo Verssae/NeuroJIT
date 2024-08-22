@@ -1,6 +1,6 @@
 # NeuroJIT Replication Package
 
-Hello. Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at {fantasyopy, sparky}@hanyang.ac.kr.
+Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at [fantasyopy](mailto:fantasyopy@hanyang.ac.kr), [sparky](mailto:sparky@hanyang.ac.kr) @hanyang.ac.kr.
 
 ## Setup
 
@@ -93,26 +93,26 @@ Hello. Here is a guide on how to use the replication package of NeuroJIT. If you
             ```
          2. Evidence that our dataset shows a different defect distribution compared to the studies cited in the External Validity section on page 10: see [scripts/commit_distribution.ipynb](./scripts/commit_distribution.ipynb).
 
-    4. Customizing NeuroJIT
+4. Customizing NeuroJIT
 
-        The structure of the core module `neurojit` is as follows:​
+    The structure of the core module `neurojit` is as follows:​
 
-        ```Shell
-        src/neurojit
-        ├── commit.py 
-        ├── cuf
-        │  ├── cfg.py
-        │  ├── halstead.py
-        │  ├── metrics.py 
-        │  └── rii.py
-        └── tools
-            └── data_utils.py 
-        ```
+    ```Shell
+    src/neurojit
+    ├── commit.py 
+    ├── cuf
+    │  ├── cfg.py
+    │  ├── halstead.py
+    │  ├── metrics.py 
+    │  └── rii.py
+    └── tools
+        └── data_utils.py 
+    ```
 
-        If you want to customize NeuroJIT, consider the following:
-        - `commit.py`: Contains the `Mining` class, which filters commits that only modify existing methods and saves the modified methods as `MethodChangesCommit` instances. 
-        - `cuf.metrics`: Contains the `MethodUnderstandabilityFeatures` class, which calculates the CUF at the method level and `CommitUnderstandabilityFeatures` which aggregate the method level features to the commit level. 
-        - other files: Refer to the source code and comments for more details.
+    If you want to customize NeuroJIT, consider the following:
+    - `commit.py`: Contains the `Mining` class, which filters commits that only modify existing methods and saves the modified methods as `MethodChangesCommit` instances. 
+    - `cuf.metrics`: Contains the `MethodUnderstandabilityFeatures` class, which calculates the CUF at the method level and `CommitUnderstandabilityFeatures` which aggregate the method level features to the commit level. 
+    - other files: Refer to the source code and comments for more details.
 
 ## License
 
