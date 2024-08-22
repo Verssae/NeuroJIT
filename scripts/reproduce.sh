@@ -14,7 +14,7 @@ echo "[Figure 4] Predictive Power of Understandability Features"
 echo "(a) understandability features' odds ratio & (b) combined features' odds ratio"
 python scripts/pre_analysis.py plot-corr
 echo "(c) group difference between defective and clean commits"
-python scripts/pre_analysis.py table-group-diff
+python scripts/pre_analysis.py table-group-diff --fmt fancy_outline
 
 echo "=====================[RQ2]====================="
 echo "** Evaluating baseline/cuf models for random forest and xgboost **"
@@ -24,12 +24,12 @@ python scripts/jit_sdp.py train-test xgboost baseline --load-model --display
 python scripts/jit_sdp.py train-test xgboost cuf --load-model --display
 echo "[Figure 5] Set Relationships between True Positives Predicted by Understandability Models and Baseline Models"
 echo "(a) Random Forest"
-python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json
+python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline
 echo "(b) XGBoost"
-python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json
+python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json --fmt fancy_outline
 echo "** Generating Figure 5 **"
-python scripts/analysis.py plot-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json
-python scripts/analysis.py plot-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json
+python scripts/analysis.py plot-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --save-path data/plots/analysis/rf_diff_plot.svg
+python scripts/analysis.py plot-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json  --save-path data/plots/analysis/xgb_diff_plot.svg
 
 echo "=====================[RQ3]====================="
 echo "** Evaluating combined models for random forest and xgboost **"
@@ -37,8 +37,10 @@ python scripts/jit_sdp.py train-test random_forest combined --load-model --displ
 python scripts/jit_sdp.py train-test xgboost combined --load-model --display
 
 echo "[Figure 7] Performance Comparison between Baseline Models and Baseline+Understandability Models"
-python scripts/analysis.py table-performances data/output/random_forest_baseline.json data/output/random_forest_combined.json
-python scripts/analysis.py table-performances data/output/xgboost_baseline.json data/output/xgboost_combined.json
+echo "Random Forest"
+python scripts/analysis.py table-performances data/output/random_forest_baseline.json data/output/random_forest_combined.json --fmt fancy_outline
+echo "XGBoost"
+python scripts/analysis.py table-performances data/output/xgboost_baseline.json data/output/xgboost_combined.json --fmt fancy_outline
 echo "** Generating Figure 7 components **"
 python scripts/analysis.py plot-radars data/output/random_forest_baseline.json data/output/random_forest_combined.json
 python scripts/analysis.py plot-radars data/output/xgboost_baseline.json data/output/xgboost_combined.json
@@ -50,8 +52,8 @@ echo "** Generating LIME explanations for random forest and xgboost **"
 python scripts/jit_sdp.py actionable random_forest --display
 python scripts/jit_sdp.py actionable xgboost --display
 echo "Random Forest"
-python scripts/analysis.py table-actionable data/output/actionable_random_forest.csv
+python scripts/analysis.py table-actionable data/output/actionable_random_forest.csv --fmt fancy_outline
 echo "XGBoost"
-python scripts/analysis.py table-actionable data/output/actionable_xgboost.csv
+python scripts/analysis.py table-actionable data/output/actionable_xgboost.csv --fmt fancy_outline
 
 echo "=====================[END]====================="

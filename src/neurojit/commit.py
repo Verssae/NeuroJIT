@@ -215,7 +215,11 @@ class Mining:
         repo: str,
         commit_hash: str,
     ) -> Optional[MethodChangesCommit]:
-        commit_object = commit_from(repo, commit_hash)
+        if '/' in repo:
+            author, repo = repo.split('/')
+            commit_object = commit_from(repo, commit_hash, author=author)
+        else:
+            commit_object = commit_from(repo, commit_hash)
         if not isinstance(commit_object, Commit):
             return None
 
@@ -302,7 +306,7 @@ class Mining:
             return True
 
     @staticmethod
-    def save(commit: MethodChangesCommit, base_dir: str) -> None:
+    def save(commit: MethodChangesCommit, base_dir: str = "data/cache") -> None:
         # save this object to a file
         try:
             path = Path(base_dir) / commit.repo / f"{commit.commit_hash}.pkl"
@@ -332,11 +336,11 @@ class Mining:
 
 
 def commit_from(
-    project: str, commit_hash: str, base_dir: str = "data/repo"
+    project: str, commit_hash: str, base_dir: str = "data/repo", author: str = 'apache'
 ) -> Union[Commit, Exception]:
     repo_path = f"{base_dir}/{project}"
     if not Path(repo_path).exists():
-        Repo.clone_from(f"https://github.com/apache/{project}.git", repo_path)
+        Repo.clone_from(f"https://github.com/{author}/{project}.git", repo_path)
     try:
         return Git(repo_path).get_commit(commit_hash)
 

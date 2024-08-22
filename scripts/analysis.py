@@ -60,7 +60,6 @@ def plot_radars(
     )
 
     sns.plotting_context("paper")
-    plt.rc("font", family="Times New Roman")
     palette_rf = ["#8DE5A1", "#FF9F9B"]
     palette_xgb = ["#8DE5A1", "#FF9F9B"]
     # palette_xgb = ["#A1C9F4", "#FFB482"]

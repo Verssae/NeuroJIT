@@ -54,9 +54,6 @@ def plot_corr():
     console = console.Console()
 
     console.print("Saved plots to data/plots/pre_analysis/significance")
-    console.print(df_cuf.T)
-    console.print(df_combined.T)
-
 
 @app.command()
 def plot_hmap():

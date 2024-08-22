@@ -1,196 +1,99 @@
-# NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers
+# NeuroJIT Replication Package
 
-This replication package contains the source code and data used in the paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"*.
+Hello. Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at {fantasyopy, sparky}@hanyang.ac.kr.
 
+## Setup
 
-## Table of Contents
+1. Hardware/Software Requirements
 
-- [NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers](#neurojit-improving-just-in-time-defect-prediction-using-neurophysiological-and-empirical-perceptions-of-modern-developers)
-  - [Table of Contents](#table-of-contents)
-  - [`neurojit`](#neurojit)
-    - [Dependencies](#dependencies)
-    - [Installation](#installation)
-    - [Usage](#usage)
-  - [Dataset](#dataset)
-  - [Reproducing the Results](#reproducing-the-results)
-    - [(Option 1) Install via Docker (recommended)](#option-1-install-via-docker-recommended)
-    - [(Option 2) Install locally](#option-2-install-locally)
-  - [License](#license)
+    We've tested the replication package on machines with the following specifications:
+    - Windows 11
+      - CPU: 
+      - RAM:
+    - Ubuntu 20.04.6
+      - Device: NVIDIA DGX Station V100, 2019
+      - CPU: Intel Xeon(R) E5-2698 v4 @ 2.20GHz
+      - RAM: 256GB
+    - MacOS 14.6.1
+      - Device: MacBook Air M2, 2022
+      - CPU: Apple M2
+      - RAM: 24GB
+    - Docker version 4.33.0 
+2. Docker Installation
 
-## `neurojit` 
+    To install Docker, please refer to the official Docker installation guide at https://docs.docker.com/get-docker/.
+    
+    Download and unzip the replication package from the following link: [NeuroJIT Replication Package](zenodo_link).
 
-`neurojit` is a python package that calculates the commit understandability features (CUF). The package is structured as follows:
+## Usage
 
-```Shell
- src/neurojit
- ├── commit.py 
- ├── cuf
- │  ├── cfg.py
- │  ├── halstead.py
- │  ├── metrics.py 
- │  └── rii.py
- └── tools
-    └── data_utils.py 
-```
-### Dependencies
+1. Docker: After navigating to the project folder, execute the following commands in the terminal to build and run the Docker container.
+   ```Shell
+    $ docker-compose up --build -d
+    ...
+     ✔ Container neurojit-ase  Started
+    ```
+2. How to run the scripts to reproduce the key experimental results from the paper: After the container is up and running, you can execute the replication script in the container.
+   ```Shell
+    $ docker exec -it neurojit-ase scripts/reproduce.sh
+    ```
+    If the script runs successfully, you will obtain results similar to the following: [out.txt](./out.txt).
+3. Using NeuroJIT to obtain commit understandability features for just-in-time defect prediction
+   1. NeuroJIT takes a repository link and a commit hash value to identify the commits that modify methods. From those commits, it calculates the nine commit understandability features proposed in our research, as follows.
+   
+        ```Shell
+        $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
 
-- python 3.11+
-- PyDriller
-- javalang
-- pandas
-- numpy
+        {'NOGV': 1.0, 'MDNL': 0.0, 'TE': 3.5122864969277017, 'II': 0.03225806451612903, 'NOP': 0.0, 'NB': 0.0, 'EC': 0.5, 'DD_HV': 0.04324106779539902, 'NOMT': 9.0}
+        
+        $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project groovy --commit-hash 7b84807
+        
+        Target commit is not a method changes commit
+        ```
 
-### Installation
+    2. Here is how to obtain features from a commit in a new repository that was not used in our research:
+        ```Shell
+        $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
 
-To install the `neurojit` package, run the following command:
-```Shell
-$ pip install --no-cache-dir ./dist/neurojit-1.0.0-py3-none-any.whl
-```
-Or to install the package with the optional dependencies for the replication, see [Install locally](#install-locally).
+        {'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
+        ```
+    3. Additional experiments conducted to ensure the methodological rigor of NeuroJIT include the following:
+       1. Evidence that the conclusion regarding Figure 5 on page 7 does not change even for all positives.
 
-### Usage
-(1) Filter commits that only modified existing methods and save the modified methods as `MethodChangesCommit` instances.
+            ```Shell
+            $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline --no-only-tp
 
-```python
-from neurojit.commit import MethodChangesCommit, Mining, Method
+            ╒═══════════╤════════════╤════════════════╤═════════════════╕
+            │ Project   │   cuf only │   Intersection │   baseline only │
+            ╞═══════════╪════════════╪════════════════╪═════════════════╡
+            │ Groovy    │       58.2 │           15.7 │            26.1 │
+            │ Camel     │       53.7 │           17.9 │            28.4 │
+            │ Flink     │       47.1 │           13.4 │            39.5 │
+            │ Ignite    │       41.9 │           10.2 │            47.9 │
+            │ Cassandra │       33.8 │           17.2 │            48.9 │
+            │ HBase     │       31.4 │           35.6 │            33.0 │
+            │ ActiveMQ  │       30.3 │           14.7 │            54.9 │
+            │ Hive      │       29.8 │           40.3 │            29.9 │
+            ╘═══════════╧════════════╧════════════════╧═════════════════╛
 
-mining = Mining()
-target_commit = mining.only_method_changes(repo="activemq", commit_hash="8f40a7")
-if target_commit is not None:
-    mining.save(target_commit)
-```
-(2) Compute the commit understandability features (CUF) from the saved `MethodChangesCommit` instances.
+            $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json --fmt fancy_outline --no-only-tp
 
-```python
-from neurojit.cuf.metrics import CommitUnderstandabilityFeatures
-
-cuf_calculator = CommitUnderstandabilityFeatures(target_commit)
-features = ["HV","DD", "MDNL", "NB", "EC", "NOP", "NOGV", "NOMT", "II", "TE", "DD_HV"]
-for feature in features:
-    value = getattr(cuf_calculator, feature)
-    print(f"{feature}: {value}")
-```
-(3) `KFoldDateSplit` is a utility class that splits the dataset into training and testing sets considering chronological order, verification latency and concept drifts. See e section 2.4 Just-in-Time Defect Prediction and Fig. 3 in the paper for more details.
-
-```python
-from neurojit.tools.data_utils import KFoldDateSplit
-
-data = pd.read_csv("...your jit-sdp dataset...")
-data["date"] = pd.to_datetime(data["date"])
-data = data.set_index(["date"])
-
-splitter = KFoldDateSplit(
-    data, k=20, start_gap=3, end_gap=3, is_mid_gap=True, sliding_months=1
-)
-
-for i, (train, test) in enumerate(splitter.split()):
-    X_train, y_train = train[features], train["buggy"]
-    X_test, y_test = test[features], test["buggy"]
-```
-For more usage examples, see the [scripts](./scripts).
-
-## Dataset
-
-To calculate the verification latency gap (i.e., average fixing time, gap), we slightly modified the code of the [ApacheJIT](https://github.com/hosseinkshvrz/apachejit) repository to create an apachejit dataset that includes a fixed_date, and constructed `data/dataset/apachejit_gap.csv`, which is composed of a total of 8 projects that include the gap.
-
-Then, we calculated the CUF of the ApacheJIT commits using the `neurojit` package. Additionally, we calculated the `LT` for the ApacheJIT commits because the `LT` is a widely used metric in the literature.
-
-We provide the dataset in the `data/dataset` directory. The dataset is structured as follows:
-
-```Shell
-data/dataset
-├── apache_metrics_kamei.csv
-├── apachejit_date.csv
-├── apachejit_gap.csv
-├── baseline.csv
-├── baseline/  # LT added apachejit dataset (baseline)
-│  ├── activemq.csv
-│  ├── ...
-├── commits/   # Filtered commits
-├── combined/   # Combined dataset
-└── cuf/      # CUF added apachejit dataset 
-```
-
-If you want to build the dataset from scratch, you can use the following scripts:
-
-```Shell
-$ python scripts/data_utils.py prepare-data
-$ python scripts/data_utils.py filter-commits
-$ python scripts/calculate.py cuf-all
-$ python scripts/calculate.py lt
-$ python scripts/data_utils.py combine
-```
-
-## Reproducing the Results
-
-This repository includes all the scripts, data and trained models to reproduce the results of the paper. The replication package is structured as follows:
-
-```Shell
-├── archive # zipped trained models (pickles) in our experiment
-├── data
-│  ├── dataset # see `Building Dataset`
-│  ├── output
-│  └── plots 
-├── dist # neurojit package distribution
-├── Dockerfile
-├── docker-compose.yml
-├── src/neurojit # neurojit source code, see `neurojit`
-└── scripts # scripts for the experiments
-```
-
-### (Option 1) Install via Docker (recommended)
-
-```Shell
-$ docker-compose up --build -d
-```
-
-Then, you can run the replication scripts in the container.
-
-```Shell
-$ docker exec -it neurojit-ase ./scripts/rq1.sh
-$ docker exec -it neurojit-ase ./scripts/rq2.sh
-$ docker exec -it neurojit-ase ./scripts/rq3.sh
-$ docker exec -it neurojit-ase ./scripts/actionable.sh
-```
-
-### (Option 2) Install locally
-
-To install the package with the optional dependencies for the replication, run the following command:
-
-```Shell
-$ pip install --no-cache-dir ./dist/neurojit-1.0.0-py3-none-any.whl[replication]
-```
-
-Or install the dependencies manually with [pyproject.toml](./pyproject.toml) based dependency management tools (e.g., [poetry](https://python-poetry.org)). We used  [rye](https://rye-up.com) for the dependency management.
-
-
-```Shell
-$ rye pin 3.12 # pin the python version you want to use
-$ rye sync --features=replication # install all dependencies
-```
-
-[Checkstyle](https://github.com/checkstyle/checkstyle/releases/): Save to root directory as checkstyle.jar for easy replication. For example,
-
-```Shell
-$ wget https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar -O checkstyle.jar
-```
-
-To unzip the trained models (pickles) in our experiment, run the following command:
-
-```Shell
-$ cat archive/pickles_part_* > pickles.tar.gz && tar -xzf pickles.tar.gz -C .
-```
-It will extract the pickles to the `data/pickles` directory.
-
-Then, you can run the replication scripts in the virtual environment.
-
-```Shell
-$ python scripts/rq1.py
-$ python scripts/rq2.py
-$ python scripts/rq3.py
-$ python scripts/actionable.py
-```
+            ╒═══════════╤════════════╤════════════════╤═════════════════╕
+            │ Project   │   cuf only │   Intersection │   baseline only │
+            ╞═══════════╪════════════╪════════════════╪═════════════════╡
+            │ Groovy    │       60.2 │           15.9 │            23.9 │
+            │ Camel     │       57.2 │           17.0 │            25.8 │
+            │ Flink     │       49.3 │           13.0 │            37.7 │
+            │ Ignite    │       45.0 │           10.1 │            44.9 │
+            │ Cassandra │       40.4 │           18.2 │            41.4 │
+            │ HBase     │       39.8 │           31.6 │            28.6 │
+            │ ActiveMQ  │       34.9 │           16.0 │            49.1 │
+            │ Hive      │       29.2 │           37.9 │            32.9 │
+            ╘═══════════╧════════════╧════════════════╧═════════════════╛
+            ```
+         2. Evidence that our dataset shows a different defect distribution compared to the studies cited in the External Validity section on page 10: see [scripts/commit_distribution.ipynb](./scripts/commit_distribution.ipynb).
 
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
