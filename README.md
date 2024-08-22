@@ -2,17 +2,20 @@
 
 This replication package contains the source code and data used in the paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"*.
 
+
 ## Table of Contents
 
-- [`neurojit`](#neurojit)
-  - [Dependencies](#dependencies)
-  - [Installation](#installation)
-  - [Usage](#usage)
-- [Dataset](#dataset)
-- [Reproducing the Results](#reproducing-the-results)
-  - [(Option 1) Install via Docker (recommended)](#option-1-install-via-docker-recommended)
-  - [(Option 2) Install locally](#option-2-install-locally)
-- [License](#license)
+- [NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers](#neurojit-improving-just-in-time-defect-prediction-using-neurophysiological-and-empirical-perceptions-of-modern-developers)
+  - [Table of Contents](#table-of-contents)
+  - [`neurojit`](#neurojit)
+    - [Dependencies](#dependencies)
+    - [Installation](#installation)
+    - [Usage](#usage)
+  - [Dataset](#dataset)
+  - [Reproducing the Results](#reproducing-the-results)
+    - [(Option 1) Install via Docker (recommended)](#option-1-install-via-docker-recommended)
+    - [(Option 2) Install locally](#option-2-install-locally)
+  - [License](#license)
 
 ## `neurojit` 
 
