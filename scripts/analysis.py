@@ -240,6 +240,7 @@ def table_set_relationships(
     cuf_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     baseline_json: Annotated[Path, typer.Argument(exists=True, file_okay=True)],
     fmt: Annotated[str, typer.Option()] = "github",
+    only_tp: Annotated[bool, typer.Option()] = True,
     quiet: Annotated[bool, typer.Option()] = False,
 ):
     """
@@ -267,21 +268,24 @@ def table_set_relationships(
                 & (result_df["fold"] == i)
             ]
 
-          
-            tp_samples_1 = set(project_df["tp_samples"].explode())
-            tp_samples_2 = set(project_df_2["tp_samples"].explode())
+            if only_tp:
+                samples_1 = set(project_df["tp_samples"].explode())
+                samples_2 = set(project_df_2["tp_samples"].explode())
+            else:
+                samples_1 = set(project_df["pos_samples"].explode())
+                samples_2 = set(project_df_2["pos_samples"].explode())
 
-            if len(tp_samples_1 | tp_samples_2) == 0:
+            if len(samples_1 | samples_2) == 0:
                 continue
 
             only_1_ratio.append(
-                len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+                len(samples_1 - samples_2) / len(samples_1 | samples_2)
             )
             only_2_ratio.append(
-                len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
+                len(samples_2 - samples_1) / len(samples_1 | samples_2)
             )
             intersection_ratio.append(
-                len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+                len(samples_1 & samples_2) / len(samples_1 | samples_2)
             )
  
 
@@ -324,7 +328,8 @@ def plot_set_relationships(
     ),
     save_path: Annotated[Path, typer.Option()] = Path(
         "data/plots/analysis/diff_plot.svg"
-    )
+    ),
+    only_tp: Annotated[bool, typer.Option()] = True,
 ):
     """
     (RQ2) Generate plots for TPs predicted by baseline model only vs cuf model only
@@ -352,20 +357,24 @@ def plot_set_relationships(
             ]
 
           
-            tp_samples_1 = set(project_df["tp_samples"].explode())
-            tp_samples_2 = set(project_df_2["tp_samples"].explode())
+            if only_tp:
+                samples_1 = set(project_df["tp_samples"].explode())
+                samples_2 = set(project_df_2["tp_samples"].explode())
+            else:
+                samples_1 = set(project_df["pos_samples"].explode())
+                samples_2 = set(project_df_2["pos_samples"].explode())
 
-            if len(tp_samples_1 | tp_samples_2) == 0:
+            if len(samples_1 | samples_2) == 0:
                 continue
 
             only_1_ratio.append(
-                len(tp_samples_1 - tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+                len(samples_1 - samples_2) / len(samples_1 | samples_2)
             )
             only_2_ratio.append(
-                len(tp_samples_2 - tp_samples_1) / len(tp_samples_1 | tp_samples_2)
+                len(samples_2 - samples_1) / len(samples_1 | samples_2)
             )
             intersection_ratio.append(
-                len(tp_samples_1 & tp_samples_2) / len(tp_samples_1 | tp_samples_2)
+                len(samples_1 & samples_2) / len(samples_1 | samples_2)
             )
  
 

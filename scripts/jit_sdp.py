@@ -57,8 +57,8 @@ def train_test(
     smote: Annotated[bool, Option(help="Use SMOTE for oversampling")] = True,
     display: Annotated[bool, Option(help="Display progress bar")] = False,
     output_dir: Annotated[Path, Option(help="Output directory")] = Path("data/output"),
-    save_model: Annotated[bool, Option(help="Save models")] = True,
-    load_model: Annotated[bool, Option(help="Load models")] = False,
+    save_model: Annotated[bool, Option(help="Save models")] = False,
+    load_model: Annotated[bool, Option(help="Load models")] = True,
     save_dir: Annotated[Path, Option(help="Save directory")] = Path("data/pickles"),
 ):
     """
@@ -100,6 +100,9 @@ def train_test(
             # True positive samples
             tp_index = (y_test == 1) & (y_pred == 1)
             score["tp_samples"] = test.loc[tp_index, "commit_id"].tolist()     
+            # Positive samples
+            pos_index = y_pred == 1
+            score["pos_samples"] = test.loc[pos_index, "commit_id"].tolist()
 
             score["test"] = len(y_test)
             score["buggy"] = sum(y_test)
