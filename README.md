@@ -39,7 +39,7 @@ Hello. Here is a guide on how to use the replication package of NeuroJIT. If you
     ```
     If the script runs successfully, you will obtain results similar to the following: [out.txt](./out.txt).
 3. Using NeuroJIT to obtain commit understandability features for just-in-time defect prediction
-   1. NeuroJIT takes a repository link and a commit hash value to identify the commits that modify methods. From those commits, it calculates the nine commit understandability features proposed in our research, as follows.
+   1. NeuroJIT takes a repository name and a commit hash value to identify the commits that modify methods. From those commits, it calculates the nine commit understandability features proposed in our research, as follows.
    
         ```Shell
         $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
@@ -92,6 +92,27 @@ Hello. Here is a guide on how to use the replication package of NeuroJIT. If you
             ╘═══════════╧════════════╧════════════════╧═════════════════╛
             ```
          2. Evidence that our dataset shows a different defect distribution compared to the studies cited in the External Validity section on page 10: see [scripts/commit_distribution.ipynb](./scripts/commit_distribution.ipynb).
+
+    4. Customizing NeuroJIT
+
+        The structure of the core module `neurojit` is as follows:​
+
+        ```Shell
+        src/neurojit
+        ├── commit.py 
+        ├── cuf
+        │  ├── cfg.py
+        │  ├── halstead.py
+        │  ├── metrics.py 
+        │  └── rii.py
+        └── tools
+            └── data_utils.py 
+        ```
+
+        If you want to customize NeuroJIT, consider the following:
+        - `commit.py`: Contains the `Mining` class, which filters commits that only modify existing methods and saves the modified methods as `MethodChangesCommit` instances. 
+        - `cuf.metrics`: Contains the `MethodUnderstandabilityFeatures` class, which calculates the CUF at the method level and `CommitUnderstandabilityFeatures` which aggregate the method level features to the commit level. 
+        - other files: Refer to the source code and comments for more details.
 
 ## License
 
