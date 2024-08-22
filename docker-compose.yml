@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   neurojit-ase:
     build: .
@@ -15,4 +13,3 @@ services:
       exec /bin/sh"
     container_name: neurojit-ase
     stdin_open: true
-    tty: true
