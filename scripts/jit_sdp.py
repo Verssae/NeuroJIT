@@ -9,6 +9,7 @@ from pathlib import Path
 from typing_extensions import Annotated
 
 import pandas as pd
+import numpy as np
 from rich.console import Console
 from rich.progress import track
 from sklearn.pipeline import Pipeline
@@ -46,6 +47,8 @@ from data_utils import load_project_data
 
 warnings.filterwarnings("ignore")
 app = Typer(add_completion=False, help="Experiments for Just-In-Time Software Defect Prediction (JIT-SDP)")
+
+np.random.seed(SEED)
 
 
 @app.command()
@@ -196,6 +199,7 @@ def actionable(
                 class_names=["not buggy", "buggy"],
                 mode="classification",
                 discretize_continuous=False,
+                random_state=SEED,
             )
 
             baseline_explainer = LimeTabularExplainer(
@@ -204,6 +208,7 @@ def actionable(
                 class_names=["not buggy", "buggy"],
                 mode="classification",
                 discretize_continuous=False,
+                random_state=SEED,
             )
 
             # Get the explanation for the common tp samples

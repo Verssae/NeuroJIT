@@ -229,7 +229,6 @@ def table_performances(
     )
 
     if not quiet:
-        print(f"#### {features_1.capitalize()} vs {features_2.capitalize()}")
         print(output)
 
     return output
