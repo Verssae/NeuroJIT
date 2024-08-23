@@ -7,12 +7,15 @@
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Contents
-0. Brief Descriptions of a Package
-1. Step-by-step Explanations for NeuroJIT Replication
-2. Customizing NeuroJIT
+0. Brief Descriptions of a Package.
+1. Step-by-step Explanations for NeuroJIT Replication.
+2. Customizing NeuroJIT.
+
+
+0. ~
 #### Structure of the Replication Package
 
-복제 패키지는 데이터셋(`data/dataset`), NeuroJIT 모듈(`src/neurojit`), 논문 결과 재현용 `scripts`를 포함합니다. 패키지의 구조는 다음과 같습니다:
+복제 패키지의 구조는 다음과 같습니다:
 
 ```Shell
 ├── archive # zipped trained models (pickles) in our experiment
@@ -148,7 +151,7 @@ src/neurojit
 캡쳐에 표시된 테이블들 외에 figures는 저장된 디렉토리에서 확인할 수 있습니다.
 또한, reproduce.sh에 대한 자세한 설명은 reproduce_sh.md에서 확인할 수 있습니다.
 
-2) Experiments for Methodological Soundness
+2) Additional Experiments for the Validity
 
 2-1). commit understandability features가 exclusive information을 제공하는 것을 보여주는 논문의 7페이지의 Figure 5는 true positives뿐만 아니라 모든 positives에 대해서도 결론이 동일하게 나타납니다. `--no-only-tp` 옵션을 사용하여 다음의 명령들을 실행하면면 모든 positives에 대한 결과를 확인할 수 있습니다:
 
