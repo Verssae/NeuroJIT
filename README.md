@@ -1,6 +1,6 @@
 # NeuroJIT Replication Package
 
-Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at {fantasyopy, sparky}@hanyang.ac.kr.
+Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at [fantasyopy](mailto:fantasyopy@hanyang.ac.kr), [sparky](mailto:sparky@hanyang.ac.kr)@hanyang.ac.kr.
 
 ## Structure of the Replication Package
 
@@ -94,6 +94,7 @@ src/neurojit
 └── tools
     └── data_utils.py # jit-sdp data split utility (chronological order, verification latency, concept drifts)
 ```
+Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at [fantasyopy](mailto:fantasyopy@hanyang.ac.kr), [sparky](mailto:sparky@hanyang.ac.kr) @hanyang.ac.kr.
 
 ## Setup
 
