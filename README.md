@@ -19,7 +19,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
   - [2-2. Usage](#2-2-usage)
     - [1) Reproducing the Experimental Results](#1-reproducing-the-experimental-results)
     - [2) Additional Experiments for the Validity](#2-additional-experiments-for-the-validity)
-    - [3) An Example Usage of NeuroJIT](#3-an-example-usage-of-neurojit)
+    - [3) An Example of NeuroJIT Usage](#3-an-example-of-neurojit-usage)
 - [3. Customizing NeuroJIT](#3-customizing-neurojit)
 
 ## 1. Brief Descriptions of a Package
@@ -109,10 +109,10 @@ src/neurojit
 ├── cuf
 │  ├── cfg.py # control flow graph
 │  ├── halstead.py # halstead metrics
-│  ├── metrics.py  # CUF calculation (method and commit level)
+│  ├── metrics.py  # commit understandability features calculation 
 │  └── rii.py # II feature calculation using Checkstyle
 └── tools
-    └── data_utils.py # JIT-SDP data split utility (chronological order, verification latency, concept drifts)
+    └── data_utils.py # JIT-SDP data split (chronological order, verification latency, concept drifts)
 ```
 
 ## 2. Step-by-step Explanations for NeuroJIT Replication
@@ -161,7 +161,7 @@ $ docker exec -it neurojit-ase scripts/reproduce.sh
 
 If the script executes successfully, you should see the following results:
 
-![demo.png](demo.png)
+![reproduced_results.png](reproduced_results.png)
 
 In addition to the tables shown in the capture, you can find the figures in the saved directory.
 
@@ -216,7 +216,7 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
 
     Check the figures saved in the corresponding directory.
 
-#### 3) An Example Usage of NeuroJIT
+#### 3) An Example of NeuroJIT Usage
 
 NeuroJIT is designed to calculate commit understandability features from any project’s commits. You can calculate the features using the following `neurojit_cli.py` script:
 
