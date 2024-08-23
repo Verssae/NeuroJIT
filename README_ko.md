@@ -130,22 +130,7 @@ src/neurojit
 
 2. Usage
 
-2-1) Accessing the Container
-
-본 패키지에 포함된 모든 실행가능한 파일은 `neurojit-ase` 컨테이너 내에서 실행됩니다. `docker exec -it neurojit-ase COMMAND` 명령을 사용하여 컨테이너에 액세스할 수 있습니다. 예를 들어, 다음 명령을 사용하여 컨테이너 내 셸에 액세스할 수 있습니다:
-
-```Shell
- $ docker exec -it neurojit-ase bash
-
- root@31d:/app#
-```
-스크립트를 바로 실행할 수도 있습니다:
-
-```Shell
- $ docker exec -it neurojit-ase scripts/reproduce.sh
-```
-
-2-2) Reproducing the Experimental Results
+2-1) Reproducing the Experimental Results
 
 논문의 주요한 결과들을 재현하려면 다음 명령을 실행하세요:
 
@@ -153,12 +138,13 @@ src/neurojit
  $ docker exec -it neurojit-ase scripts/reproduce.sh
 ``` 
 
-스크립트가 성공적으로 실행되면 다음과 같은 결과를 얻을 수 있습니다: [out.txt](./out.txt).
+스크립트가 성공적으로 실행되면 다음과 같은 결과를 얻을 수 있습니다:
+![demo.png](demo.png)
 reproduce.sh에 대한 자세한 설명은 reproduce_sh.md에서 확인할 수 있습니다.
 
-### Example Usage of NeuroJIT
+2-2) Example Usage of NeuroJIT
 
-NeuroJIT은 어느 프로젝트의 커밋에 대해서도 CUF를 계산하는 데 사용할 수 있도록 설계되었습니다. 간단하게 `neurojit` 컴포넌트들을 활용하여 만든 `neurojit_cli.py` 스크립트를 사용하여 다음과 같이 CUF를 계산할 수 있습니다:
+NeuroJIT은 어떤 프로젝트의 커밋이던지간에 commit understandability features를 계산하도록 설계되었습니다. `neurojit` 컴포넌트들을 활용하여 만든 `neurojit_cli.py` 스크립트를 사용하여 다음과 같이 CUF를 계산할 수 있습니다:
 
 ```Shell
 $ python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
