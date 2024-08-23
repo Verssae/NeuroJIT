@@ -2,10 +2,12 @@
 
 본 문서는 *NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers*(NeuroJIT)의 복제 패키지를 소개하고 그 사용 방법을 자세히 설명합니다. 이 패키지는 NeuroJIT의 핵심 모듈과 논문의 결과를 재현하기 위한 스크립트 및 데이터셋을 포함합니다. 여러분은 이 패키지를 사용해 논문의 결과를 재현하거나 customized NeuroJIT을 구현해 필요한 실험을 수행할 수 있습니다. 패키지 및 본문에 관한 질문이 있으시면 언제든지 [fantasyopy@hanyang.ac.kr](mailto:fantasyopy@hanyang.ac.kr) 또는 [sparky@hanyang.ac.kr](mailto:sparky@hanyang.ac.kr)로 이메일을 통해 연락해 주세요. 감사합니다!
 
-0. Brief Descriptions of this package
-1. step-by-step explanations for neurojit replication
+## Contents
+0. Brief Descriptions of a Package
+1. Step-by-step Explanations for NeuroJIT Replication
    
 #### Structure of the Replication Package
+
 복제 패키지는 데이터셋(`data/dataset`), NeuroJIT 모듈(`src/neurojit`), 논문 결과 재현용 `scripts`를 포함합니다. 패키지의 구조는 다음과 같습니다:
 
 ```Shell
@@ -35,7 +37,7 @@
    └── neurojit_cli.py # an example of utilizing NeuroJIT for user's objectives
 ```
 
-#### Dataset
+#### Dataset:
 
 Apache JIT 기반의 데이터셋(`combined/`)은 총 8개의 Apache 프로젝트들의 widely adopted just-in-time defect prediction features와 NeuroJIT의 commit understandability features를 포함합니다. `data/dataset` 속 각 csv 파일은 논문에서 설명한 각 실험 단계에 따라 생성된 중간 산출물이며, `combined/` 속 각 csv 파일은 프로젝트 별 최종 산출물입니다.
 
@@ -79,7 +81,7 @@ data/dataset
 
 데이터를 처음부터 구축하는 데는 시간이 상당히 오래 걸리는데, 그 이유는 `filter-commits`를 위해 각 커밋의 모든 메서드를 비교해야 하며, CUF 계산 시 커밋의 각 파일에 대해 Checkstyle을 호출해야 하기 때문입니다. 따라서 우리는 [data/dataset](data/dataset/) 디렉터리에 미리 구축된 데이터셋을 제공합니다.
 
-#### `neurojit` 
+#### neurojit: 
 
 `neurojit` 모듈은 NeuroJIT의 핵심 기능인 CUF 계산, JIT-SDP 데이터 분할 방법 구현을 제공합니다. 모듈은 다음과 같은 구조로 구성되어 있습니다:
 
@@ -95,11 +97,11 @@ src/neurojit
     └── data_utils.py # JIT-SDP data split utility (chronological order, verification latency, concept drifts)
 ```
 
-## Setup
+1.  Setup
 
-1. Hardware/Software Requirements
+1-1) Hardware/Software Requirements
 
-    우리는 다음 사양의 장치들에서 복제 패키지를 테스트했습니다:
+    우리는 다음 사양의 장치들에서 복제 패키지를 테스트했습니다.
 
     - Windows 11
       - CPU: AMD Ryzen 5 5600X
@@ -113,9 +115,10 @@ src/neurojit
       - CPU: Apple M2
       - RAM: 24GB
     - Docker version 4.33.1
-2. Docker Container Setup
-   Docker를 설치하려면 https://docs.docker.com/get-docker/ 에서 공식 설치 가이드를 참조하세요.
-   OOO.zip를 다운로드 및 압축해제한 후 CLI에서 해당 디렉토리로 이동하세요.
+  
+1-2) Docker Container Setup
+   Docker를 설치하려면 [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)에서 공식 설치 가이드를 참조하세요.
+   NeuroJIT.zip를 다운로드 및 압축해제한 후 CLI에서 해당 디렉토리로 이동하세요.
    Docker Compose를 사용하여 컨테이너를 빌드하기 위해 다음 명령을 실행하세요:
 
    ```Shell
@@ -125,9 +128,9 @@ src/neurojit
    ```
    `docker ps`를 통해 `neurojit-ase` 컨테이너가 실행 중인지 확인하세요.
 
-## Usage
+2. Usage
 
-### Accessing the Container
+2-1) Accessing the Container
 
 본 패키지에 포함된 모든 실행가능한 파일은 `neurojit-ase` 컨테이너 내에서 실행됩니다. `docker exec -it neurojit-ase COMMAND` 명령을 사용하여 컨테이너에 액세스할 수 있습니다. 예를 들어, 다음 명령을 사용하여 컨테이너 내 셸에 액세스할 수 있습니다:
 
@@ -142,63 +145,16 @@ src/neurojit
  $ docker exec -it neurojit-ase scripts/reproduce.sh
 ```
 
-컨테이너 및 볼륨 정리를 하고자 할 때는 다음 명령을 사용하세요:
+2-2) Reproducing the Experimental Results
 
-```Shell
- $ docker-compose down -v
-```
-
-### Reproducing the Results
-
-논문의 핵심 결과를 재현하려면 다음 명령을 실행하세요:
+논문의 주요한 결과들을 재현하려면 다음 명령을 실행하세요:
 
 ```Shell
  $ docker exec -it neurojit-ase scripts/reproduce.sh
 ``` 
 
 스크립트가 성공적으로 실행되면 다음과 같은 결과를 얻을 수 있습니다: [out.txt](./out.txt).
-
-### About the Reproduction Script
-
-[`reproduce.sh`](scripts/reproduce.sh) 스크립트는 논문의 핵심 결과를 재현하는 데 사용됩니다. 다음과 같이 크게 3가지 파이썬 스크립트를 실행합니다:
-
-```Shell
-(1) Usage: python scripts/pre_analysis.py COMMAND [ARGS]...
-
-Statistical pre-analysis for CUF, Baseline and Dataset
-
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ plot-corr                   (RQ1) Generate plots for Correlations between cuf Features and Defect-inducing Risks              │
-│ plot-hmap                   Generate plots for Collinearity between Features                                                  │
-│ table-distribution          Tabulate the distribution of the dataset                                                          │
-│ table-group-diff            (RQ1) Tabulate the group differences between buggy and clean commits for cuf                      │
-│ table-group-diff-projects   Tabulate the group differences between buggy and clean commits for cuf (each project)             │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-(2) Usage: python scripts/jit_sdp.py COMMAND [ARGS]...
-
-Experiments for Just-In-Time Software Defect Prediction (JIT-SDP)
-
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ actionable   Compute the ratios of actionable features for the baseline and combined models for the true positive samples in  │
-│              the 20 folds JIT-SDP                                                                                             │
-│ train-test   Train and test the baseline/cuf/combined model with 20 folds JIT-SDP                                             │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-(3) Usage: python scripts/analysis.py COMMAND [ARGS]...
-
-Table and plot generation for analysis
-
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ plot-radars               (RQ3) Generate radar charts for performance comparison between models                               │
-│ plot-set-relationships    (RQ2) Generate plots for TPs predicted by baseline model only vs cuf model only                     │
-│ table-actionable          (Toward More Actionable Guidance) Tabulate the results of the actionable features                   │
-│ table-performances        (RQ3) Generate table for performance comparison between models                                      │
-│ table-set-relationships   (RQ2) Generate table for TPs predicted by baseline model only vs cuf model only                     │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
-
-각 스크립트 내 서브 커맨드에 대한 자세한 내용은 `--help` 옵션을 사용하면 확인할 수 있습니다.
+reproduce.sh에 대한 자세한 설명은 reproduce_sh.md에서 확인할 수 있습니다.
 
 ### Example Usage of NeuroJIT
 
