@@ -7,13 +7,15 @@
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Contents
-0. Brief Descriptions of a Package.
-1. Step-by-step Explanations for NeuroJIT Replication.
-2. Customizing NeuroJIT.
+
+[0. Brief Descriptions of a Package](#0-brief-descriptions-of-a-package)  
+[1. Step-by-step Explanations for NeuroJIT Replication](#1-step-by-step-explanations-for-neurojit-replication)  
+[2. Customizing NeuroJIT](#2-customizing-neurojit)
 
 
-0. ~
-#### Structure of the Replication Package
+## 0. Brief Descriptions of a Package
+
+### 0.1. Structure of the Replication Package
 
 복제 패키지의 구조는 다음과 같습니다:
 
@@ -44,7 +46,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
    └── neurojit_cli.py # an example of utilizing NeuroJIT for user's objectives
 ```
 
-#### Dataset:
+### 0.2. Dataset:
 
 Apache JIT 기반의 데이터셋(`combined/`)은 총 8개의 Apache 프로젝트들의 widely adopted just-in-time defect prediction features와 NeuroJIT의 commit understandability features를 포함합니다. `data/dataset` 속 각 csv 파일은 논문에서 설명한 각 실험 단계에 따라 생성된 중간 산출물이며, `combined/` 속 각 csv 파일은 프로젝트 별 최종 산출물입니다.
 
@@ -88,7 +90,7 @@ data/dataset
 
 데이터를 처음부터 구축하는 데는 시간이 상당히 오래 걸리는데, 그 이유는 `filter-commits`를 위해 각 커밋의 모든 메서드를 비교해야 하며, CUF 계산 시 커밋의 각 파일에 대해 Checkstyle을 호출해야 하기 때문입니다. 따라서 우리는 [data/dataset](data/dataset/) 디렉터리에 미리 구축된 데이터셋을 제공합니다.
 
-#### neurojit: 
+### 0.3. neurojit: 
 
 `neurojit` 모듈은 NeuroJIT의 핵심 기능인 CUF 계산, JIT-SDP 데이터 분할 방법 구현을 제공합니다. 모듈은 다음과 같은 구조로 구성되어 있습니다:
 
@@ -103,57 +105,59 @@ src/neurojit
 └── tools
     └── data_utils.py # JIT-SDP data split utility (chronological order, verification latency, concept drifts)
 ```
-1. ㄴㅇㅁㄴㅇ
-1-1.  Setup
+## 1. Step-by-step Explanations for NeuroJIT Replication
+### 1.1. Setup
 
-1) Hardware/Software Requirements
+#### 1) Hardware/Software Requirements
 
-    우리는 다음 사양의 장치들에서 복제 패키지를 테스트했습니다.
+우리는 다음 사양의 장치들에서 복제 패키지를 테스트했습니다.
 
-    - Windows 11
-      - CPU: AMD Ryzen 5 5600X
-      - RAM: 32GB
-    - Ubuntu 20.04.6
-      - Device: NVIDIA DGX Station V100, 2019
-      - CPU: Intel Xeon(R) E5-2698 v4 @ 2.20GHz
-      - RAM: 256GB
-    - MacOS 14.6.1
-      - Device: MacBook Air M2, 2022
-      - CPU: Apple M2
-      - RAM: 24GB
-    - Docker version 4.33.1
+ - Windows 11
+   - CPU: AMD Ryzen 5 5600X
+   - RAM: 32GB
+ - Ubuntu 20.04.6
+   - Device: NVIDIA DGX Station V100, 2019
+   - CPU: Intel Xeon(R) E5-2698 v4 @ 2.20GHz
+   - RAM: 256GB
+ - MacOS 14.6.1
+   - Device: MacBook Air M2, 2022
+   - CPU: Apple M2
+   - RAM: 24GB
+ - Docker version 4.33.1
   
-2) Docker Container Setup
-   Docker를 설치하려면 [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)에서 공식 설치 가이드를 참조하세요.
-   NeuroJIT.zip를 다운로드 및 압축해제한 후 CLI에서 해당 디렉토리로 이동하세요.
-   Docker Compose를 사용하여 컨테이너를 빌드하기 위해 다음 명령을 실행하세요:
+#### 2) Docker Container Setup
 
-   ```Shell
-   $ docker-compose up --build -d
-   ...
-   ✔ Container neurojit-ase  Started
-   ```
-   `docker ps`를 통해 `neurojit-ase` 컨테이너가 실행 중인지 확인하세요.
+Docker를 설치하려면 [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)에서 공식 설치 가이드를 참조하세요.
+NeuroJIT.zip를 다운로드 및 압축해제한 후 CLI에서 해당 디렉토리로 이동하세요.
+Docker Compose를 사용하여 컨테이너를 빌드하기 위해 다음 명령을 실행하세요:
 
-1-2. Usage
+```Shell
+$ docker-compose up --build -d
+...
+✔ Container neurojit-ase  Started
+```
+`docker ps`를 통해 `neurojit-ase` 컨테이너가 실행 중인지 확인하세요.
 
-1) Reproducing the Experimental Results
+### 1.2. Usage
+
+#### 1) Reproducing the Experimental Results
 
 논문의 주요한 결과들을 재현하려면 다음 명령을 실행하세요:
 
 ```Shell
- $ docker exec -it neurojit-ase scripts/reproduce.sh
+$ docker exec -it neurojit-ase scripts/reproduce.sh
 ``` 
 
 스크립트가 성공적으로 실행되면 다음과 같은 결과를 얻을 수 있습니다:
 ![demo.png](demo.png)
 
 캡쳐에 표시된 테이블들 외에 figures는 저장된 디렉토리에서 확인할 수 있습니다.
-또한, reproduce.sh에 대한 자세한 설명은 reproduce_sh.md에서 확인할 수 있습니다.
 
-2) Additional Experiments for the Validity
+또한, reproduce.sh에 대한 자세한 설명은 `reproduce_sh.md`에서 확인할 수 있습니다.
 
-2-1). commit understandability features가 exclusive information을 제공하는 것을 보여주는 논문의 7페이지의 Figure 5는 true positives뿐만 아니라 모든 positives에 대해서도 결론이 동일하게 나타납니다. `--no-only-tp` 옵션을 사용하여 다음의 명령들을 실행하면면 모든 positives에 대한 결과를 확인할 수 있습니다:
+#### 2) Additional Experiments for the Validity
+
+1) Commit understandability features가 exclusive information을 제공하는 것을 보여주는 논문의 7페이지의 Figure 5는 true positives뿐만 아니라 모든 positives에 대해서도 결론이 동일하게 나타납니다. `--no-only-tp` 옵션을 사용하여 다음의 명령들을 실행하면면 모든 positives에 대한 결과를 확인할 수 있습니다:
 
     ```Shell
     $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline --no-only-tp
@@ -186,11 +190,11 @@ src/neurojit
     │ Hive      │       29.2 │           37.9 │            32.9 │
     ╘═══════════╧════════════╧════════════════╧═════════════════╛
     ```
-2-2). 논문 10페이지의 External Validity 섹션에서 언급된 연구의 데이터셋과 본 연구의 데이터셋이 다른 분포를 보인다는 결과는 다음의 명령들을 실행하면 얻을 수 있습니다:
+2) 논문 10페이지의 External Validity 섹션에서 언급된 연구의 데이터셋과 본 연구의 데이터셋이 다른 분포를 보인다는 결과는 다음의 명령들을 실행하면 얻을 수 있습니다:
 
 해당 디렉토리에 저장된 figures를 확인해주세요.
 
-3) An Example Usage of NeuroJIT
+#### 3) An Example Usage of NeuroJIT
 
 NeuroJIT은 어떤 프로젝트의 커밋에서든지간에 commit understandability features를 계산할 수 있도록 설계되었습니다. 
 다음의 `neurojit_cli.py` 스크립트를 사용하여 the features를 계산할 수 있습니다:
@@ -223,7 +227,7 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 {'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
 ```
 
-3. Customizing NeuroJIT
+## 2. Customizing NeuroJIT
 
 NeuroJIT을 변형하여 사용자 정의 실험을 수행하려면 지금까지 기술한 스크립트들을 참조하여 `neurojit` 모듈을 확장하거나 수정할 수 있습니다. 모듈 확장을 위해 참조할 수 있는 코드들은 다음과 같습니다:
 
