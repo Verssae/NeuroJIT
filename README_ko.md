@@ -1,12 +1,12 @@
 # NeuroJIT Replication Package
 
-이 문서에서는 논문 *NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers*(NeuroJIT)의 복제 패키지를 소개합니다. 복제 패키지는 NeuroJIT의 핵심 모듈과 논문의 결과를 재현하는 데 사용된 스크립트를 포함하고 있습니다. 복제 패키지를 사용하여 논문의 결과를 재현하거나 포함된 핵심 모듈을 바탕으로 사용자 정의 실험을 수행할 수 있습니다.
- 
-패키지 사용에 관한 질문이 있으시면 언제든지 [fantasyopy@hanyang.ac.kr](mailto:fantasyopy@hanyang.ac.kr) 또는 [sparky@hanyang.ac.kr](mailto:sparky@hanyang.ac.kr)로 이메일을 통해 연락해 주세요.
+본 문서는 *NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers*(NeuroJIT)의 복제 패키지를 소개하고 그 사용 방법을 자세히 설명합니다. 이 패키지는 NeuroJIT의 핵심 모듈과 논문의 결과를 재현하기 위한 스크립트 및 데이터셋을 포함합니다. 여러분은 이 패키지를 사용해 논문의 결과를 재현하거나 customized NeuroJIT을 구현해 필요한 실험을 수행할 수 있습니다. 패키지 및 본문에 관한 질문이 있으시면 언제든지 [fantasyopy@hanyang.ac.kr](mailto:fantasyopy@hanyang.ac.kr) 또는 [sparky@hanyang.ac.kr](mailto:sparky@hanyang.ac.kr)로 이메일을 통해 연락해 주세요. 감사합니다!
 
-## Structure of the Replication Package
-
-복제 패키지는 크게 데이터셋인 `data/dataset`, 핵심 모듈인 `src/neurojit`, 그리고 논문의 결과를 재현하는 데 사용된 `scripts`의 3가지로 구성되어 있습니다. 복제 패키지의 구조는 다음과 같습니다:
+0. Brief Descriptions of this package
+1. step-by-step explanations for neurojit replication
+   
+#### Structure of the Replication Package
+복제 패키지는 데이터셋(`data/dataset`), NeuroJIT 모듈(`src/neurojit`), 논문 결과 재현용 `scripts`를 포함합니다. 패키지의 구조는 다음과 같습니다:
 
 ```Shell
 ├── archive # zipped trained models (pickles) in our experiment
@@ -21,40 +21,38 @@
 └── scripts 
 # main scripts
    ├── data_utils.py # data preprocessing and caching
-   ├── calculate.py # calculate CUF and LT
-   ├── pre_analysis.py # pre-analysis for CUF, Baseline and Dataset
-   ├── jit_sdp.py # JIT-SDP training and evaluation
-   ├── analysis.py # analysis after JIT-SDP training and evaluation
-# utility
-   ├── correlation.py # correlation analysis utility
-   ├── environment.py # environment variables for the scripts
-   ├── visualization.py # visualization utility
+   ├── calculate.py # calculate commit understandability features and LT of Kamei et al.
+   ├── pre_analysis.py # analyze statistics of the dataset
+   ├── jit_sdp.py # machine learning algorithm training and evaluation for just-in-time defect prediction
+   ├── analysis.py # analyze the ML models
+# sub-modules
+   ├── correlation.py # modules for correlation analysis
+   ├── environment.py # environment variables for main scripts
+   ├── visualization.py # visualization tools
 # for replication
-   ├── commit_distribution.ipynb # commit distribution analysis for the dataset (external validity)
-   ├── neurojit_cli.py # simple example of NeuroJIT usage 
-   └── reproduce.sh # script to reproduce the key experimental results from the paper
+   ├── reproduce.sh # a script to reproduce the major experimental results of the paper
+   ├── commit_distribution.ipynb # a notebook for commit distribution analysis (external validity)
+   └── neurojit_cli.py # an example of utilizing NeuroJIT for user's objectives
 ```
 
-### Dataset
+#### Dataset
 
-데이터셋은 ApacheJIT 데이터셋을 기반으로 구축되었습니다. 우리의 데이터셋은 총 8개의 Apache 프로젝트에 대해 Kamei et. al이 제안한 JIT 피처와 NeuroJIT에서 제안하는 Commit Understandability Features(CUF)를 모두 포함하고 있습니다. 데이터셋은 다음과 같은 구조로 구성되어 있습니다:
+Apache JIT 기반의 데이터셋(`combined/`)은 총 8개의 Apache 프로젝트들의 widely adopted just-in-time defect prediction features와 NeuroJIT의 commit understandability features를 포함합니다. `data/dataset` 속 각 csv 파일은 논문에서 설명한 각 실험 단계에 따라 생성된 중간 산출물이며, `combined/` 속 각 csv 파일은 프로젝트 별 최종 산출물입니다.
 
 ```Shell
 data/dataset
 ├── apachejit_total.csv # original ApacheJIT dataset
 ├── apachejit_date.csv # ApacheJIT dataset with bug_fix_date
 ├── apachejit_gap.csv # gap between commit date and bug_fix_date in ApacheJIT dataset
-├── apache_metrics_kamei.csv # JIT metrics in ApacheJIT dataset
-├── baseline.csv # LT added and filtered ApacheJIT dataset
-├── baseline/  
+├── apache_metrics_kamei.csv # traditional just-in-time features in ApacheJIT dataset
+├── baseline/  # LT added and preprocessed ApacheJIT dataset
 │  ├── activemq.csv
 │  ├── ...
-├── combined/   # Combined of CUF and baseline dataset (our main dataset)
-├── commits/   # Filtered commits (only method changes commits)
-└── cuf/      # CUF calculated and filtered ApacheJIT dataset
+├── combined/*.csv   # the dataset used in the research
+└── cuf/*.csv      # 9 commit understandability features of target commits
 ```
 
-데이터셋을 처음부터 구축하려면 다음 스크립트들을 사용할 수 있습니다:
+만약, 데이터셋을 처음부터 구축하길 원한다면 다음 스크립트들을 사용할 수 있습니다:
 
 ```Shell
  (1) Usage: python scripts/data_utils.py COMMAND [ARGS]...
@@ -81,7 +79,7 @@ data/dataset
 
 데이터를 처음부터 구축하는 데는 시간이 상당히 오래 걸리는데, 그 이유는 `filter-commits`를 위해 각 커밋의 모든 메서드를 비교해야 하며, CUF 계산 시 커밋의 각 파일에 대해 Checkstyle을 호출해야 하기 때문입니다. 따라서 우리는 [data/dataset](data/dataset/) 디렉터리에 미리 구축된 데이터셋을 제공합니다.
 
-### `neurojit` 
+#### `neurojit` 
 
 `neurojit` 모듈은 NeuroJIT의 핵심 기능인 CUF 계산, JIT-SDP 데이터 분할 방법 구현을 제공합니다. 모듈은 다음과 같은 구조로 구성되어 있습니다:
 
@@ -116,12 +114,9 @@ src/neurojit
       - RAM: 24GB
     - Docker version 4.33.1
 2. Docker Container Setup
-
-   본 문서에서는 Docker 컨테이너를 사용하여 복제 패키지를 실행하는 방법에 대해 설명합니다. 로컬 환경에서 설치 및 실행하는 방법은 문서 하단의 [Local Setup](#local-setup)을 참조하세요.
-
    Docker를 설치하려면 https://docs.docker.com/get-docker/ 에서 공식 설치 가이드를 참조하세요.
-
-   본 복제 패키지를 다운로드하고 해당 디렉토리로 이동하세요. 복제 환경은 Docker 컨테이너로 실행 데이터셋 및 결과 파일을 호스트와 컨테이너 간에 공유	하기 위해 볼륨을 사용합니다. 간편한 볼륨 마운트를 위해 Docker Compose를 사용합니다. Docker Compose를 사용하여 컨테이너를 빌드하고 백그라운드에서 실행하려면 다음 명령을 실행하세요:
+   OOO.zip를 다운로드 및 압축해제한 후 CLI에서 해당 디렉토리로 이동하세요.
+   Docker Compose를 사용하여 컨테이너를 빌드하기 위해 다음 명령을 실행하세요:
 
    ```Shell
    $ docker-compose up --build -d
