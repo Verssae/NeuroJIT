@@ -8,25 +8,25 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Contents
 
-- [0. Brief Descriptions of a Package](#0-brief-descriptions-of-a-package)
-  - [0.1. Structure of the Replication Package](#01-structure-of-the-replication-package)
-  - [0.2. Dataset:](#02-dataset)
-  - [0.3. neurojit:](#03-neurojit)
-- [1. Step-by-step Explanations for NeuroJIT Replication](#1-step-by-step-explanations-for-neurojit-replication)
-  - [1.1. Setup](#11-setup)
+- [1. Brief Descriptions of the Replication Package](#1-brief-descriptions-of-a-package)
+  - [Structure of the Replication Package](#Structure-of-the-Replication-Package)
+  - [Dataset](#Dataset)
+  - [NeuroJIT](#NeuroJIT)
+- [2. Step-by-step Explanations for NeuroJIT Replication](#1-step-by-step-explanations-for-neurojit-replication)
+  - [2-1. Setup](#21-setup)
     - [1) Hardware/Software Requirements](#1-hardwaresoftware-requirements)
     - [2) Docker Container Setup](#2-docker-container-setup)
-  - [1.2. Usage](#12-usage)
+  - [2-2. Usage](#22-usage)
     - [1) Reproducing the Experimental Results](#1-reproducing-the-experimental-results)
     - [2) Additional Experiments for the Validity](#2-additional-experiments-for-the-validity)
     - [3) An Example Usage of NeuroJIT](#3-an-example-usage-of-neurojit)
-- [2. Customizing NeuroJIT](#2-customizing-neurojit)
+- [3. Customizing NeuroJIT](#2-customizing-neurojit)
 
-## 0. Brief Descriptions of a Package
+## 1. Brief Descriptions of a Package
 
-### 0.1. Structure of the Replication Package
+### Structure
 
-The structure of the replication package is as follows:
+The structure of the package is as follows:
 
 ```Shell
 ├── archive # zipped trained models (pickles) in our experiment
@@ -55,7 +55,7 @@ The structure of the replication package is as follows:
    └── neurojit_cli.py # an example of utilizing NeuroJIT for user's objectives
 ```
 
-### 0.2. Dataset:
+### Dataset
 
 The ApacheJIT-based dataset includes widely adopted just-in-time defect prediction features and the commit understandability features of NeuroJIT from a total of eight Apache projects. Each CSV file in the `data/dataset` directory represents intermediate outputs generated at each experimental stage described in the paper, while each CSV file in the combined/ directory represents the final output per project.
 
@@ -99,7 +99,7 @@ If you wish to build the dataset from scratch, you can use the following scripts
 
 Building the dataset from scratch takes considerable time because it requires comparing all methods in each commit for `filter-commits` and invoking Checkstyle for each file in the commit when calculating commit understandability features. Therefore, we provide the pre-built datasets in the data/dataset directory.
 
-### 0.3. neurojit: 
+### NeuroJIT
 
 The `neurojit` module provides commit understandability features calculation, a core feature of NeuroJIT, and the implementation of the JIT-SDP data splitting method. The module has the following structure:
 
@@ -115,8 +115,8 @@ src/neurojit
     └── data_utils.py # JIT-SDP data split utility (chronological order, verification latency, concept drifts)
 ```
 
-## 1. Step-by-step Explanations for NeuroJIT Replication
-### 1.1. Setup
+## 2. Step-by-step Explanations for NeuroJIT Replication
+### 2-1. Setup
 
 #### 1) Hardware/Software Requirements
 
@@ -149,7 +149,7 @@ $ docker-compose up --build -d
 
 Verify that the `neurojit-ase` container is running by using the `docker ps` command.
 
-### 1.2. Usage
+### 2-2. Usage
 
 #### 1) Reproducing the Experimental Results
 
@@ -248,7 +248,7 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 {'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
 ```
 
-## 2. Customizing NeuroJIT
+## 3. Customizing NeuroJIT
 
 To modify NeuroJIT and perform custom experiments, you can extend or modify the neurojit module by referring to the scripts described so far. Here are some examples of the code you can reference for module extensions:
 
