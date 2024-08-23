@@ -9,18 +9,18 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Contents
 
 - [1. Brief Descriptions of the Replication Package](#1-brief-descriptions-of-a-package)
-  - [Structure of the Replication Package](#Structure-of-the-Replication-Package)
-  - [Dataset](#Dataset)
-  - [NeuroJIT](#NeuroJIT)
-- [2. Step-by-step Explanations for NeuroJIT Replication](#1-step-by-step-explanations-for-neurojit-replication)
-  - [2-1. Setup](#21-setup)
+  - [Structure](#structure)
+  - [Dataset](#dataset)
+  - [NeuroJIT](#neurojit)
+- [2. Step-by-step Explanations for NeuroJIT Replication](#2-step-by-step-explanations-for-neurojit-replication)
+  - [2-1. Setup](#2-1-setup)
     - [1) Hardware/Software Requirements](#1-hardwaresoftware-requirements)
     - [2) Docker Container Setup](#2-docker-container-setup)
-  - [2-2. Usage](#22-usage)
+  - [2-2. Usage](#2-2-usage)
     - [1) Reproducing the Experimental Results](#1-reproducing-the-experimental-results)
     - [2) Additional Experiments for the Validity](#2-additional-experiments-for-the-validity)
     - [3) An Example Usage of NeuroJIT](#3-an-example-usage-of-neurojit)
-- [3. Customizing NeuroJIT](#2-customizing-neurojit)
+- [3. Customizing NeuroJIT](#3-customizing-neurojit)
 
 ## 1. Brief Descriptions of a Package
 
