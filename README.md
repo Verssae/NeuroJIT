@@ -22,7 +22,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
     - [3) An Example of NeuroJIT Usage](#3-an-example-of-neurojit-usage)
 - [3. Customizing NeuroJIT](#3-customizing-neurojit)
 
-## 1. Brief Descriptions of the Replication Package
+## 1. Brief Descriptions of the Replication Package (NeuroJIT.zip)
 
 ### Structure
 
