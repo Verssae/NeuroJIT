@@ -238,7 +238,7 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 Target commit is not a method changes commit
 ```
 
-If you want to calculate the features from commits in a project not included in our dataset, please refer to the following example command.
+If the commits are at the method level, you can still extract the commit understandability features even if the project is not included in our dataset. Please refer to the example below.
 
 ```Shell
 $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
@@ -248,8 +248,8 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 
 ## 3. Customizing NeuroJIT
 
-To modify NeuroJIT and perform custom experiments, you can extend or modify the neurojit module by referring to the scripts described so far. Here are some examples of the code you can reference for module extensions:
+To modify NeuroJIT and conduct custom experiments, you can extend the neurojit module by referring to the scripts described above. Below are the key modules you should consider to customize NeuroJIT:
 
 - `neurojit.commit.py`: The function `Mining.only_method_changes(repo, commit_hash)` filters commits that only modify methods and saves the method bodies to the cache. You can modify this function to use other filtering methods.
-- `neurojit.cuf.metrics.py`: The `MethodUnderstandabilityFeatures` class calculates commit understandability features at the method level, and the `CommitUnderstandabilityFeatures` class calculates features for each method in the commit. You can modify these classes to add new features or change existing features.
-- `scripts/environment.py`: This script includes the environment variables used in the scripts. Modify the environment variables to perform custom experiments.
+- `neurojit.cuf.metrics.py`: The `MethodUnderstandabilityFeatures` and `CommitUnderstandabilityFeatures` classes calculate commit understandability features of method-level commits. You can modify these classes if you wish to change the detailed methodology for extracting the features.
+- `scripts/environment.py`: This script includes the environment variables used in the scripts. You can modify the environment variables to perform custom experiments.
