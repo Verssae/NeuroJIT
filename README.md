@@ -55,7 +55,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ### Dataset
 
-The ApacheJIT-based dataset includes widely adopted just-in-time defect prediction features as well as the commit understandability features of NeuroJIT, derived from a total of eight Apache projects. Each CSV file in the `data/dataset` directory represents intermediate outputs generated at data preprocessing stages described in the paper, while each CSV file in the `combined` directory represents the final output for each project.
+Our dataset includes widely adopted just-in-time defect prediction features as well as the commit understandability features of NeuroJIT, derived from a total of eight Apache projects. Each CSV file in the `data/dataset` directory represents intermediate outputs generated at data preprocessing stages described in the paper, while each CSV file in the `combined` directory represents the final output for each project.
 
 ```Shell
 data/dataset
@@ -94,8 +94,6 @@ If you wish to build the dataset from scratch, the following scripts can be used
 │ lt            Calculate LT for apachejit_metrics (baseline)                                                                   │
 ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
-
-Building the dataset from scratch is time-consuming, as it involves comparing all methods in each commit for `filter-commits` and invoking Checkstyle for each file in the commit to calculate the commit understandability features. Therefore, we provide the pre-built datasets in the `data/dataset` directory.
 
 ### NeuroJIT
 
