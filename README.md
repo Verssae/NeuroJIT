@@ -1,58 +1,78 @@
 # NeuroJIT Replication Package
 
-Here is a guide on how to use the replication package of NeuroJIT. If you have any questions regarding the use of the package, feel free to contact us anytime via email at [fantasyopy@hanyang.ac.kr](mailto:fantasyopy@hanyang.ac.kr) or [sparky@hanyang.ac.kr](mailto:sparky@hanyang.ac.kr).
+This document introduces the replication package for *NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers* (NeuroJIT) and provides detailed instructions on how to use it. The package includes core modules of NeuroJIT as well as scripts and datasets necessary to replicate the results presented in the paper. You can use this package to replicate the paper’s results or implement a customized version of NeuroJIT to conduct experiments that meet your needs. If you have any questions about the package or the content of the paper, please feel free to contact us via email at [fantasyopy@hanyang.ac.kr](mailto:fantasyopy@hanyang.ac.kr) or [sparky@hanyang.ac.kr](mailto:sparky@hanyang.ac.kr). Thank you!
 
-## Structure of the Replication Package
+## License
 
-The replication package consists of `data/dataset`, the core module `src/neurojit` and `scripts/` used to reproduce the results of the paper. The structure of the replication package is as follows:
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Contents
+
+- [0. Brief Descriptions of a Package](#0-brief-descriptions-of-a-package)
+  - [0.1. Structure of the Replication Package](#01-structure-of-the-replication-package)
+  - [0.2. Dataset:](#02-dataset)
+  - [0.3. neurojit:](#03-neurojit)
+- [1. Step-by-step Explanations for NeuroJIT Replication](#1-step-by-step-explanations-for-neurojit-replication)
+  - [1.1. Setup](#11-setup)
+    - [1) Hardware/Software Requirements](#1-hardwaresoftware-requirements)
+    - [2) Docker Container Setup](#2-docker-container-setup)
+  - [1.2. Usage](#12-usage)
+    - [1) Reproducing the Experimental Results](#1-reproducing-the-experimental-results)
+    - [2) Additional Experiments for the Validity](#2-additional-experiments-for-the-validity)
+    - [3) An Example Usage of NeuroJIT](#3-an-example-usage-of-neurojit)
+- [2. Customizing NeuroJIT](#2-customizing-neurojit)
+
+## 0. Brief Descriptions of a Package
+
+### 0.1. Structure of the Replication Package
+
+The structure of the replication package is as follows:
 
 ```Shell
 ├── archive # zipped trained models (pickles) in our experiment
 ├── data
-│  ├── dataset # see Dataset
+│  ├── dataset # dataset used in the experiments
 │  ├── output # output of the experiments
 │  └── plots  # plots generated in the experiments
 ├── dist # neurojit package distribution
 ├── Dockerfile
 ├── docker-compose.yml
-├── src/neurojit # neurojit source code, see `neurojit`
+├── src/neurojit # core module
 └── scripts 
 # main scripts
    ├── data_utils.py # data preprocessing and caching
-   ├── calculate.py # calculate CUF and LT
-   ├── pre_analysis.py # pre-analysis for CUF, Baseline and Dataset
-   ├── jit_sdp.py # JIT-SDP training and evaluation
-   ├── analysis.py # analysis after JIT-SDP training and evaluation
-# utility
-   ├── correlation.py # correlation analysis utility
-   ├── environment.py # environment variables for the scripts
-   ├── visualization.py # visualization utility
+   ├── calculate.py # calculate commit understandability features and LT of Kamei et al.
+   ├── pre_analysis.py # analyze statistics of the dataset
+   ├── jit_sdp.py # machine learning algorithm training and evaluation for just-in-time defect prediction
+   ├── analysis.py # analyze the ML models
+# sub-modules
+   ├── correlation.py # modules for correlation analysis
+   ├── environment.py # environment variables for main scripts
+   ├── visualization.py # visualization tools
 # for replication
-   ├── commit_distribution.ipynb # commit distribution analysis for the dataset (external validity)
-   ├── neurojit_cli.py # simple example of NeuroJIT usage 
-   └── reproduce.sh # script to reproduce the key experimental results from the paper
+   ├── reproduce.sh # a script to reproduce the major experimental results of the paper
+   ├── commit_distribution.ipynb # a notebook for commit distribution analysis (external validity)
+   └── neurojit_cli.py # an example of utilizing NeuroJIT for user's objectives
 ```
 
-### Dataset
+### 0.2. Dataset:
 
-We provide the dataset in the `data/dataset` directory. The dataset is structured as follows:
+The ApacheJIT-based dataset includes widely adopted just-in-time defect prediction features and the commit understandability features of NeuroJIT from a total of eight Apache projects. Each CSV file in the `data/dataset` directory represents intermediate outputs generated at each experimental stage described in the paper, while each CSV file in the combined/ directory represents the final output per project.
 
 ```Shell
 data/dataset
 ├── apachejit_total.csv # original ApacheJIT dataset
 ├── apachejit_date.csv # ApacheJIT dataset with bug_fix_date
 ├── apachejit_gap.csv # gap between commit date and bug_fix_date in ApacheJIT dataset
-├── apache_metrics_kamei.csv # JIT metrics in ApacheJIT dataset
-├── baseline.csv # LT added and filtered ApacheJIT dataset
-├── baseline/  
+├── apache_metrics_kamei.csv # traditional just-in-time features in ApacheJIT dataset
+├── baseline/  # LT added and preprocessed ApacheJIT dataset
 │  ├── activemq.csv
 │  ├── ...
-├── combined/   # Combined of CUF and baseline dataset 
-├── commits/   # Filtered commits (only method changes commits)
-└── cuf/      # CUF calculated and filtered ApacheJIT dataset
+├── combined/*.csv   # the dataset used in the research
+└── cuf/*.csv      # 9 commit understandability features of target commits
 ```
 
-If you want to build the dataset from scratch, you can use the following scripts:
+If you wish to build the dataset from scratch, you can use the following scripts:
 
 ```Shell
  (1) Usage: python scripts/data_utils.py COMMAND [ARGS]...
@@ -77,11 +97,11 @@ If you want to build the dataset from scratch, you can use the following scripts
 ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Building the dataset from scratch takes a considerable amount of time because it requires comparing all methods in each commit for filter-commits, and CUF calculation requires invoking Checkstyle for each file in the commit. Therefore, we provide the pre-built dataset in the data/dataset directory.
+Building the dataset from scratch takes considerable time because it requires comparing all methods in each commit for `filter-commits` and invoking Checkstyle for each file in the commit when calculating commit understandability features. Therefore, we provide the pre-built datasets in the data/dataset directory.
 
-### `neurojit` 
+### 0.3. neurojit: 
 
-The structure of the core module `neurojit` is as follows:​
+The `neurojit` module provides commit understandability features calculation, a core feature of NeuroJIT, and the implementation of the JIT-SDP data splitting method. The module has the following structure:
 
 ```Shell
 src/neurojit
@@ -95,142 +115,61 @@ src/neurojit
     └── data_utils.py # JIT-SDP data split utility (chronological order, verification latency, concept drifts)
 ```
 
-## Setup
+## 1. Step-by-step Explanations for NeuroJIT Replication
+### 1.1. Setup
 
-1. Hardware/Software Requirements
+#### 1) Hardware/Software Requirements
 
-    We've tested the replication package on machines with the following specifications:
-    - Windows 11
-      - CPU: AMD Ryzen 5 5600X
-      - RAM: 32GB
-    - Ubuntu 20.04.6
-      - Device: NVIDIA DGX Station V100, 2019
-      - CPU: Intel Xeon(R) E5-2698 v4 @ 2.20GHz
-      - RAM: 256GB
-    - MacOS 14.6.1
-      - Device: MacBook Air M2, 2022
-      - CPU: Apple M2
-      - RAM: 24GB
-    - Docker version 4.33.1
-2. Docker Installation
+We tested the replication package on the following devices:
 
-    To install Docker, please refer to the official Docker installation guide at https://docs.docker.com/get-docker/.
-    
-    Download and unzip the replication package from the following link: [NeuroJIT Replication Package](zenodo_link).
+ - Windows 11
+   - CPU: AMD Ryzen 5 5600X
+   - RAM: 32GB
+ - Ubuntu 20.04.6
+   - Device: NVIDIA DGX Station V100, 2019
+   - CPU: Intel Xeon(R) E5-2698 v4 @ 2.20GHz
+   - RAM: 256GB
+ - MacOS 14.6.1
+   - Device: MacBook Air M2, 2022
+   - CPU: Apple M2
+   - RAM: 24GB
+ - Docker version 4.33.1
+  
+#### 2) Docker Container Setup
 
-## Usage
-
-### Docker Container Setup
-
-After navigating to the project folder, execute the following commands in the terminal to build and run the Docker container.
+To install Docker, refer to the official installation guide at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/). 
+After downloading and extracting `NeuroJIT.zip`, navigate to the directory via CLI. 
+To build the container using Docker Compose, execute the following command:
 
 ```Shell
- $ docker-compose up --build -d
- ...
-  ✔ Container neurojit-ase  Started
-```
- 
-To access the container, execute the following command:
-
-```Shell
- $ docker exec -it neurojit-ase bash
-
- root@31d:/app# scripts/reproduce.sh
+$ docker-compose up --build -d
+...
+✔ Container neurojit-ase  Started
 ```
 
-Or execute scripts in the container directly such as:
+Verify that the `neurojit-ase` container is running by using the `docker ps` command.
+
+### 1.2. Usage
+
+#### 1) Reproducing the Experimental Results
+
+To reproduce the main results of the paper, run the following command:
 
 ```Shell
- $ docker exec -it neurojit-ase scripts/reproduce.sh
-```
-
-### Reproducing the Results
-
-After the container is up and running, you can execute the replication script in the container.
-
-```Shell
- $ docker exec -it neurojit-ase scripts/reproduce.sh
+$ docker exec -it neurojit-ase scripts/reproduce.sh
 ``` 
 
-If the script runs successfully, you will obtain results similar to the following: [out.txt](./out.txt).
+If the script executes successfully, you should see the following results:
 
-### About the Reproduction Script
+![demo.png](demo.png)
 
-[`reproduce.sh`](scripts/reproduce.sh) contains the following python scripts with the specified commands:
+In addition to the tables shown in the capture, you can find the figures in the saved directory.
 
-```Shell
-(1) Usage: python scripts/pre_analysis.py COMMAND [ARGS]...
+For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
 
-Statistical pre-analysis for CUF, Baseline and Dataset
+#### 2) Additional Experiments for the Validity
 
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ plot-corr                   (RQ1) Generate plots for Correlations between cuf Features and Defect-inducing Risks              │
-│ plot-hmap                   Generate plots for Collinearity between Features                                                  │
-│ table-distribution          Tabulate the distribution of the dataset                                                          │
-│ table-group-diff            (RQ1) Tabulate the group differences between buggy and clean commits for cuf                      │
-│ table-group-diff-projects   Tabulate the group differences between buggy and clean commits for cuf (each project)             │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-(2) Usage: python scripts/jit_sdp.py COMMAND [ARGS]...
-
-Experiments for Just-In-Time Software Defect Prediction (JIT-SDP)
-
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ actionable   Compute the ratios of actionable features for the baseline and combined models for the true positive samples in  │
-│              the 20 folds JIT-SDP                                                                                             │
-│ train-test   Train and test the baseline/cuf/combined model with 20 folds JIT-SDP                                             │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-(3) Usage: python scripts/analysis.py COMMAND [ARGS]...
-
-Table and plot generation for analysis
-
-╭─ Commands ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ plot-radars               (RQ3) Generate radar charts for performance comparison between models                               │
-│ plot-set-relationships    (RQ2) Generate plots for TPs predicted by baseline model only vs cuf model only                     │
-│ table-actionable          (Toward More Actionable Guidance) Tabulate the results of the actionable features                   │
-│ table-performances        (RQ3) Generate table for performance comparison between models                                      │
-│ table-set-relationships   (RQ2) Generate table for TPs predicted by baseline model only vs cuf model only                     │
-╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-```
-
-for more details, the `--help` option can be used with each command.
-
-### Example Usage of NeuroJIT
-
-To calculate the commit understandability features of a commit in a repository, you can use the following command:
-
-```Shell
-$ python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
-```
-
-Here is an example of how to obtain features from a commit in the repository used in our research:
-
-```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
-
-{'NOGV': 1.0, 'MDNL': 0.0, 'TE': 3.5122864969277017, 'II': 0.03225806451612903, 'NOP': 0.0, 'NB': 0.0, 'EC': 0.5, 'DD_HV': 0.04324106779539902, 'NOMT': 9.0}
-```
-
-If the commit is not a method changes commit, you will see the following message:
-
-```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project groovy --commit-hash 7b84807
-
-Target commit is not a method changes commit
-```
-
-For the commits not used in our research, you can also obtain the features using the same command. For example, to obtain the features of the commit `0101945` in the `spring-projects/spring-framework` repository:
-
-```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
-
-{'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
-```
-
-### Additional Experiments
-
-1. Evidence that the conclusion regarding Figure 5 on page 7 does not change even for all positives.
+1) The conclusion presented in Figure 5 on page 7 of the paper, which shows that commit understandability features provide exclusive information, holds true for all positives, not just true positives. You can confirm the results for all positives by executing the following commands with the `--no-only-tp` option:
 
     ```Shell
     $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline --no-only-tp
@@ -263,16 +202,56 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
     │ Hive      │       29.2 │           37.9 │            32.9 │
     ╘═══════════╧════════════╧════════════════╧═════════════════╛
     ```
-2. Evidence that our dataset shows a different defect distribution compared to the studies cited in the External Validity section on page 10: see [scripts/commit_distribution.ipynb](./scripts/commit_distribution.ipynb).
+2) To obtain the results mentioned in the External Validity section on page 10 of the paper, which states that the dataset used in this study shows a different distribution compared to the dataset used in previous studies, execute the following commands:
+  
+    ```Shell
+    $ docker exec -it neurojit-ase python scripts/pre_analysis.py plot-commit-distribution --ours
 
-### Customizing NeuroJIT
+    Saved plot to data/plots/commit_distribution_ours.png
 
-If you want to customize NeuroJIT, consider the following:
+    $ docker exec -it neurojit-ase python scripts/pre_analysis.py plot-commit-distribution
 
-- `commit.py`: `Mining.only_method_changes(repo, commit_hash)` filters commits that only modify existing methods and saves the modified methods as `MethodChangesCommit` instances. You can customize the method filtering logic in this function.
-- `cuf.metrics.py`: Contains the `MethodUnderstandabilityFeatures` class, which calculates the CUF at the method level and `CommitUnderstandabilityFeatures` which aggregate the method level features to the commit level. You can extend or modify the features calculated in these classes by adding new methods or modifying existing ones.
-- `scripts/environment.py`: Contains the environment variables used in the scripts. You can modify the environment variables to customize the experiments.
+    Saved plot to data/plots/commit_distribution_apachejit.png
+    ```
 
-## License
+    Check the figures saved in the corresponding directory.
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+#### 3) An Example Usage of NeuroJIT
+
+NeuroJIT is designed to calculate commit understandability features from any project’s commits. You can calculate the features using the following `neurojit_cli.py` script:
+
+```Shell
+$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
+```
+
+For example, to calculate the features for the `8f40a7` commit in the `ActiveMQ` project, run the following command:
+
+```Shell
+$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
+
+{'NOGV': 1.0, 'MDNL': 0.0, 'TE': 3.5122864969277017, 'II': 0.03225806451612903, 'NOP': 0.0, 'NB': 0.0, 'EC': 0.5, 'DD_HV': 0.04324106779539902, 'NOMT': 9.0}
+```
+
+If the commit is not a method changes commit, you will see a message like this:
+
+```Shell
+$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project groovy --commit-hash 7b84807
+
+Target commit is not a method changes commit
+```
+
+You can calculate the features in any project you desire, even if it is not one of the Apache projects included in the experiments of the paper. For example, to calculate the features from the `0101945` commit in the `spring-projects/spring-framework` project, run the following command:
+
+```Shell
+$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
+
+{'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
+```
+
+## 2. Customizing NeuroJIT
+
+To modify NeuroJIT and perform custom experiments, you can extend or modify the neurojit module by referring to the scripts described so far. Here are some examples of the code you can reference for module extensions:
+
+- `neurojit.commit.py`: The function `Mining.only_method_changes(repo, commit_hash)` filters commits that only modify methods and saves the method bodies to the cache. You can modify this function to use other filtering methods.
+- `neurojit.cuf.metrics.py`: The `MethodUnderstandabilityFeatures` class calculates commit understandability features at the method level, and the `CommitUnderstandabilityFeatures` class calculates features for each method in the commit. You can modify these classes to add new features or change existing features.
+- `scripts/environment.py`: This script includes the environment variables used in the scripts. Modify the environment variables to perform custom experiments.

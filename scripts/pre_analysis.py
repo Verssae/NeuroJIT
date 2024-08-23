@@ -4,6 +4,7 @@
 
 import warnings
 from pathlib import Path
+from matplotlib import pyplot as plt
 from typing_extensions import Annotated
 
 import typer
@@ -234,6 +235,60 @@ def table_distribution(
     )
     print(output)
     return output
+
+@app.command()
+def plot_commit_distribution(
+    ours: bool = typer.Option(False, help="Plot for our dataset"),
+):
+    """
+    Generate plots for Commit Distribution
+    """
+    all_projects_data = []
+
+    for project in PROJECTS:
+        if ours:
+            data = pd.read_csv(f"data/dataset/combined/{project}.csv")
+            data = data.loc[data["project"] == project]
+            data["date"] = pd.to_datetime(data["date"])
+        else:
+            data = pd.read_csv("data/dataset/apachejit_total.csv")
+            data = data.loc[data["project"] == f"apache/{project}"]
+            data = data.rename(columns={"author_date": "date"})
+            data["date"] = pd.to_datetime(data["date"], unit="s")
+        data = data.set_index(["date"])
+        data = data.sort_index()
+
+        monthly_bug_counts = data.resample("M")["buggy"].value_counts().unstack(fill_value=0)
+        monthly_bug_counts["total"] = monthly_bug_counts[False] + monthly_bug_counts[True]
+        monthly_bug_counts["project"] = project
+
+        monthly_bug_counts["month_number"] = range(1, len(monthly_bug_counts) + 1)
+
+        all_projects_data.append(monthly_bug_counts)
+
+    num_projects = len(PROJECTS)
+    cols = 2
+    rows = (num_projects + 1) // cols
+
+    fig, axes = plt.subplots(rows, cols, figsize=(10, 9))
+
+    for i, (project, ax) in enumerate(zip(PROJECTS, axes.flatten())):
+        project_data = all_projects_data[i]
+        
+        ax.plot(project_data['month_number'], project_data[True], color='red')
+        ax.fill_between(project_data['month_number'], project_data[True], color='red', alpha=0.3)
+        ax.plot(project_data['month_number'], project_data['total'], color='black')
+        ax.axvline(x=4, color='green', linestyle='--')
+        ax.set_title(project.capitalize())
+
+    if num_projects % cols != 0:
+        for j in range(num_projects, rows * cols):
+            fig.delaxes(axes.flatten()[j])
+
+    save_path = f"data/plots/commit_distribution_{'ours' if ours else 'apachejit'}.png"
+    plt.tight_layout()
+    plt.savefig(save_path)
+    print(f"Saved plot to {save_path}")
 
 
 if __name__ == "__main__":
