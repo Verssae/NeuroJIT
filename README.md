@@ -200,7 +200,7 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
     │ Hive      │       29.2 │           37.9 │            32.9 │
     ╘═══════════╧════════════╧════════════════╧═════════════════╛
     ```
-2) To obtain the results mentioned in the External Validity section on page 10 of the paper, which states that the dataset used in this study shows a different distribution compared to the dataset used in previous studies, execute the following commands:
+2) To obtain the results mentioned in the External Validity section on page 10 of the paper, which states that the dataset used in this study shows a different distribution compared to the dataset used in cited study, execute the following commands:
   
     ```Shell
     $ docker exec -it neurojit-ase python scripts/pre_analysis.py plot-commit-distribution --ours
@@ -212,17 +212,17 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
     Saved plot to data/plots/commit_distribution_apachejit.png
     ```
 
-    Check the figures saved in the corresponding directory.
+    Please check the figures saved in the corresponding directory.
 
 #### 3) An Example of NeuroJIT Usage
 
-NeuroJIT is designed to calculate commit understandability features from any project’s commits. You can calculate the features using the following `neurojit_cli.py` script:
+NeuroJIT is currently designed to calculate commit understandability features from method-level commits of projects. You can calculate the features using the following `neurojit_cli.py` script:
 
 ```Shell
 $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
 ```
 
-For example, to calculate the features for the `8f40a7` commit in the `ActiveMQ` project, run the following command:
+For example, to calculate the features for the `8f40a7` commit in the `ActiveMQ` project, execute the following command:
 
 ```Shell
 $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
@@ -238,7 +238,7 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 Target commit is not a method changes commit
 ```
 
-You can calculate the features in any project you desire, even if it is not one of the Apache projects included in the experiments of the paper. For example, to calculate the features from the `0101945` commit in the `spring-projects/spring-framework` project, run the following command:
+If you want to calculate the features from commits in a project not included in our dataset, please refer to the following example command.
 
 ```Shell
 $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
