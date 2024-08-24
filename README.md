@@ -155,7 +155,7 @@ To reproduce the major results of the paper, execute the following command:
 $ docker exec -it neurojit-ase scripts/reproduce.sh
 ``` 
 
-If the script is executed successfully, you should see the following results:
+If the script is executed successfully, you should see the results as `reproduced results.png`:
 
 ![reproduced_results.png](reproduced_results.png)
 
