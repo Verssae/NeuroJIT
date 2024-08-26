@@ -15,8 +15,6 @@ RUN --mount=source=dist,target=/dist PYTHONDONTWRITEBYTECODE=1 pip install --no-
 
 RUN curl -L -o checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.15.0/checkstyle-10.15.0-all.jar
 
-RUN cat /app/archive/pickles_part_* > /app/pickles.tar.gz && tar --warning=no-unknown-keyword -xzf /app/pickles.tar.gz -C /app
-
 RUN chmod +x scripts/*.sh
 
 CMD ["/bin/sh"]

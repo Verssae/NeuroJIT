@@ -4,6 +4,7 @@ services:
     image: neurojit-ase
     volumes:
       - ./data:/app/data
+      - ./archive:/app/archive
     container_name: neurojit-ase
     command: bash
     stdin_open: true
