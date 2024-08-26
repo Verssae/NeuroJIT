@@ -4,12 +4,6 @@ services:
     image: neurojit-ase
     volumes:
       - ./data:/app/data
-      - ./archive:/app/archive
-    command: /bin/sh -c "
-      if [ ! -d /app/data/pickles ]; then
-        cat /app/archive/pickles_part_* > /app/pickles.tar.gz &&
-        tar --warning=no-unknown-keyword -xzf /app/pickles.tar.gz -C /app;
-      fi;
-      exec /bin/sh"
     container_name: neurojit-ase
+    command: bash
     stdin_open: true
