@@ -1,6 +1,6 @@
 # neurojit
 
-`neurojit` is a Python package designed to enhance Just-In-Time (JIT) defect prediction by combining neurophysiological and empirical developer insights. The package provides tools for calculating commit understandability features (CUF), which are critical in modern software development and defect prediction. For more information, see our research paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers"*.
+`neurojit` is a Python package designed to enhance Just-In-Time (JIT) defect prediction by leveraging insights from both neurophysiological and empirical developer reactions to code. Modern developers make changes based on their understanding of the existing code context, and the difficulty in comprehending these changes can increase the likelihood of human error, potentially introducing defects. NeuroJIT captures the understandability of each commit through features that correlate with developers’ cognitive and empirical responses to different code segments. These features have been shown to improve JIT defect prediction models by identifying defect-inducing commits more effectively. For more information, see our research paper *"NeuroJIT: Improving Just-In-Time Defect Prediction Using Neurophysiological and Empirical Perceptions of Modern Developers."*
 
 ## Installation
 
@@ -15,7 +15,7 @@ To install with additional dependencies for replicating the research results:
 $ pip install neurojit[replication]
 ```
 
-For more information about the replication package, see our [replication package](https://github.com/Verssae/NeuroJIT)
+For more information about the replication, see our [NeuroJIT replication package](https://github.com/Verssae/NeuroJIT)
 
 ### Example Usage
 1. Filtering Commits and Saving Method Changes
@@ -28,9 +28,9 @@ For more information about the replication package, see our [replication package
     if target_commit is not None:
         mining.save(target_commit)
     ```
-2. Calculating Commit Understandability Features (CUF)
+2. Calculating Commit Understandability Features
 
-    Compute commit understandability features (CUF) from the saved MethodChangesCommit instances.
+    Compute commit understandability features from the saved `MethodChangesCommit` instances.
 
     ```python
     from neurojit.cuf.metrics import CommitUnderstandabilityFeatures
