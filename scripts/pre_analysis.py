@@ -41,7 +41,7 @@ def plot_corr():
     X = data[COMBINED]
     results_combined = significances(X, y, metrics=COMBINED)
 
-    save_dir = Path("data/plots/pre_analysis/significance")
+    save_dir = Path("data/output/plots/pre_analysis/significance")
     save_dir.mkdir(exist_ok=True, parents=True)
 
     corr_plot(results_cuf, results_combined, save_dir=save_dir, top_k=9)
@@ -54,7 +54,7 @@ def plot_corr():
     df_combined = df_combined.drop(["adjusted_odds", "abs_odds", "jit-sdp"], axis=1)
     console = console.Console()
 
-    console.print("Saved plots to data/plots/pre_analysis/significance")
+    console.print("Saved plots to data/output/plots/pre_analysis/significance")
 
 @app.command()
 def plot_hmap():
@@ -64,15 +64,15 @@ def plot_hmap():
     data = load_project_data()
 
     X = data[BASELINE + CUF]
-    save_path = "data/plots/pre_analysis/hmap/ALL.png"
+    save_path = "data/output/plots/pre_analysis/hmap/ALL.png"
     visualize_hmap(X.corr(method="spearman"), size=7, save_path=save_path)
 
     X = data[CUF_ALL]
-    save_path = "data/plots/pre_analysis/hmap/ALL_CUF.png"
+    save_path = "data/output/plots/pre_analysis/hmap/ALL_CUF.png"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
     X = data[BASE_ALL]
-    save_path = "data/plots/pre_analysis/hmap/ALL_Baseline.png"
+    save_path = "data/output/plots/pre_analysis/hmap/ALL_Baseline.png"
     visualize_hmap(X.corr(method="spearman"), size=5, save_path=save_path)
 
 
@@ -285,7 +285,7 @@ def plot_commit_distribution(
         for j in range(num_projects, rows * cols):
             fig.delaxes(axes.flatten()[j])
 
-    save_path = f"data/plots/commit_distribution_{'ours' if ours else 'apachejit'}.png"
+    save_path = f"data/output/plots/commit_distribution_{'ours' if ours else 'apachejit'}.png"
     plt.tight_layout()
     plt.savefig(save_path)
     print(f"Saved plot to {save_path}")

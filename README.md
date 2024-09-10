@@ -15,7 +15,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [2. Step-by-step Explanations for NeuroJIT Replication](#2-step-by-step-explanations-for-neurojit-replication)
   - [2-1. Setup](#2-1-setup)
     - [1) Hardware/Software Requirements](#1-hardwaresoftware-requirements)
-    - [2) Docker Container Setup](#2-docker-container-setup)
+    - [2) Docker Setup](#2-docker-setup)
   - [2-2. Usage](#2-2-usage)
     - [1) Reproducing the Experimental Results](#1-reproducing-the-experimental-results)
     - [2) Additional Experiments for the Validity](#2-additional-experiments-for-the-validity)
@@ -111,6 +111,19 @@ src/neurojit
     └── data_utils.py # the implementation of sliding window method for chronological order, verification latency, and concept drifts
 ```
 
+`neurojit` is available at [PyPI](https://pypi.org/project/neurojit/), and you can install it using the following command:
+
+```Shell
+$ pip install neurojit
+```
+Now, you can use the NeuroJIT module in your Python project.
+
+If you want to install all the dependencies for the replication package, add the `[replication]` option:
+```Shell
+$ pip install neurojit[replication]
+```
+
+
 ## 2. Step-by-step Explanations for NeuroJIT Replication
 ### 2-1. Setup
 
@@ -131,28 +144,42 @@ We tested the replication package on the following devices:
    - RAM: 24GB
  - Docker version 4.33.1
   
-#### 2) Docker Container Setup
+#### 2) Docker Setup
 
 To install Docker, refer to the official installation guide at [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/). 
 After downloading and extracting `NeuroJIT.zip`, navigate to the directory via CLI. 
-To build the container using `docker-compose`, execute the following command:
+To build the image using `docker-compose`, execute the following command:
 
 ```Shell
-$ docker-compose up --build -d
+$ docker-compose build
 ...
-✔ Container neurojit-ase  Started
+
+$ docker image ls
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+neurojit-ase   latest    12e828b38d59   18 seconds ago   3.57GB
 ```
 
-Verify that the `neurojit-ase` container is running by using the `docker ps` command.
+Or you can build the image and run the replication script in one command:
+
+```Shell
+$ docker-compose up --build
+...
+✔ Container neurojit-ase  Started
+Attaching to neurojit-ase
+...
+```
+
+`neurojit-ase` container is created and `scripts/reproduce.sh` is executed automatically.
+
 
 ### 2-2. Usage
 
 #### 1) Reproducing the Experimental Results
 
-To reproduce the major results of the paper, execute the following command:
+After you build the image, to reproduce the major results of the paper, execute the following command:
 
 ```Shell
-$ docker exec -it neurojit-ase scripts/reproduce.sh
+$ docker-compose run --rm neurojit-ase scripts/reproduce.sh # or docker-compose up 
 ``` 
 
 If the script is executed successfully, you can see the identical results as `reproduced_results.png`:
@@ -168,7 +195,7 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
 1) The result presented in Figure 5 on page 7 of the paper, which demonstrates that commit understandability features provide exclusive information, applies to all positives, not just true positives. You can verify the results for all positives by executing the following commands with the `--no-only-tp` option:
 
     ```Shell
-    $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline --no-only-tp
+    $ docker-compose run --rm neurojit-ase python scripts/analysis.py table-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --fmt fancy_outline --no-only-tp
 
     ╒═══════════╤════════════╤════════════════╤═════════════════╕
     │ Project   │   cuf only │   Intersection │   baseline only │
@@ -183,7 +210,7 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
     │ Hive      │       29.8 │           40.3 │            29.9 │
     ╘═══════════╧════════════╧════════════════╧═════════════════╛
 
-    $ docker exec -it neurojit-ase python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json --fmt fancy_outline --no-only-tp
+    $ docker-compose run --rm neurojit-ase python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json --fmt fancy_outline --no-only-tp
 
     ╒═══════════╤════════════╤════════════════╤═════════════════╕
     │ Project   │   cuf only │   Intersection │   baseline only │
@@ -201,11 +228,11 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
 2) To obtain the results mentioned in the External Validity section on page 10 of the paper, which states that the dataset used in this study shows a different distribution compared to the dataset used in cited study, execute the following commands:
   
     ```Shell
-    $ docker exec -it neurojit-ase python scripts/pre_analysis.py plot-commit-distribution --ours
+    $ docker-compose run --rm neurojit-ase python scripts/pre_analysis.py plot-commit-distribution --ours
 
     Saved plot to data/plots/commit_distribution_ours.png
 
-    $ docker exec -it neurojit-ase python scripts/pre_analysis.py plot-commit-distribution
+    $ docker-compose run --rm neurojit-ase python scripts/pre_analysis.py plot-commit-distribution
 
     Saved plot to data/plots/commit_distribution_apachejit.png
     ```
@@ -217,13 +244,13 @@ For a detailed explanation of reproduce.sh, please refer to `reproduce_sh.md`.
 NeuroJIT is currently designed to calculate commit understandability features from method-level commits of projects. You can calculate the features using the following `neurojit_cli.py` script:
 
 ```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
+$ docker-compose run --rm neurojit-ase python scripts/neurojit_cli.py calculate --project REPONAME --commit-hash COMMIT_HASH
 ```
 
 For example, to calculate the features for the `8f40a7` commit in the `ActiveMQ` project, execute the following command:
 
 ```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
+$ docker-compose run --rm neurojit-ase python scripts/neurojit_cli.py calculate --project activemq --commit-hash 8f40a7
 
 {'NOGV': 1.0, 'MDNL': 0.0, 'TE': 3.5122864969277017, 'II': 0.03225806451612903, 'NOP': 0.0, 'NB': 0.0, 'EC': 0.5, 'DD_HV': 0.04324106779539902, 'NOMT': 9.0}
 ```
@@ -231,7 +258,7 @@ $ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --projec
 If the commit is not a method changes commit, you will see a message like this:
 
 ```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project groovy --commit-hash 7b84807
+$ docker-compose run --rm neurojit-ase python scripts/neurojit_cli.py calculate --project groovy --commit-hash 7b84807
 
 Target commit is not a method changes commit
 ```
@@ -239,7 +266,7 @@ Target commit is not a method changes commit
 If the commits are at the method level, you can still extract the commit understandability features even if the project is not included in our dataset. Please refer to the example below.
 
 ```Shell
-$ docker exec -it neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
+$ docker-compose run --rm neurojit-ase python scripts/neurojit_cli.py calculate --project spring-projects/spring-framework --commit-hash 0101945
 
 {'NOGV': 0.6, 'MDNL': 0.0, 'TE': 4.623781958476344, 'II': 0.9166666666666666, 'NOP': 1.0, 'NB': 0.0, 'EC': 0.3333333333333333, 'DD_HV': 0.04484876484351509, 'NOMT': 17.0}
 ```

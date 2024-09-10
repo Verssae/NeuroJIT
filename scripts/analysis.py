@@ -36,7 +36,7 @@ def plot_radars(
     xgb_baseline_cuf: Annotated[
         Path, typer.Argument(exists=True, file_okay=True, readable=True)
     ] = Path("data/output/xgboost_combined.json"),
-    save_dir: Annotated[Path, typer.Option()] = Path("data/plots/analysis"),
+    save_dir: Annotated[Path, typer.Option()] = Path("data/output/plots/analysis"),
 ):
     """
     (RQ3) Generate radar charts for performance comparison between models
@@ -325,7 +325,7 @@ def plot_set_relationships(
         "data/output/random_forest_cuf.json"
     ),
     save_path: Annotated[Path, typer.Option()] = Path(
-        "data/plots/analysis/diff_plot.svg"
+        "data/output/plots/analysis/diff_plot.svg"
     ),
     only_tp: Annotated[bool, typer.Option()] = True,
 ):

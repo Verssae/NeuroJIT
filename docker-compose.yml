@@ -6,5 +6,6 @@ services:
       - ./data:/app/data
       - ./archive:/app/archive
     container_name: neurojit-ase
-    command: bash
+    command: ["scripts/reproduce.sh"]  # bash 대신 애플리케이션을 직접 실행하도록 설정
     stdin_open: true
+    tty: true

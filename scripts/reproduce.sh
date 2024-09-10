@@ -30,8 +30,8 @@ python scripts/analysis.py table-set-relationships data/output/random_forest_cuf
 echo "(b) XGBoost"
 python scripts/analysis.py table-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json --fmt fancy_outline
 echo "** Generating Figure 5 **"
-python scripts/analysis.py plot-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --save-path data/plots/analysis/rf_diff_plot.svg
-python scripts/analysis.py plot-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json  --save-path data/plots/analysis/xgb_diff_plot.svg
+python scripts/analysis.py plot-set-relationships data/output/random_forest_cuf.json data/output/random_forest_baseline.json --save-path data/output/plots/analysis/rf_diff_plot.svg
+python scripts/analysis.py plot-set-relationships data/output/xgboost_cuf.json data/output/xgboost_baseline.json  --save-path data/output/plots/analysis/xgb_diff_plot.svg
 
 echo "=====================[RQ3]====================="
 echo "** Evaluating combined models for random forest and xgboost **"
