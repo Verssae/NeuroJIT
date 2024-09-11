@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 
-RUN pip install neurojit[replication]
+RUN pip install neurojit[replication]==1.0.2
 
 # 첫 번째 스테이지에서 필요한 파일만 복사
 COPY --from=build-stage /app /app
